@@ -4,6 +4,7 @@ import {
   useScroll,
   useSpring,
   useTransform,
+  useMotionValue
 } from "framer-motion";
 
 const images = [
@@ -44,11 +45,11 @@ const images = [
  * endRadius -> ring size at the end (pushed out to frame the message)
  */
 const LAYERS = [
-  { sides: 4, startAngle: 45,  radius: 1.05, endRadius: 1.1,  scale: 1.3,  opacity: 1,    blur: 0 },
-  { sides: 5, startAngle: -90, radius: 0.88, endRadius: 1.0,  scale: 1.1,  opacity: 0.95, blur: 0 },
-  { sides: 6, startAngle: 0,   radius: 0.72, endRadius: 0.95, scale: 0.92, opacity: 0.85, blur: 0.4 },
-  { sides: 7, startAngle: -90, radius: 0.56, endRadius: 0.9,  scale: 0.76, opacity: 0.72, blur: 0.8 },
-  { sides: 6, startAngle: 30,  radius: 0.4,  endRadius: 0.85, scale: 0.62, opacity: 0.6,  blur: 1.2 },
+  { sides: 4, startAngle: 45, radius: 1.05, endRadius: 1.1, scale: 1.3, opacity: 1, blur: 0 },
+  { sides: 5, startAngle: -90, radius: 0.88, endRadius: 1.0, scale: 1.1, opacity: 0.95, blur: 0 },
+  { sides: 6, startAngle: 0, radius: 0.72, endRadius: 0.95, scale: 0.92, opacity: 0.85, blur: 0.4 },
+  { sides: 7, startAngle: -90, radius: 0.56, endRadius: 0.9, scale: 0.76, opacity: 0.72, blur: 0.8 },
+  { sides: 6, startAngle: 30, radius: 0.4, endRadius: 0.85, scale: 0.62, opacity: 0.6, blur: 1.2 },
 ];
 
 const SLOTS = (() => {
@@ -69,7 +70,7 @@ const easeOutCubic = (t) => 1 - Math.pow(1 - t, 3);
 const easeInOut = (t) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2);
 
 /* One card. Reads the shared scroll progress and derives its own motion values. */
-function Card({ slot, progress, width, height, mobile }) {
+function Card({ slot, progress, width, height, mobile, mouse }) {
   const { image, index, layerIndex, vertex, layer } = slot;
 
   const cardW = mobile
@@ -131,6 +132,54 @@ function Card({ slot, progress, width, height, mobile }) {
     s.blur > 0.05 ? `blur(${s.blur}px)` : "none"
   );
 
+
+  const repelX = useTransform(
+    [mouse.x, x],
+    ([mouseX, cardX]) => {
+      if (mobile || mouseX == null) return 0;
+
+      const screenX = width / 2 + cardX;
+      const distance = screenX - mouseX;
+      const range = 180;
+
+      if (Math.abs(distance) >= range) return 0;
+
+      return Math.sign(distance || 1) *
+        Math.pow(1 - Math.abs(distance) / range, 2) *
+        55;
+    }
+  );
+
+  const repelY = useTransform(
+    [mouse.y, y],
+    ([mouseY, cardY]) => {
+      if (mobile || mouseY == null) return 0;
+
+      const screenY = height / 2 + cardY;
+      const distance = screenY - mouseY;
+      const range = 180;
+
+      if (Math.abs(distance) >= range) return 0;
+
+      return Math.sign(distance || 1) *
+        Math.pow(1 - Math.abs(distance) / range, 2) *
+        40;
+    }
+  );
+
+  const smoothRepelX = useSpring(repelX, {
+    stiffness: 180,
+    damping: 22,
+    mass: 0.45,
+  });
+
+  const smoothRepelY = useSpring(repelY, {
+    stiffness: 180,
+    damping: 22,
+    mass: 0.45,
+  });
+
+
   return (
     <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
       <motion.div
@@ -138,8 +187,8 @@ function Card({ slot, progress, width, height, mobile }) {
         style={{
           width: cardW,
           height: cardH,
-          x,
-          y,
+          x: useTransform([x, smoothRepelX], ([base, repel]) => base + repel),
+          y: useTransform([y, smoothRepelY], ([base, repel]) => base + repel),
           rotate,
           scale,
           opacity,
@@ -182,6 +231,21 @@ export default function VisualStory() {
     mass: 0.4,
   });
 
+  const mouse = {
+    x: useMotionValue(null),
+    y: useMotionValue(null),
+  };
+
+  const handleMouseMove = (event) => {
+    mouse.x.set(event.clientX);
+    mouse.y.set(event.clientY);
+  };
+
+  const handleMouseLeave = () => {
+    mouse.x.set(null);
+    mouse.y.set(null);
+  };
+
   const { width, height } = viewport;
   const mobile = width < 640;
 
@@ -206,7 +270,11 @@ export default function VisualStory() {
       ref={sectionRef}
       className="relative h-[340vh] bg-[var(--jpg-black)]"
     >
-      <div className="sticky top-0 h-[100svh] min-h-[560px] overflow-hidden bg-[var(--jpg-black)]">
+      <div
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        className="sticky top-0 h-[100svh] min-h-[560px] overflow-hidden bg-[var(--jpg-black)]"
+      >
         {/* Soft glow */}
         <motion.div
           className="pointer-events-none absolute inset-0"
@@ -226,6 +294,7 @@ export default function VisualStory() {
             width={width}
             height={height}
             mobile={mobile}
+            mouse={mouse}
           />
         ))}
 
