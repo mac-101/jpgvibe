@@ -198,13 +198,13 @@ function PillarCard({ pillar, index, reduced }) {
                   </svg>
                 </span>
 
-                <span
+                {/* <span
                   aria-hidden="true"
                   className="text-xs tabular-nums"
                   style={{ color: "var(--jpg-muted)" }}
                 >
                   {pillar.index}
-                </span>
+                </span> */}
               </div>
 
               <h3 className="mt-10 text-3xl font-medium tracking-tight sm:text-4xl">

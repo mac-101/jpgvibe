@@ -67,6 +67,91 @@ const RANKS = [
     { z: -30, scale: 0.91, tilt: 1.2, dim: 0.52 },
 ];
 
+
+const headlineContainer = {
+    hidden: {},
+    show: {
+        transition: {
+            delayChildren: 0.25,
+            staggerChildren: 0.16,
+        },
+    }
+}
+
+const headlineWord = {
+    hidden: {
+        opacity: 0,
+        y: 45,
+        rotateX: -35,
+        filter: "blur(8px)",
+    },
+    show: {
+        opacity: 1,
+        y: 0,
+        rotateX: 0,
+        filter: "blur(0px)",
+        transition: {
+            duration: 0.85,
+            ease: [0.22, 1, 0.36, 1],
+        },
+    },
+};
+
+const visionariesReveal = {
+    hidden: {
+        opacity: 0,
+        x: 35,
+        filter: "blur(10px)",
+    },
+    show: {
+        opacity: 1,
+        x: 0,
+        filter: "blur(0px)",
+        transition: {
+            duration: 1.05,
+            delay: 0.15,
+            ease: [0.22, 1, 0.36, 1],
+        },
+    },
+};
+
+const convergeReveal = {
+    hidden: {
+        opacity: 0,
+        y: 24,
+        scale: 0.96,
+        filter: "blur(12px)",
+    },
+    show: {
+        opacity: 1,
+        y: 0,
+        scale: 1,
+        filter: "blur(0px)",
+        transition: {
+            duration: 1.1,
+            delay: 0.2,
+            ease: [0.22, 1, 0.36, 1],
+        },
+    },
+};
+
+const supportingText = {
+    hidden: {
+        opacity: 0,
+        y: 20,
+    },
+    show: {
+        opacity: 1,
+        y: 0,
+        transition: {
+            duration: 0.8,
+            delay: 0.25,
+            ease: [0.22, 1, 0.36, 1],
+        },
+    },
+};
+
+
 function ArtworkCard({ artwork, index, rank, ready, onSelect, sx, sy, reduced }) {
     const px = useTransform(sx, [-0.5, 0.5], [-artwork.depth, artwork.depth]);
     const py = useTransform(sy, [-0.5, 0.5], [-artwork.depth, artwork.depth]);
@@ -190,6 +275,7 @@ export default function Hero() {
     const [focus, setFocus] = useState(0);
     const [ready, setReady] = useState(false);
 
+
     // Intro finishes, then the rotation can start
     useEffect(() => {
         const t = setTimeout(() => setReady(true), 1700);
@@ -229,9 +315,9 @@ export default function Hero() {
             <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-12 px-6 pb-24 pt-16 lg:min-h-screen lg:grid-cols-2 lg:gap-8 lg:px-10 lg:pb-24">
                 {/* Copy */}
                 <motion.div
-                    variants={container}
-                    initial="hidden"
-                    animate="show"
+                    // variants={container}
+                    // initial="hidden"
+                    // animate="show"
                     className="relative z-20 max-w-2xl"
                 >
                     {/* <motion.div
@@ -247,24 +333,60 @@ export default function Hero() {
                         Independent visual culture
                     </motion.div> */}
 
+
                     <motion.h1
-                        variants={item}
+                        variants={headlineContainer}
+                        initial="hidden"
+                        animate="show"
                         className="text-[clamp(2.8rem,6vw,5.4rem)] font-semibold leading-[1.04] tracking-[-0.065em]"
                     >
-                        Where Fine Artists, Photographers{" "}
-                        <span className="text-[var(--jpg-cream)]/55">
-                            &amp; Visionaries
-                        </span>{" "}
-                        Converge.
+                        <span className="block overflow-hidden pb-1">
+                            <motion.span
+                                variants={headlineWord}
+                                className="inline-block"
+                            >
+                                Where Fine Artists,
+                            </motion.span>
+                        </span>
+
+                        <span className="block overflow-hidden pb-1">
+                            <motion.span
+                                variants={headlineWord}
+                                className="inline-block"
+                            >
+                                Photographers
+                            </motion.span>
+                        </span>
+
+                        <span className="block overflow-hidden pb-1">
+                            <motion.span
+                                variants={visionariesReveal}
+                                className="inline-block text-[var(--jpg-cream)]/55"
+                            >
+                                &amp; Visionaries
+                            </motion.span>
+                        </span>
+
+                        <span className="block overflow-hidden pb-2">
+                            <motion.span
+                                variants={convergeReveal}
+                                className="inline-block"
+                            >
+                                Converge.
+                            </motion.span>
+                        </span>
                     </motion.h1>
 
                     <motion.p
-                        variants={item}
+                        variants={supportingText}
+                        initial="hidden"
+                        animate="show"
                         className="mt-7 max-w-lg text-base leading-8 text-[var(--jpg-cream)]/65 sm:text-lg"
                     >
                         A space for exceptional art, bold perspectives, and the people
                         shaping how the world sees.
                     </motion.p>
+
 
                     <motion.div
                         variants={item}
