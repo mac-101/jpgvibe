@@ -1,0 +1,54 @@
+
+@import "tailwindcss";
+
+:root {
+  --jpg-black: #000000;
+  --jpg-red: #F91D1D;
+  --jpg-cream: #F6E8B1;
+  --jpg-yellow: #FFE600;
+  --jpg-orange: #FF6A00;
+
+  --jpg-surface: #0A0A0A;
+  --jpg-surface-raised: #141414;
+  --jpg-muted: #A39D89;
+  --jpg-border: rgba(246, 232, 177, 0.18);
+
+  --jpg-gradient: linear-gradient(
+    110deg,
+    var(--jpg-yellow) 0%,
+    var(--jpg-orange) 50%,
+    var(--jpg-red) 100%
+  );
+}
+
+@keyframes hero-enter {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes artwork-float {
+  0%, 100% {
+    translate: 0 0;
+  }
+
+  50% {
+    translate: 0 -10px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+  }
+}
