@@ -4,7 +4,7 @@ import Hero from "../components/Hero";
 import VisualStory from "../components/VisualStory";
 import ValueGrid from "../components/CoreValueGrid";
 import LiveVisualFeed from "../components/LiveVisualFeed";
-
+import ExhibitionFinale from "../components/ExhibitionFinale";
 export default function App() {
   return (
     <main>
@@ -16,6 +16,7 @@ export default function App() {
       <VisualStory />
         <LiveVisualFeed/>
         <ValueGrid/>
+        <ExhibitionFinale/>
       {/* Next homepage sections go here */}
     </main>
   );

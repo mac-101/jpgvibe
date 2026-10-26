@@ -464,7 +464,7 @@ export default function LiveVisualFeed() {
                         </p>
                     </motion.div>
 
-                    <div className="flex gap-2 self-end">
+                    {/* <div className="flex gap-2 self-end">
                         {!reduced && (
                             <button
                                 type="button"
@@ -513,7 +513,7 @@ export default function LiveVisualFeed() {
                                 </Icon>
                             </motion.button>
                         ))}
-                    </div>
+                    </div> */}
                 </div>
 
                 {/* Gallery */}
