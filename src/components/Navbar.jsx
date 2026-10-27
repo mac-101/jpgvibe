@@ -268,12 +268,7 @@ export default function Navbar() {
                       className="group flex items-center justify-between rounded-xl px-3 py-3.5 text-base text-[var(--jpg-cream)]/75 transition-[background-color,color,padding] duration-300 hover:bg-[var(--jpg-cream)]/[0.05] hover:pl-5 hover:text-[var(--jpg-cream)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--jpg-cream)]"
                     >
                       <span className="flex items-baseline gap-4">
-                        <span
-                          aria-hidden="true"
-                          className="text-[10px] tracking-[0.2em] text-[var(--jpg-red)]"
-                        >
-                          0{index + 1}
-                        </span>
+                        
                         {link.label}
                       </span>
                       <span
