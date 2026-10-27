@@ -14,9 +14,9 @@ export default function App() {
       </div>
 
       <VisualStory />
-        <LiveVisualFeed/>
-        <ValueGrid/>
-        <ExhibitionFinale/>
+      <LiveVisualFeed />
+      <ValueGrid />
+      <ExhibitionFinale />
       {/* Next homepage sections go here */}
     </main>
   );

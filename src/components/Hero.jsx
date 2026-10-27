@@ -6,6 +6,7 @@ import {
     useTransform,
     useReducedMotion,
 } from "framer-motion";
+import { FaArrowTrendUp, FaArrowRight } from "react-icons/fa6";
 
 const artworks = [
     {
@@ -226,7 +227,7 @@ function ArtworkCard({ artwork, index, rank, ready, onSelect, sx, sy, reduced })
                             aria-hidden="true"
                             className="text-sm text-[var(--jpg-cream)]/70 transition duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-[var(--jpg-red)]"
                         >
-                            ↗
+                            <FaArrowRight/>
                         </span>
                     </figcaption> */}
 
@@ -320,20 +321,6 @@ export default function Hero() {
                     // animate="show"
                     className="relative z-20 max-w-2xl"
                 >
-                    {/* <motion.div
-                        variants={item}
-                        className="mb-7 flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.22em] text-[var(--jpg-red)]"
-                    >
-                        <motion.span
-                            className="h-px w-10 origin-left bg-[var(--jpg-red)]"
-                            initial={{ scaleX: 0 }}
-                            animate={{ scaleX: 1 }}
-                            transition={{ duration: 0.9, delay: 0.3, ease }}
-                        />
-                        Independent visual culture
-                    </motion.div> */}
-
-
                     <motion.h1
                         variants={headlineContainer}
                         initial="hidden"
@@ -399,7 +386,7 @@ export default function Hero() {
                             transition={{ type: "spring", stiffness: 300, damping: 20 }}
                             className="inline-flex items-center gap-3 rounded-full bg-[image:var(--jpg-gradient)] px-6 py-4 text-sm font-bold text-[var(--jpg-black)] transition-shadow duration-300 hover:shadow-[0_10px_40px_rgba(249,29,29,0.3)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)] sm:px-7"
                         >
-                            Explore the Platform <span aria-hidden="true">↗</span>
+                            Explore the Platform <span aria-hidden="true"><FaArrowTrendUp/></span>
                         </motion.a>
 
                         <motion.a

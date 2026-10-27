@@ -1,3 +1,4 @@
+import { FaArrowTrendUp , FaArrowRight} from "react-icons/fa6";
 import { useEffect, useRef, useState } from "react";
 import {
   AnimatePresence,
@@ -218,7 +219,7 @@ export default function Navbar() {
                 aria-hidden="true"
                 className="inline-block text-[var(--jpg-red)] transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1"
               >
-                ↗
+                <FaArrowTrendUp/>
               </span>
             </motion.a>
 
@@ -279,7 +280,7 @@ export default function Navbar() {
                         aria-hidden="true"
                         className="text-[var(--jpg-red)] transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-1"
                       >
-                        ↗
+                        <FaArrowRight/>
                       </span>
                     </motion.a>
                   ))}
@@ -290,7 +291,7 @@ export default function Navbar() {
                     onClick={closeMenu}
                     className="mt-3 flex items-center justify-center gap-2 rounded-full bg-[image:var(--jpg-gradient)] px-5 py-3.5 text-sm font-bold text-[var(--jpg-black)] transition-transform duration-300 active:scale-[0.98]"
                   >
-                    Join the collective <span aria-hidden="true">↗</span>
+                    Join the collective <span aria-hidden="true"><FaArrowTrendUp/></span>
                   </motion.a>
                 </div>
               </motion.div>

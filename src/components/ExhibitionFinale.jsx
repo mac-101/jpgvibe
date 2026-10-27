@@ -6,6 +6,7 @@ import {
     useSpring,
     useTransform,
 } from "framer-motion";
+import { FaArrowTrendUp, FaArrowRight } from "react-icons/fa6";
 
 const ease = [0.22, 1, 0.36, 1];
 
@@ -173,7 +174,7 @@ function ExhibitionCard({ artwork, index, reduced }) {
                                     backgroundColor: "transparent",
                                 }}
                             >
-                                ↗
+                                <FaArrowRight/>
                             </span>
                         </div>
                     </div>
@@ -413,7 +414,7 @@ export default function ExhibitionFinale() {
                                     aria-hidden="true"
                                     className="inline-block transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"
                                 >
-                                    ↗
+                                    <FaArrowTrendUp/>
                                 </span>
                             </motion.a>
                         </div>
@@ -425,7 +426,7 @@ export default function ExhibitionFinale() {
                             >
                                 Explore the platform
                                 <span className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1">
-                                    ↗
+                                    <FaArrowRight/>
                                 </span>
                             </a>
 
@@ -435,7 +436,7 @@ export default function ExhibitionFinale() {
                             >
                                 Discover what we do
                                 <span className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1">
-                                    ↗
+                                    <FaArrowRight/>
                                 </span>
                             </a>
 
@@ -445,7 +446,7 @@ export default function ExhibitionFinale() {
                             >
                                 Back to the exhibition
                                 <span className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1">
-                                    ↗
+                                    <FaArrowRight/>
                                 </span>
                             </a>
                         </div>

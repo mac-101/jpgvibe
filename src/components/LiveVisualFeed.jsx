@@ -5,6 +5,7 @@ import {
     useScroll,
     useSpring,
 } from "framer-motion";
+import { FaArrowRight } from "react-icons/fa6";
 
 const artworks = [
     {
@@ -108,7 +109,7 @@ const artworks = [
 const ease = [0.22, 1, 0.36, 1];
 
 const SPEED = 38; // auto-scroll speed in px per second
-const IDLE_PAUSE = 3500; // pause after manual interaction (ms)
+const IDLE_PAUSE = 1000; // pause after manual interaction (ms)
 const EDGE_DWELL = 1400; // pause when reaching either end (ms)
 
 const CARD_SIZE = {
@@ -464,56 +465,7 @@ export default function LiveVisualFeed() {
                         </p>
                     </motion.div>
 
-                    {/* <div className="flex gap-2 self-end">
-                        {!reduced && (
-                            <button
-                                type="button"
-                                onClick={() => setPlaying((p) => !p)}
-                                aria-pressed={!playing}
-                                aria-label={playing ? "Pause auto-scroll" : "Play auto-scroll"}
-                                className="flex h-11 w-11 items-center justify-center rounded-full border transition-colors hover:bg-white/5 focus-visible:outline focus-visible:outline-2"
-                                style={{
-                                    borderColor: "var(--jpg-border)",
-                                    color: "var(--jpg-cream)",
-                                    outlineColor: "var(--jpg-orange)",
-                                }}
-                            >
-                                <Icon size={17}>
-                                    {playing ? (
-                                        <>
-                                            <path d="M9 5v14" />
-                                            <path d="M15 5v14" />
-                                        </>
-                                    ) : (
-                                        <path d="M7 4.5v15l12-7.5z" />
-                                    )}
-                                </Icon>
-                            </button>
-                        )}
-
-                        {[
-                            { dir: -1, label: "Previous artworks", d: "m15 18-6-6 6-6" },
-                            { dir: 1, label: "Next artworks", d: "m9 18 6-6-6-6" },
-                        ].map(({ dir, label, d }) => (
-                            <motion.button
-                                key={dir}
-                                type="button"
-                                whileTap={{ scale: 0.92 }}
-                                onClick={() => scrollTrack(dir)}
-                                aria-label={label}
-                                className="flex h-11 w-11 items-center justify-center rounded-full border transition-colors hover:bg-white/5 focus-visible:outline focus-visible:outline-2"
-                                style={{
-                                    borderColor: "var(--jpg-border)",
-                                    color: "var(--jpg-cream)",
-                                    outlineColor: "var(--jpg-orange)",
-                                }}
-                            >
-                                <Icon>
-                                    <path d={d} />
-                                </Icon>
-                            </motion.button>
-                        ))}
-                    </div> */}
+                
                 </div>
 
                 {/* Gallery */}
@@ -583,7 +535,7 @@ export default function LiveVisualFeed() {
                                     className="inline-block transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-1"
                                     style={{ color: "var(--jpg-orange)" }}
                                 >
-                                    ↗
+                                    <FaArrowRight/>
                                 </span>
                             </a>
                         </div>
