@@ -1,5 +1,6 @@
-import { FaArrowTrendUp , FaArrowRight} from "react-icons/fa6";
+import { FaArrowTrendUp, FaArrowRight } from "react-icons/fa6";
 import { useEffect, useRef, useState } from "react";
+import { Link, useLocation } from "react-router-dom";
 import {
   AnimatePresence,
   motion,
@@ -10,10 +11,10 @@ import {
 } from "framer-motion";
 
 const links = [
-  { label: "Explore", href: "#explore" },
-  { label: "Artists", href: "#artists" },
-  { label: "Services", href: "#services" },
-  { label: "Journal", href: "#journal" },
+  { label: "Explore", href: "/#explore", section: "#explore" },
+  { label: "Services", href: "/services" },
+  { label: "Team", href: "/team" },
+  { label: "Contact", href: "/contact" },
 ];
 
 const ease = [0.22, 1, 0.36, 1];
@@ -50,6 +51,8 @@ export default function Navbar() {
 
   const closeMenu = () => setMenuOpen(false);
 
+  const { pathname, hash } = useLocation();
+
   // Page scroll progress shown as a thin bar along the bottom of the nav
   const { scrollY, scrollYProgress } = useScroll();
   const progress = useSpring(scrollYProgress, {
@@ -67,15 +70,42 @@ export default function Navbar() {
 
   // Highlight the link for the section currently in view
   useEffect(() => {
-    const targets = links
-      .map((link) => document.querySelector(link.href))
+    // New page: close the mobile menu and bring the navbar back
+    setMenuOpen(false);
+    setHidden(false);
+
+    // 1. Page links follow the route
+    const page = links.find(
+      (link) =>
+        !link.section &&
+        (link.href === "/" ? pathname === "/" : pathname.startsWith(link.href))
+    );
+    setActive(page?.href ?? null);
+
+    // 2. Section links follow the scroll, on the home page only
+    if (pathname !== "/") return;
+
+    // Arrived via /#explore from another page: scroll to it
+    if (hash) {
+      requestAnimationFrame(() =>
+        document.querySelector(hash)?.scrollIntoView({ behavior: "smooth" })
+      );
+    }
+
+    const sectionLinks = links.filter((link) => link.section);
+    const targets = sectionLinks
+      .map((link) => document.querySelector(link.section))
       .filter(Boolean);
     if (!targets.length) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
-          if (entry.isIntersecting) setActive(`#${entry.target.id}`);
+          if (!entry.isIntersecting) return;
+          const match = sectionLinks.find(
+            (link) => link.section === `#${entry.target.id}`
+          );
+          if (match) setActive(match.href);
         });
       },
       { rootMargin: "-45% 0px -50% 0px" }
@@ -83,7 +113,7 @@ export default function Navbar() {
 
     targets.forEach((el) => observer.observe(el));
     return () => observer.disconnect();
-  }, []);
+  }, [pathname, hash]);
 
   // Lock page scroll while the mobile menu is open
   useEffect(() => {
@@ -142,11 +172,10 @@ export default function Navbar() {
       >
         <nav
           aria-label="Main navigation"
-          className={`relative mx-auto max-w-7xl overflow-hidden rounded-2xl border px-5 backdrop-blur-xl transition-[background-color,border-color,box-shadow] duration-500 sm:px-7 ${
-            scrolled || menuOpen
-              ? "border-[var(--jpg-cream)]/[0.16] bg-[var(--jpg-black)]/80 shadow-[0_20px_60px_rgba(0,0,0,0.5)]"
-              : "border-[var(--jpg-cream)]/[0.08] bg-[var(--jpg-black)]/30"
-          }`}
+          className={`relative mx-auto max-w-7xl overflow-hidden rounded-2xl border px-5 backdrop-blur-xl transition-[background-color,border-color,box-shadow] duration-500 sm:px-7 ${scrolled || menuOpen
+            ? "border-[var(--jpg-cream)]/[0.16] bg-[var(--jpg-black)]/80 shadow-[0_20px_60px_rgba(0,0,0,0.5)]"
+            : "border-[var(--jpg-cream)]/[0.08] bg-[var(--jpg-black)]/30"
+            }`}
         >
           <div className="flex h-[76px] items-center justify-between">
             {/* Logo */}
@@ -179,12 +208,11 @@ export default function Navbar() {
                     onMouseEnter={() => setHovered(link.href)}
                     onFocus={() => setHovered(link.href)}
                     onBlur={() => setHovered(null)}
-                    aria-current={isActive ? "location" : undefined}
-                    className={`relative rounded-full px-4 py-2 text-sm transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--jpg-cream)] ${
-                      isHighlighted
-                        ? "text-[var(--jpg-cream)]"
-                        : "text-[var(--jpg-cream)]/60"
-                    }`}
+                      aria-current={isActive ? (link.section ? "location" : "page") : undefined}
+                    className={`relative rounded-full px-4 py-2 text-sm transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--jpg-cream)] ${isHighlighted
+                      ? "text-[var(--jpg-cream)]"
+                      : "text-[var(--jpg-cream)]/60"
+                      }`}
                   >
                     {isHighlighted && (
                       <motion.span
@@ -219,7 +247,7 @@ export default function Navbar() {
                 aria-hidden="true"
                 className="inline-block text-[var(--jpg-red)] transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1"
               >
-                <FaArrowTrendUp/>
+                <FaArrowTrendUp />
               </span>
             </motion.a>
 
@@ -268,14 +296,14 @@ export default function Navbar() {
                       className="group flex items-center justify-between rounded-xl px-3 py-3.5 text-base text-[var(--jpg-cream)]/75 transition-[background-color,color,padding] duration-300 hover:bg-[var(--jpg-cream)]/[0.05] hover:pl-5 hover:text-[var(--jpg-cream)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--jpg-cream)]"
                     >
                       <span className="flex items-baseline gap-4">
-                        
+
                         {link.label}
                       </span>
                       <span
                         aria-hidden="true"
                         className="text-[var(--jpg-red)] transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-1"
                       >
-                        <FaArrowRight/>
+                        <FaArrowRight />
                       </span>
                     </motion.a>
                   ))}
@@ -286,7 +314,7 @@ export default function Navbar() {
                     onClick={closeMenu}
                     className="mt-3 flex items-center justify-center gap-2 rounded-full bg-[image:var(--jpg-gradient)] px-5 py-3.5 text-sm font-bold text-[var(--jpg-black)] transition-transform duration-300 active:scale-[0.98]"
                   >
-                    Join the collective <span aria-hidden="true"><FaArrowTrendUp/></span>
+                    Join the collective <span aria-hidden="true"><FaArrowTrendUp /></span>
                   </motion.a>
                 </div>
               </motion.div>

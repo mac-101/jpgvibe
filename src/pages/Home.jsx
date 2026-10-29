@@ -9,7 +9,7 @@ export default function App() {
   return (
     <main>
       <div className="relative">
-        <Navbar />
+        {/* <Navbar /> */}
         <Hero />
       </div>
 
