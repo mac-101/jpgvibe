@@ -1,46 +1,90 @@
-
 @import "tailwindcss";
 
-:root {
-  --jpg-black: #000000;
-  --jpg-red: #F91D1D;
-  --jpg-cream: #F6E8B1;
-  --jpg-yellow: #FFE600;
-  --jpg-orange: #FF6A00;
+/* Fonts live in @theme so the classes font-heading, font-ui and font-body exist.
+   "static" keeps the variables available to var() even where no class uses them. */
+@theme static {
+  --font-heading: "Rozha One", Georgia, "Times New Roman", serif;
+  --font-ui: "Syncopate", Arial, system-ui, sans-serif;
+  --font-body: "Ysabeau", system-ui, -apple-system, "Segoe UI", sans-serif;
+}
 
-  --jpg-surface: #0A0A0A;
-  --jpg-surface-raised: #141414;
-  --jpg-muted: #A39D89;
-  --jpg-border: rgba(246, 232, 177, 0.18);
+@layer base {
+  :root {
+    --jpg-black: #000000;
+    --jpg-red: #F91D1D;
+    --jpg-cream: #F6E8B1;
+    --jpg-yellow: #FFE600;
+    --jpg-orange: #FF6A00;
 
-  --jpg-gradient: linear-gradient(
-    110deg,
-    var(--jpg-yellow) 0%,
-    var(--jpg-orange) 50%,
-    var(--jpg-red) 100%
-  );
+    --jpg-surface: #0A0A0A;
+    --jpg-surface-raised: #141414;
+    --jpg-muted: #A39D89;
+    --jpg-border: rgba(246, 232, 177, 0.18);
+
+    --jpg-gradient: linear-gradient(110deg,
+        var(--jpg-yellow) 0%,
+        var(--jpg-orange) 50%,
+        var(--jpg-red) 100%);
+  }
+
+  body {
+    font-family: var(--font-body);
+    font-weight: 400;
+    font-synthesis: none; /* stops browsers faking bold on single-weight fonts */
+  }
+
+  h1, h2, h3, h4 {
+    font-family: var(--font-heading);
+    font-weight: 400; /* Rozha One has only one weight */
+  }
+
+  /* Every link is a Syncopate label by default.
+     Classes always override this, because the base layer has the lowest priority. */
+  a {
+    font-family: var(--font-ui);
+    font-size: 0.6875rem; 
+    letter-spacing: 0.12em;
+  }
+  a:hover {
+    font-weight: bold;
+  }
+
+}
+
+/* Reusable classes */
+
+/* Small menu text and labels, for non-link elements too (spans, eyebrows, tags) */
+@utility font-label {
+  font-family: var(--font-ui);
+  font-size: 0.6875rem;
+  letter-spacing: 0.12em;
+}
+
+/* Buttons: Syncopate bold, slightly larger */
+@utility font-button {
+  font-family: var(--font-ui);
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+/* Opt a link out of the global style, for links inside body text */
+@utility link-plain {
+  font-family: var(--font-body);
+  font-size: inherit;
+  letter-spacing: normal;
+  text-transform: none;
 }
 
 @keyframes hero-enter {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes artwork-float {
-  0%, 100% {
-    translate: 0 0;
-  }
-
-  50% {
-    translate: 0 -10px;
-  }
+  0%, 100% { translate: 0 0; }
+  50% { translate: 0 -10px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

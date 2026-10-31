@@ -6,6 +6,7 @@ import {
   useTransform,
   useMotionValue
 } from "framer-motion";
+import LiveLight from "./LiveLight";
 
 const images = [
   "photo-1531058020387-3be344556be6",
@@ -313,9 +314,10 @@ export default function VisualStory() {
           <div className="max-w-4xl">
             <motion.p
               style={{ opacity: eyebrowOpacity, y: eyebrowY }}
-              className="mb-5 text-xs font-semibold uppercase tracking-[0.35em] text-[var(--jpg-orange)] sm:text-sm"
+              className="mb-5 flex items-center justify-center gap-3 font-label text-[var(--jpg-cream)]"
             >
-              More than an image
+              <LiveLight />
+              Live from the vibe
             </motion.p>
 
             <motion.h2
@@ -331,8 +333,8 @@ export default function VisualStory() {
               style={{ opacity: bodyOpacity, y: bodyY }}
               className="mx-auto mt-6 max-w-xl text-sm leading-7 text-[var(--jpg-muted)] sm:text-base"
             >
-              A space for artists, photographers and visual thinkers to share
-              their perspective and discover what is possible.
+              Fresh from our community of black artists worldwide. 
+              <br/>Tap any work to meet the creative.
             </motion.p>
           </div>
         </div>

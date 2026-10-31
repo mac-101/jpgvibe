@@ -301,7 +301,7 @@ function ServiceCard({ service, index, open, onOpen, onClose, onToggle, reduced 
                   <a
                     href={`/contact?service=${service.slug}`}
                     tabIndex={open ? 0 : -1}
-                    className="mt-auto inline-flex items-center justify-center gap-3 self-start rounded-full bg-[image:var(--jpg-gradient)] px-6 py-3.5 text-sm font-bold text-[var(--jpg-black)] transition-transform duration-300 hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)]"
+                    className="mt-auto inline-flex items-center justify-center gap-3 self-start rounded-full bg-[image:var(--jpg-gradient)] px-6 py-3.5 font-button text-[var(--jpg-black)] transition-transform duration-300 hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)]"
                   >
                     Inquire Now <span aria-hidden="true">↗</span>
                   </a>

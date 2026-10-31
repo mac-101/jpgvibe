@@ -332,7 +332,7 @@ export default function Hero() {
                                 variants={headlineWord}
                                 className="inline-block"
                             >
-                                Where Fine Artists,
+                               Where creatives
                             </motion.span>
                         </span>
 
@@ -341,11 +341,11 @@ export default function Hero() {
                                 variants={headlineWord}
                                 className="inline-block"
                             >
-                                Photographers
+                                converge
                             </motion.span>
                         </span>
 
-                        <span className="block overflow-hidden pb-1">
+                        {/* <span className="block overflow-hidden pb-1">
                             <motion.span
                                 variants={visionariesReveal}
                                 className="inline-block text-[var(--jpg-cream)]/55"
@@ -361,7 +361,7 @@ export default function Hero() {
                             >
                                 Converge.
                             </motion.span>
-                        </span>
+                        </span> */}
                     </motion.h1>
 
                     <motion.p
@@ -370,8 +370,7 @@ export default function Hero() {
                         animate="show"
                         className="mt-7 max-w-lg text-base leading-8 text-[var(--jpg-cream)]/65 sm:text-lg"
                     >
-                        A space for exceptional art, bold perspectives, and the people
-                        shaping how the world sees.
+                        A curated home for African and diaspora artists to share timeless work and find each other.
                     </motion.p>
 
 
@@ -384,17 +383,17 @@ export default function Hero() {
                             whileHover={{ y: -4 }}
                             whileTap={{ scale: 0.97 }}
                             transition={{ type: "spring", stiffness: 300, damping: 20 }}
-                            className="inline-flex items-center gap-3 rounded-full bg-[image:var(--jpg-gradient)] px-6 py-4 text-sm font-bold text-[var(--jpg-black)] transition-shadow duration-300 hover:shadow-[0_10px_40px_rgba(249,29,29,0.3)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)] sm:px-7"
+                            className="inline-flex font-button items-center gap-3 rounded-full bg-[image:var(--jpg-gradient)] px-6 py-4  font-bold text-[var(--jpg-black)] transition-shadow duration-300 hover:shadow-[0_10px_40px_rgba(249,29,29,0.3)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)] sm:px-7"
                         >
-                            Explore the Platform <span aria-hidden="true"><FaArrowTrendUp/></span>
+                            See the work<span aria-hidden="true"><FaArrowTrendUp/></span>
                         </motion.a>
 
                         <motion.a
                             href="#services"
                             whileTap={{ scale: 0.97 }}
-                            className="rounded-full border border-[var(--jpg-border)] px-6 py-4 text-sm transition hover:border-[var(--jpg-cream)]/60 hover:bg-[var(--jpg-cream)]/[0.04] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)] sm:px-7"
+                            className="rounded-full font-button border border-[var(--jpg-border)] px-6 py-4 transition hover:border-[var(--jpg-cream)]/60 hover:bg-[var(--jpg-cream)]/[0.04] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)] sm:px-7"
                         >
-                            Discover our world
+                            Join the waitlist
                         </motion.a>
                     </motion.div>
 

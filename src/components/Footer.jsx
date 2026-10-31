@@ -73,7 +73,7 @@ export default function Footer() {
                                 }}
                                 className="group inline-flex w-fit items-center gap-5 rounded-full bg-[image:var(--jpg-gradient)] px-7 py-4 text-sm font-bold text-[var(--jpg-black)] shadow-[0_0_0_rgba(249,29,29,0)] transition-shadow duration-300 hover:shadow-[0_12px_45px_rgba(249,29,29,0.2)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)] sm:px-8"
                             >
-                                Explore JPGVIBE
+                                Explore Thevibe
                                 <span
                                     aria-hidden="true"
                                     className="inline-block transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"
@@ -86,7 +86,7 @@ export default function Footer() {
                         <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4 border-t border-[var(--jpg-border)] pt-6">
                             <a
                                 href="#explore"
-                                className="group inline-flex items-center gap-2 text-sm text-[var(--jpg-cream)] transition-colors hover:text-[var(--jpg-yellow)]"
+                                className="group inline-flex items-center gap-2 text-[var(--jpg-cream)] transition-colors hover:text-[var(--jpg-yellow)]"
                             >
                                 Explore the platform
                                 <span className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1">
@@ -96,7 +96,7 @@ export default function Footer() {
 
                             <a
                                 href="#services"
-                                className="group inline-flex items-center gap-2 text-sm text-[var(--jpg-muted)] transition-colors hover:text-[var(--jpg-cream)]"
+                                className="group inline-flex items-center gap-2 text-[var(--jpg-muted)] transition-colors hover:text-[var(--jpg-cream)]"
                             >
                                 Discover what we do
                                 <span className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1">
@@ -106,7 +106,7 @@ export default function Footer() {
 
                             <a
                                 href="#exhibition"
-                                className="group inline-flex items-center gap-2 text-sm text-[var(--jpg-muted)] transition-colors hover:text-[var(--jpg-cream)]"
+                                className="group inline-flex items-center gap-2  text-[var(--jpg-muted)] transition-colors hover:text-[var(--jpg-red)]"
                             >
                                 Back to the exhibition
                                 <span className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1">

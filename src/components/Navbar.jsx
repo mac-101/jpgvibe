@@ -179,18 +179,18 @@ export default function Navbar() {
         >
           <div className="flex h-[76px] items-center justify-between">
             {/* Logo */}
-            <a
-              href="/"
+            <Link
+              to="/"
               onClick={closeMenu}
-              aria-label="jpgvibe home"
-              className="group relative text-2xl font-extrabold tracking-[-0.075em] text-[var(--jpg-cream)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)]"
+              aria-label="Thevibe home"
+              className="group relative text-2xl font-heading text-[var(--jpg-cream)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)]"
             >
-              jpgvibe
+              Thevibe
               <span className="text-[var(--jpg-red)] transition-colors duration-300 group-hover:text-[var(--jpg-orange)]">
                 .
               </span>
               <span className="absolute -bottom-1 left-0 h-[2px] w-0 rounded-full bg-[image:var(--jpg-gradient)] transition-all duration-500 ease-out group-hover:w-full" />
-            </a>
+            </Link>
 
             {/* Desktop navigation: one pill slides between links */}
             <div
@@ -209,7 +209,7 @@ export default function Navbar() {
                     onFocus={() => setHovered(link.href)}
                     onBlur={() => setHovered(null)}
                       aria-current={isActive ? (link.section ? "location" : "page") : undefined}
-                    className={`relative rounded-full px-4 py-2 text-sm transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--jpg-cream)] ${isHighlighted
+                    className={`relative rounded-full px-4 py-2  transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--jpg-cream)] ${isHighlighted
                       ? "text-[var(--jpg-cream)]"
                       : "text-[var(--jpg-cream)]/60"
                       }`}
@@ -240,9 +240,9 @@ export default function Navbar() {
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.97 }}
               transition={{ type: "spring", stiffness: 300, damping: 20 }}
-              className="group hidden items-center gap-3 rounded-full border border-[var(--jpg-cream)]/20 px-5 py-3 text-sm font-medium text-[var(--jpg-cream)] transition-colors duration-300 hover:border-[var(--jpg-red)]/70 hover:bg-[var(--jpg-red)]/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)] md:inline-flex"
+              className="group hidden font-label items-center gap-3 rounded-full border border-[var(--jpg-cream)]/20 px-5 py-3 text-[var(--jpg-cream)] transition-colors duration-300 hover:border-[var(--jpg-red)]/70 hover:bg-[var(--jpg-red)]/10 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)] md:inline-flex"
             >
-              Join the collective
+              Join the waitlist
               <span
                 aria-hidden="true"
                 className="inline-block text-[var(--jpg-red)] transition-transform duration-300 group-hover:-translate-y-1 group-hover:translate-x-1"
@@ -312,9 +312,9 @@ export default function Navbar() {
                     variants={menuItem}
                     href="#explore"
                     onClick={closeMenu}
-                    className="mt-3 flex items-center justify-center gap-2 rounded-full bg-[image:var(--jpg-gradient)] px-5 py-3.5 text-sm font-bold text-[var(--jpg-black)] transition-transform duration-300 active:scale-[0.98]"
+                    className="mt-3 flex items-center justify-center gap-2 rounded-full bg-[image:var(--jpg-gradient)] px-5 py-3.5 text-[var(--jpg-black)] transition-transform duration-300 active:scale-[0.98]"
                   >
-                    Join the collective <span aria-hidden="true"><FaArrowTrendUp /></span>
+                    Join the waitlist <span aria-hidden="true"><FaArrowTrendUp /></span>
                   </motion.a>
                 </div>
               </motion.div>

@@ -158,9 +158,9 @@ function ExhibitionCard({ artwork, index, reduced }) {
                     </div>
 
                     <div className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
-                        <p className="mb-2 text-xs text-white/65">
+                        <span className="mb-2 font-label text-[10px] text-white/65">
                             {artwork.artist}
-                        </p>
+                        </span>
 
                         <div className="flex items-end justify-between gap-3">
                             <h3 className="text-xl font-medium tracking-tight text-white sm:text-2xl">
@@ -324,7 +324,7 @@ export default function ExhibitionFinale() {
                             those perspectives find their place.
                         </p>
 
-                        <div className="mt-7 flex items-center gap-4 text-xs uppercase tracking-[0.18em] text-[var(--jpg-muted)]">
+                        <div className="mt-7 flex font-label items-center gap-4  uppercas text-[var(--jpg-muted)]">
                             <span className="h-px w-8 bg-[var(--jpg-orange)]" />
                             Made to be seen
                         </div>
