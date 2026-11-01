@@ -336,7 +336,7 @@ export default function Hero() {
                             </motion.span>
                         </span>
 
-                        <span className="block overflow-hidden pb-1">
+                        <span className="block text-[var(--jpg-red)] overflow-hidden pb-1">
                             <motion.span
                                 variants={headlineWord}
                                 className="inline-block"

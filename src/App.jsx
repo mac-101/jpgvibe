@@ -4,12 +4,14 @@ import Home from './pages/Home'
 import ServicesPage from './pages/Service'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
+import TeamPage from './pages/Team'
 
 function AppRoutes() {
   return (
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/services" element={<ServicesPage />} />
+      <Route path="/team" element={<TeamPage />} />
     </Routes>
   )
 }
