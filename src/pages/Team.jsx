@@ -9,6 +9,7 @@ import {
     FaArrowRight,
     FaXmark,
 } from "react-icons/fa6";
+import InstagramStrip from "../instagram/InstagramStrip";
 
 const ease = [0.22, 1, 0.36, 1];
 
@@ -239,7 +240,7 @@ function TeamCard({ member, index, open, onClose, onToggle, reduced }) {
                     </p>
 
                     {/* Bio area. The black panel slides up over this. */}
-                    <div className="relative mt-4 min-h-[7.5rem] flex-1 overflow-hidden rounded-2xl">
+                    <div className="relative mt-4 flex-1 overflow-hidden rounded-2xl">
                         <p
                             className="text-base leading-7"
                             style={{ color: "var(--jpg-cream)", opacity: 0.78 }}
@@ -303,7 +304,7 @@ function TeamCard({ member, index, open, onClose, onToggle, reduced }) {
                         onClick={onToggle}
                         aria-expanded={open}
                         aria-controls={panelId}
-                        className="mt-5 inline-flex items-center gap-2.5 self-start rounded-full border px-4 py-2.5 font-label transition-colors duration-300 hover:border-[var(--jpg-red)] hover:text-[var(--jpg-red)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)]"
+                        className=" inline-flex mt-5 items-center gap-2.5 self-start rounded-full border px-4 py-2.5 font-label transition-colors duration-300 hover:border-[var(--jpg-red)] hover:text-[var(--jpg-red)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)]"
                         style={{
                             color: "var(--jpg-cream)",
                             borderColor: "var(--jpg-border)",
@@ -416,6 +417,7 @@ export default function TeamPage() {
                     ))}
                 </div>
             </div>
+                <InstagramStrip start={0} /> 
         </section>
     );
 }
