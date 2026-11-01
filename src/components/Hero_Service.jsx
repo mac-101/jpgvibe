@@ -177,7 +177,7 @@ function ServiceCard({ service, index, open, onOpen, onClose, onToggle, reduced 
               rotateX: reduced ? 0 : rotateX,
               rotateY: reduced ? 0 : rotateY,
             }}
-            className="relative min-h-[360px] rounded-3xl sm:min-h-[400px]"
+            className="relative min-h-[400px] rounded-3xl"
           >
             {/* Glass surface */}
             <div className="absolute inset-0 overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] shadow-[0_30px_80px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-xl">
