@@ -417,7 +417,7 @@ export default function TeamPage() {
                     ))}
                 </div>
             </div>
-                <InstagramStrip start={0} /> 
+                <InstagramStrip start={8} /> 
         </section>
     );
 }

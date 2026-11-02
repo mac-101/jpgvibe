@@ -6,6 +6,7 @@ import {
     useSpring,
     useTransform,
 } from "framer-motion";
+import InstagramStrip from "../instagram/InstagramStrip";
 import { FaArrowTrendUp, FaArrowRight } from "react-icons/fa6";
 
 const ease = [0.22, 1, 0.36, 1];
@@ -120,7 +121,7 @@ function ExhibitionCard({ artwork, index, reduced }) {
                 onPointerLeave={handleLeave}
             >
                 <motion.a
-                    href="#explore"
+                    href="/art-feed"
                     aria-label={`Explore the platform — ${artwork.title}, ${artwork.category}`}
                     style={
                         reduced
@@ -332,7 +333,7 @@ export default function ExhibitionFinale() {
                 </div>
 
                 {/* Gallery heading */}
-                <motion.div
+                {/* <motion.div
                     variants={reveal}
                     initial="hidden"
                     whileInView="show"
@@ -349,10 +350,10 @@ export default function ExhibitionFinale() {
                     </div>
 
                    
-                </motion.div>
+                </motion.div> */}
 
                 {/* Artwork gallery */}
-                <div className="grid grid-cols-2 items-start gap-x-4 gap-y-9 sm:gap-x-6 sm:gap-y-12 lg:grid-cols-4 lg:gap-x-7">
+                {/* <div className="grid grid-cols-2 items-start gap-x-4 gap-y-9 sm:gap-x-6 sm:gap-y-12 lg:grid-cols-4 lg:gap-x-7">
                     {artworks.map((artwork, index) => (
                         <ExhibitionCard
                             key={artwork.id}
@@ -361,7 +362,9 @@ export default function ExhibitionFinale() {
                             reduced={reduced}
                         />
                     ))}
-                </div>
+                </div> */}
+
+                <InstagramStrip start={0} heading="Our art feed"/>
 
             </div>
 

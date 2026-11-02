@@ -522,7 +522,7 @@ export default function LiveVisualFeed() {
                             </h3>
 
                             <a
-                                href="#artists"
+                                href="/team"
                                 className="group inline-flex items-center gap-3 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
                                 style={{
                                     color: "var(--jpg-cream)",

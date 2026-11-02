@@ -64,10 +64,10 @@ export default function InstagramStrip({
 
         <div className="mt-10">
           <Link
-            to="/instagram"
+            to="/art-feed"
             className="font-button inline-flex items-center gap-3 rounded-full bg-[image:var(--jpg-gradient)] px-7 py-4 text-[var(--jpg-black)] transition-transform duration-300 hover:-translate-y-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)]"
           >
-            See more on Instagram
+            See more on art feed
             <FaArrowRight aria-hidden="true" />
           </Link>
         </div>

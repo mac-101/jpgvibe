@@ -63,7 +63,7 @@ export default function Footer() {
                             </p>
 
                             <motion.a
-                                href="#explore"
+                                href="/art-feed"
                                 whileHover={reduced ? undefined : { y: -4 }}
                                 whileTap={reduced ? undefined : { scale: 0.97 }}
                                 transition={{
@@ -85,7 +85,7 @@ export default function Footer() {
 
                         <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4 border-t border-[var(--jpg-border)] pt-6">
                             <a
-                                href="#explore"
+                                href="/art-feed"
                                 className="group inline-flex items-center gap-2 text-[var(--jpg-cream)] transition-colors hover:text-[var(--jpg-yellow)]"
                             >
                                 Explore the platform
@@ -95,7 +95,7 @@ export default function Footer() {
                             </a>
 
                             <a
-                                href="#services"
+                                href="/services"
                                 className="group inline-flex items-center gap-2 text-[var(--jpg-muted)] transition-colors hover:text-[var(--jpg-cream)]"
                             >
                                 Discover what we do

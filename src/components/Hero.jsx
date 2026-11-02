@@ -332,7 +332,7 @@ export default function Hero() {
                                 variants={headlineWord}
                                 className="inline-block"
                             >
-                               Where creatives
+                                Where creatives
                             </motion.span>
                         </span>
 
@@ -341,7 +341,10 @@ export default function Hero() {
                                 variants={headlineWord}
                                 className="inline-block"
                             >
-                                converge
+                                converge 
+                                <span className="text-[var(--jpg-cream)] pl-1 transition-colors duration-300 group-hover:text-[var(--jpg-orange)]">
+                                    .
+                                </span>
                             </motion.span>
                         </span>
 
@@ -379,17 +382,17 @@ export default function Hero() {
                         className="mt-9 flex flex-wrap items-center gap-4"
                     >
                         <motion.a
-                            href="#explore"
+                            href="/art-feed"
                             whileHover={{ y: -4 }}
                             whileTap={{ scale: 0.97 }}
                             transition={{ type: "spring", stiffness: 300, damping: 20 }}
                             className="inline-flex font-button items-center gap-3 rounded-full bg-[image:var(--jpg-gradient)] px-6 py-4  font-bold text-[var(--jpg-black)] transition-shadow duration-300 hover:shadow-[0_10px_40px_rgba(249,29,29,0.3)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)] sm:px-7"
                         >
-                            See the work<span aria-hidden="true"><FaArrowTrendUp/></span>
+                            See the work<span aria-hidden="true"><FaArrowTrendUp /></span>
                         </motion.a>
 
                         <motion.a
-                            href="#services"
+                            href="/contact"
                             whileTap={{ scale: 0.97 }}
                             className="rounded-full font-button border border-[var(--jpg-border)] px-6 py-4 transition hover:border-[var(--jpg-cream)]/60 hover:bg-[var(--jpg-cream)]/[0.04] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)] sm:px-7"
                         >
