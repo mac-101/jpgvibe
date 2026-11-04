@@ -2,6 +2,7 @@
 import { FaArrowTrendUp, FaArrowRight, FaChevronDown } from "react-icons/fa6";
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import logo from "../assets/logo.jpg";
 import {
   AnimatePresence,
   motion,
@@ -173,8 +174,14 @@ export default function Navbar() {
               to="/"
               onClick={closeMenu}
               aria-label="thevibe home"
-              className="group relative z-10 flex items-center gap-2"
+              className="group relative z-10 flex items-center gap-2.5"
             >
+              <img
+                src={logo}
+                alt=""
+                aria-hidden="true"
+                className="h-9 w-9 rounded-full object-cover"
+              />
               <span className="font-heading text-[27px] tracking-[-1.5px] text-[var(--jpg-cream)]">
                 thevibe
                 <span className="text-[var(--jpg-red)] pl-1 transition-colors duration-300 group-hover:text-[var(--jpg-orange)]">
