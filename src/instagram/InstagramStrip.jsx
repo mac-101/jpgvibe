@@ -3,6 +3,9 @@ import { FaArrowRight } from "react-icons/fa6";
 import LiveLight from "../components/LiveLight";
 import { useInstagram } from "./InstagramContext";
 import InstagramTile, { TileSkeleton } from "./InstagramTile";
+import { ACCOUNTS } from "./data";
+import { SOURCE_META } from "./sources";
+import { hasMedia } from "./utils";
 
 /**
  * start=0 on Home, start=4 on Services, start=8 on Team.
@@ -13,9 +16,10 @@ export default function InstagramStrip({
   count = 4,
   heading = "Fresh from the feed",
 }) {
-  const { posts, status, account, openLightbox } = useInstagram();
+  const { posts, status, openLightbox } = useInstagram();
 
-  const slice = posts.slice(start, start + count);
+  const pool = posts.filter(hasMedia);
+  const slice = pool.slice(start, start + count);
 
   // A broken connection shouldn't leave a hole in the page
   if (status === "error") return null;
@@ -38,28 +42,36 @@ export default function InstagramStrip({
             </h2>
           </div>
 
-          <a
-            href={account.profileUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-body text-base normal-case tracking-normal transition-colors duration-300 hover:text-[var(--jpg-red)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)]"
-            style={{ color: "var(--jpg-cream)" }}
-          >
-            @{account.username} ↗
-          </a>
+          <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
+            {Object.entries(ACCOUNTS).map(([key, acc]) => {
+              const { Icon } = SOURCE_META[key];
+              return (
+                <a
+                  key={key}
+                  href={acc.profileUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-2 font-body text-base normal-case tracking-normal transition-colors duration-300 hover:text-[var(--jpg-red)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)]"
+                  style={{ color: "var(--jpg-cream)" }}
+                >
+                  <Icon aria-hidden="true" />@{acc.username}
+                </a>
+              );
+            })}
+          </div>
         </div>
 
         <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
           {status === "loading"
             ? Array.from({ length: count }, (_, i) => <TileSkeleton key={i} />)
             : slice.map((post, i) => (
-                <InstagramTile
-                  key={post.id}
-                  post={post}
-                  index={i}
-                  onOpen={() => openLightbox(start + i)}
-                />
-              ))}
+              <InstagramTile
+                key={post.id}
+                post={post}
+                index={i}
+                onOpen={() => openLightbox(posts.indexOf(post))}
+              />
+            ))}
         </div>
 
         <div className="mt-10">

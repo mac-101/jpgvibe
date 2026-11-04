@@ -28,8 +28,8 @@ export default function InstagramProvider({ children }) {
       setFeed({
         posts: res.data,
         status: "ready",
-        after: res.paging?.cursors?.after ?? null,
-        hasMore: Boolean(res.paging?.next),
+        after: res.paging?.after ?? null,
+        hasMore: Boolean(res.paging?.hasMore),
       });
     } catch {
       setFeed((f) => ({ ...f, status: "error" }));
@@ -51,8 +51,8 @@ export default function InstagramProvider({ children }) {
       setFeed((f) => ({
         ...f,
         posts: [...f.posts, ...res.data],
-        after: res.paging?.cursors?.after ?? null,
-        hasMore: Boolean(res.paging?.next),
+        after: res.paging?.after ?? null,
+        hasMore: Boolean(res.paging?.hasMore),
       }));
     } catch {
       setMoreError(true);

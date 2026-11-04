@@ -13,11 +13,19 @@ export const parseIgDate = (ts) =>
 export const formatDate = (ts) =>
   new Intl.DateTimeFormat("en", { dateStyle: "long" }).format(parseIgDate(ts));
 
-// Videos need thumbnail_url. Everything else uses media_url.
-export const getThumb = (post) =>
-  post.media_type === "VIDEO"
-    ? post.thumbnail_url ?? post.media_url
-    : post.media_url;
+export const getThumb = (post) => {
+  const media = post.media?.[0];
+  return (
+    media?.thumb ??
+    media?.url ??
+    (post.media_type === "VIDEO"
+      ? post.thumbnail_url ?? post.media_url
+      : post.media_url)
+  );
+};
+
+export const hasMedia = (post) =>
+  Array.isArray(post.media) && post.media.length > 0;
 
 export const snippet = (caption = "", max = 90) => {
   const flat = caption.replace(/\s+/g, " ").trim();

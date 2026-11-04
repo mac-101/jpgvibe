@@ -1,10 +1,17 @@
 import { useEffect, useRef } from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { FaInstagram } from "react-icons/fa6";
+import { useState } from "react";
 import LiveLight from "../components/LiveLight";
 import { useInstagram } from "./InstagramContext";
 import InstagramTile, { TileSkeleton } from "./InstagramTile";
+import { ACCOUNTS } from "./data";
+import { SOURCE_META } from "./sources";
 
+const FILTERS = [
+  { id: "all", label: "All" },
+  { id: "instagram", label: "Instagram" },
+  { id: "x", label: "X" },
+];
 const ease = [0.22, 1, 0.36, 1];
 
 const outlineBtn =
@@ -21,10 +28,11 @@ export default function InstagramPage() {
     moreError,
     refetch,
     openLightbox,
-    account,
   } = useInstagram();
 
   const sentinel = useRef(null);
+  const [filter, setFilter] = useState("all");
+  const visible = filter === "all" ? posts : posts.filter((p) => p.source === filter);
 
   // Infinite scroll: load the next page when the sentinel gets close.
   // Re-observing after every load also fills tall screens that need more than one page.
@@ -76,10 +84,29 @@ export default function InstagramPage() {
             className="mt-6 max-w-xl text-lg leading-8"
             style={{ opacity: 0.8 }}
           >
-            Everything we're posting, synced straight from @{account.username}.
-            Tap any post to see the full story.
+            The latest posts from our Instagram and X accounts, collected in
+            one place. Tap any post to see the full story.
           </p>
         </motion.div>
+
+        <div role="group" aria-label="Filter posts by platform" className="mb-8 flex flex-wrap gap-2.5">
+          {FILTERS.map((f) => (
+            <button
+              key={f.id}
+              type="button"
+              aria-pressed={filter === f.id}
+              onClick={() => setFilter(f.id)}
+              className="font-label rounded-full border px-5 py-2.5 transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)]"
+              style={{
+                color: "var(--jpg-cream)",
+                borderColor: filter === f.id ? "var(--jpg-red)" : "var(--jpg-border)",
+                backgroundColor: filter === f.id ? "rgba(249,29,29,0.12)" : "transparent",
+              }}
+            >
+              {f.label}
+            </button>
+          ))}
+        </div>
 
         {/* Grid: 3 columns on desktop, 2 on tablet, 1 on mobile */}
         {status === "error" ? (
@@ -98,7 +125,7 @@ export default function InstagramPage() {
                 Try again
               </button>
               <a
-                href={account.profileUrl}
+                href={ACCOUNTS.x.profileUrl}
                 target="_blank"
                 rel="noopener noreferrer"
                 className={outlineBtn}
@@ -112,14 +139,14 @@ export default function InstagramPage() {
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-6">
             {status === "loading"
               ? Array.from({ length: 9 }, (_, i) => <TileSkeleton key={i} />)
-              : posts.map((post, i) => (
-                  <InstagramTile
-                    key={post.id}
-                    post={post}
-                    index={i}
-                    onOpen={() => openLightbox(i)}
-                  />
-                ))}
+              : visible.map((post, i) => (
+                <InstagramTile
+                  key={post.id}
+                  post={post}
+                  index={i}
+                  onOpen={() => openLightbox(i)}
+                />
+              ))}
 
             {loadingMore &&
               Array.from({ length: 3 }, (_, i) => <TileSkeleton key={`more-${i}`} />)}
@@ -152,15 +179,23 @@ export default function InstagramPage() {
                 <p className="text-base" style={{ opacity: 0.75 }}>
                   You're all caught up.
                 </p>
-                <a
-                  href={account.profileUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="font-button inline-flex items-center gap-3 rounded-full bg-[image:var(--jpg-gradient)] px-7 py-4 text-[var(--jpg-black)] transition-transform duration-300 hover:-translate-y-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)]"
-                >
-                  Follow @{account.username}
-                  <FaInstagram aria-hidden="true" />
-                </a>
+                <div className="flex flex-wrap justify-center gap-3">
+                  {Object.entries(ACCOUNTS).map(([key, acc]) => {
+                    const { Icon, label } = SOURCE_META[key];
+                    return (
+                      <a
+                        key={key}
+                        href={acc.profileUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="font-button inline-flex items-center gap-3 rounded-full bg-[image:var(--jpg-gradient)] px-7 py-4 text-[var(--jpg-black)] transition-transform duration-300 hover:-translate-y-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)]"
+                      >
+                        Follow on {label}
+                        <Icon aria-hidden="true" />
+                      </a>
+                    );
+                  })}
+                </div>
               </>
             )}
           </div>
