@@ -83,7 +83,9 @@ export async function getXFeed({ limit = 20, after = null, env }) {
   return {
     ok: true,
     body: {
-      data: (json.data ?? []).map((t) => normalize(t, mediaByKey, X_USERNAME)),
+      data: (json.data ?? [])
+        .map((t) => normalize(t, mediaByKey, X_USERNAME))
+        .filter((post) => post.media.length > 0),
       paging: { after: next, hasMore: Boolean(next) },
     },
   };

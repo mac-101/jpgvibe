@@ -102,6 +102,7 @@ const X = RAW_X.map(([text, kind, photos, likes, replies, hours], i) => {
 const ALL = [...IG, ...X].sort(
   (a, b) => new Date(b.timestamp) - new Date(a.timestamp)
 );
+const MEDIA_POSTS = ALL.filter((post) => post.media.length > 0);
 
 export async function fetchPosts({ limit = 20, after = null } = {}) {
   if (!USE_MOCK) {
@@ -115,9 +116,9 @@ export async function fetchPosts({ limit = 20, after = null } = {}) {
   await new Promise((resolve) => setTimeout(resolve, 500)); // fake network
 
   const start = after ? Number(after) : 0;
-  const end = Math.min(start + limit, ALL.length);
+  const end = Math.min(start + limit, MEDIA_POSTS.length);
   return {
-    data: ALL.slice(start, end),
-    paging: { after: String(end), hasMore: end < ALL.length },
+    data: MEDIA_POSTS.slice(start, end),
+    paging: { after: String(end), hasMore: end < MEDIA_POSTS.length },
   };
 }

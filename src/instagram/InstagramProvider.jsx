@@ -1,10 +1,36 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ACCOUNT, fetchPosts } from "./data";
+import { hasMedia } from "./utils";
 import { InstagramContext } from "./InstagramContext";
 import Lightbox from "./Lighbox";
 
 const FIRST_PAGE = 20; // fetched once when the app loads
 const NEXT_PAGE = 12; // infinite scroll on the Instagram page
+
+async function fetchMediaPosts(limit, after = null) {
+  const posts = [];
+  let cursor = after;
+  let hasMore = true;
+
+  while (posts.length < limit && hasMore) {
+    const page = await fetchPosts({
+      limit: limit - posts.length,
+      after: cursor,
+    });
+    const nextCursor = page.paging?.after ?? null;
+
+    posts.push(...page.data.filter(hasMedia));
+    hasMore = Boolean(page.paging?.hasMore && nextCursor);
+
+    if (nextCursor === cursor) {
+      hasMore = false;
+    } else {
+      cursor = nextCursor;
+    }
+  }
+
+  return { data: posts, paging: { after: cursor, hasMore } };
+}
 
 export default function InstagramProvider({ children }) {
   const [feed, setFeed] = useState({
@@ -24,7 +50,7 @@ export default function InstagramProvider({ children }) {
   const loadFirst = useCallback(async () => {
     setFeed((f) => ({ ...f, status: "loading" }));
     try {
-      const res = await fetchPosts({ limit: FIRST_PAGE });
+      const res = await fetchMediaPosts(FIRST_PAGE);
       setFeed({
         posts: res.data,
         status: "ready",
@@ -47,7 +73,7 @@ export default function InstagramProvider({ children }) {
     setLoadingMore(true);
     setMoreError(false);
     try {
-      const res = await fetchPosts({ limit: NEXT_PAGE, after: feed.after });
+      const res = await fetchMediaPosts(NEXT_PAGE, feed.after);
       setFeed((f) => ({
         ...f,
         posts: [...f.posts, ...res.data],

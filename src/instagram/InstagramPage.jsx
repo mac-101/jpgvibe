@@ -144,7 +144,7 @@ export default function InstagramPage() {
                   key={post.id}
                   post={post}
                   index={i}
-                  onOpen={() => openLightbox(i)}
+                  onOpen={() => openLightbox(posts.indexOf(post))}
                 />
               ))}
 
