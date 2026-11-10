@@ -8,6 +8,7 @@ import {
   useTransform,
 } from "framer-motion";
 import { ROUTES } from "../routes";
+import { artworkImages } from "../artworkImages";
 
 const ease = [0.22, 1, 0.36, 1];
 
@@ -25,8 +26,7 @@ const services = [
       "Launch, press and opening-night support",
       "Visitor analytics and a follow-up report",
     ],
-    image:
-      "https://images.unsplash.com/photo-1549490349-8643362247b5?auto=format&fit=crop&w=900&q=80",
+    image: artworkImages[3],
     glow: "rgba(249,29,29,0.22)",
     float: 12,
     duration: 6.4,
@@ -45,8 +45,7 @@ const services = [
       "Art direction on set",
       "Retouching and a licensed image library",
     ],
-    image:
-      "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?auto=format&fit=crop&w=900&q=80",
+    image: artworkImages[8],
     glow: "rgba(255,106,0,0.22)",
     float: 15,
     duration: 7.2,
@@ -65,8 +64,7 @@ const services = [
       "Social and presentation templates",
       "A brand guide your team can use",
     ],
-    image:
-      "https://images.unsplash.com/photo-1541961017774-22349e4a1262?auto=format&fit=crop&w=900&q=80",
+    image: artworkImages[14],
     glow: "rgba(255,230,0,0.16)",
     float: 13,
     duration: 6.8,
@@ -85,8 +83,7 @@ const services = [
       "Opportunity and commission scouting",
       "Quarterly growth check-ins",
     ],
-    image:
-      "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=900&q=80",
+    image: artworkImages[20],
     glow: "rgba(249,29,29,0.2)",
     float: 14,
     duration: 7,

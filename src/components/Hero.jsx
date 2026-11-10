@@ -8,14 +8,15 @@ import {
 } from "framer-motion";
 import { FaArrowTrendUp } from "react-icons/fa6";
 import { ROUTES } from "../routes";
+import { useInstagram } from "../instagram/InstagramContext";
+import { artworkImages } from "../artworkImages";
 
 const artworks = [
     {
         id: 1,
         title: "Human / 001",
         category: "Portrait photography",
-        image:
-            "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=900&q=85",
+        image: artworkImages[0],
         position: "left-[26%] top-[8%] w-[54%]",
         height: "h-[340px] sm:h-[390px]",
         rotate: 3,
@@ -26,8 +27,7 @@ const artworks = [
         id: 2,
         title: "Fragments / 014",
         category: "Contemporary art",
-        image:
-            "https://images.unsplash.com/photo-1541961017774-22349e4a1262?auto=format&fit=crop&w=700&q=85",
+        image: artworkImages[1],
         position: "left-0 top-[23%] w-[48%]",
         height: "h-[220px] sm:h-[260px]",
         rotate: -10,
@@ -38,8 +38,7 @@ const artworks = [
         id: 3,
         title: "Structure / 021",
         category: "Architecture",
-        image:
-            "https://images.unsplash.com/photo-1511818966892-d7d671e672a2?auto=format&fit=crop&w=700&q=85",
+        image: artworkImages[2],
         position: "right-0 top-[38%] w-[45%]",
         height: "h-[190px] sm:h-[230px]",
         rotate: 8,
@@ -166,7 +165,7 @@ function ArtworkCard({ artwork, index, rank, ready, onSelect, sx, sy, reduced })
                     <div className={`relative overflow-hidden ${artwork.height}`}>
                         <img
                             src={artwork.image}
-                            alt={`${artwork.title} — ${artwork.category}`}
+                            alt={artwork.alt || `${artwork.title} — ${artwork.category}`}
                             loading="eager"
                             draggable="false"
                             className="h-full w-full object-cover transition duration-700 group-hover:scale-105"
@@ -190,6 +189,19 @@ function ArtworkCard({ artwork, index, rank, ready, onSelect, sx, sy, reduced })
 
 export default function Hero() {
     const reduced = useReducedMotion();
+    const { posts } = useInstagram();
+    const liveImages = posts.flatMap((post) =>
+        post.media
+            .filter((media) => media.type === "image")
+            .map((media) => ({
+                image: media.thumb || media.url,
+                alt: post.text?.trim() || "Artwork shared by the community",
+            }))
+    );
+    const carouselArtworks = artworks.map((artwork, index) => ({
+        ...artwork,
+        ...(liveImages[index] ?? {}),
+    }));
 
     // Normalised cursor position inside the artwork cluster (-0.5 to 0.5)
     const mx = useMotionValue(0);
@@ -328,7 +340,7 @@ export default function Hero() {
                         className="mt-12 flex items-center gap-4 border-t border-[var(--jpg-cream)]/10 pt-6"
                     >
                         <div className="flex -space-x-3">
-                            {artworks.map((artwork) => (
+                            {carouselArtworks.map((artwork) => (
                                 <img
                                     key={artwork.id}
                                     src={artwork.image}
@@ -371,7 +383,7 @@ export default function Hero() {
                             className="absolute inset-[12%_8%] rotate-[-20deg] scale-y-[0.7] rounded-[50%] border border-[var(--jpg-cream)]/[0.08] shadow-[0_0_100px_rgba(249,29,29,0.07)]"
                         />
 
-                        {artworks.map((artwork, index) => (
+                        {carouselArtworks.map((artwork, index) => (
                             <ArtworkCard
                                 key={artwork.id}
                                 artwork={artwork}

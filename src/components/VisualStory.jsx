@@ -7,37 +7,9 @@ import {
   useMotionValue
 } from "framer-motion";
 import LiveLight from "./LiveLight";
+import { artworkImages } from "../artworkImages";
 
-const images = [
-  "photo-1531058020387-3be344556be6",
-  "photo-1549490349-8643362247b5",
-  "photo-1579783902614-a3fb3927b6a5",
-  "photo-1577083552431-6e5fd01aa342",
-  "photo-1541961017774-22349e4a1262",
-  "photo-1513364776144-60967b0f800f",
-  "photo-1515405295579-ba7b45403062",
-  "photo-1501472312651-726afe119ff1",
-  "photo-1506794778202-cad84cf45f1d",
-  "photo-1500648767791-00dcc994a43e",
-  "photo-1534528741775-53994a69daeb",
-  "photo-1524504388940-b1c1722653e1",
-  "photo-1492684223066-81342ee5ff30",
-  "photo-1516280440614-37939bbacd81",
-  "photo-1500530855697-b586d89ba3ee",
-  "photo-1470252649378-9c29740c9fa8",
-  "photo-1494438639946-1ebd1d20bf85",
-  "photo-1518005020951-eccb494ad742",
-  "photo-1515886657613-9f3515b0c78f",
-  "photo-1519681393784-d120267933ba",
-  "photo-1500534623283-312aade485b7",
-  "photo-1517841905240-472988babdf9",
-  "photo-1531123897727-8f129e1688ce",
-  "photo-1529139574466-a303027c1d8b",
-  "photo-1508214751196-bcfd4ca60f91",
-  "photo-1534528741775-53994a69daeb",
-  "photo-1529626455594-4ff0802cfb7e",
-  "photo-1504593811423-6dd665756598",
-];
+const images = artworkImages.slice(0, 28);
 
 /**
  * Polygon rings. Index 0 = closest to the viewer.
@@ -198,7 +170,7 @@ function Card({ slot, progress, width, height, mobile, mouse }) {
         }}
       >
         <img
-          src={`https://images.unsplash.com/${image}?auto=format&fit=crop&w=300&q=75`}
+          src={image}
           alt="Creative photography and visual art"
           loading="lazy"
           draggable="false"

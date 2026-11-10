@@ -7,6 +7,8 @@ import {
 } from "framer-motion";
 import { FaArrowRight } from "react-icons/fa6";
 import { ROUTES } from "../routes";
+import { useInstagram } from "../instagram/InstagramContext";
+import { artworkImages } from "../artworkImages";
 
 const artworks = [
     {
@@ -17,8 +19,7 @@ const artworks = [
         medium: "Mixed media",
         description:
             "An exploration of light, memory, and the imperfect beauty found in everyday moments.",
-        image:
-            "https://images.unsplash.com/photo-1549490349-8643362247b5?auto=format&fit=crop&w=1000&q=90",
+        image: artworkImages[4],
         color: "var(--jpg-red)",
     },
     {
@@ -29,8 +30,7 @@ const artworks = [
         medium: "Portrait photography",
         description:
             "A portrait study about stillness, identity, and the stories we rarely tell.",
-        image:
-            "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1000&q=90",
+        image: artworkImages[7],
         color: "var(--jpg-orange)",
     },
     {
@@ -41,8 +41,7 @@ const artworks = [
         medium: "Digital composition",
         description:
             "Natural forms and unexpected colors come together in a study of movement and change.",
-        image:
-            "https://images.unsplash.com/photo-1579783902614-a3fb3927b6a5?auto=format&fit=crop&w=1000&q=90",
+        image: artworkImages[10],
         color: "var(--jpg-yellow)",
     },
     {
@@ -53,8 +52,7 @@ const artworks = [
         medium: "Editorial photography",
         description:
             "A fleeting afternoon moment captured in warm light and delicate shadows.",
-        image:
-            "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1000&q=90",
+        image: artworkImages[12],
         color: "var(--jpg-orange)",
     },
     {
@@ -65,8 +63,7 @@ const artworks = [
         medium: "Contemporary painting",
         description:
             "A visual conversation about perspective, boundaries, and seeing beyond the obvious.",
-        image:
-            "https://images.unsplash.com/photo-1577083552431-6e5fd01aa342?auto=format&fit=crop&w=1000&q=90",
+        image: artworkImages[15],
         color: "var(--jpg-red)",
     },
     {
@@ -77,8 +74,7 @@ const artworks = [
         medium: "Documentary photography",
         description:
             "An intimate collection celebrating the people and everyday scenes that shape our world.",
-        image:
-            "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=1000&q=90",
+        image: artworkImages[18],
         color: "var(--jpg-yellow)",
     },
     {
@@ -89,8 +85,7 @@ const artworks = [
         medium: "Abstract painting",
         description:
             "Color and texture evoke the calm that follows a storm and the beginning of something new.",
-        image:
-            "https://images.unsplash.com/photo-1541961017774-22349e4a1262?auto=format&fit=crop&w=1000&q=90",
+        image: artworkImages[22],
         color: "var(--jpg-orange)",
     },
     {
@@ -101,8 +96,7 @@ const artworks = [
         medium: "Architectural photography",
         description:
             "An unconventional look at structure, geometry, and the relationship between space and light.",
-        image:
-            "https://images.unsplash.com/photo-1518005020951-eccb494ad742?auto=format&fit=crop&w=1000&q=90",
+        image: artworkImages[26],
         color: "var(--jpg-red)",
     },
 ];
@@ -289,7 +283,7 @@ function ArtworkCard({ artwork, flipped, onToggle, reduced }) {
                         </span>
 
                         <span
-                            className="mt-5 block text-sm leading-7"
+                            className="mt-5 line-clamp-5 block text-sm leading-7"
                             style={{ color: "var(--jpg-cream)", opacity: 0.88 }}
                         >
                             {artwork.description}
@@ -315,6 +309,30 @@ function ArtworkCard({ artwork, flipped, onToggle, reduced }) {
 
 export default function LiveVisualFeed() {
     const reduced = useReducedMotion();
+    const { posts } = useInstagram();
+    const liveArtworks = posts.flatMap((post) =>
+        post.media
+            .filter((media) => media.type === "image")
+            .map((media) => {
+                const caption = post.text?.trim() || "Artwork shared by the community.";
+                const title = caption.split(/\r?\n/)[0];
+                return {
+                    ...artworks[0],
+                    id: `${post.id}-${media.url}`,
+                    title: title.length > 56 ? `${title.slice(0, 53)}...` : title,
+                    artist: post.source === "x" ? "Shared on X" : "Shared on Instagram",
+                    category: "Community artwork",
+                    description: caption,
+                    image: media.thumb || media.url,
+                    medium: "Community post",
+                    color: artworks[0].color,
+                };
+            })
+    );
+    const displayedArtworks = [
+        ...liveArtworks.slice(0, artworks.length),
+        ...artworks.slice(liveArtworks.length, artworks.length),
+    ];
 
     const sectionRef = useRef(null);
     const trackRef = useRef(null);
@@ -481,7 +499,7 @@ export default function LiveVisualFeed() {
                         }}
                         className="flex gap-4 overflow-x-auto px-6 pb-6 [-ms-overflow-style:none] [overscroll-behavior-x:contain] [scrollbar-width:none] sm:gap-5 sm:px-10 lg:gap-6 lg:px-16 [&::-webkit-scrollbar]:hidden"
                     >
-                        {artworks.map((artwork) => (
+                        {displayedArtworks.map((artwork) => (
                             <ArtworkCard
                                 key={artwork.id}
                                 artwork={artwork}
