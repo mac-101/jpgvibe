@@ -8,7 +8,6 @@ import {
 } from "framer-motion";
 import { FaArrowTrendUp } from "react-icons/fa6";
 import { ROUTES } from "../routes";
-import { useInstagram } from "../instagram/InstagramContext";
 import { artworkImages } from "../artworkImages";
 
 const artworks = [
@@ -16,7 +15,7 @@ const artworks = [
         id: 1,
         title: "Human / 001",
         category: "Portrait photography",
-        image: artworkImages[0],
+        image: artworkImages[2],
         position: "left-[26%] top-[8%] w-[54%]",
         height: "h-[340px] sm:h-[390px]",
         rotate: 3,
@@ -25,9 +24,9 @@ const artworks = [
     },
     {
         id: 2,
-        title: "Fragments / 014",
+        title: "Colour / 014",
         category: "Contemporary art",
-        image: artworkImages[18],
+        image: artworkImages[24],
         position: "left-0 top-[23%] w-[48%]",
         height: "h-[220px] sm:h-[260px]",
         rotate: -10,
@@ -36,9 +35,9 @@ const artworks = [
     },
     {
         id: 3,
-        title: "Structure / 021",
-        category: "Architecture",
-        image: artworkImages[2],
+        title: "Sound / 021",
+        category: "Music photography",
+        image: artworkImages[11],
         position: "right-0 top-[38%] w-[45%]",
         height: "h-[190px] sm:h-[230px]",
         rotate: 8,
@@ -189,19 +188,6 @@ function ArtworkCard({ artwork, index, rank, ready, onSelect, sx, sy, reduced })
 
 export default function Hero() {
     const reduced = useReducedMotion();
-    const { posts } = useInstagram();
-    const liveImages = posts.flatMap((post) =>
-        post.media
-            .filter((media) => media.type === "image")
-            .map((media) => ({
-                image: media.thumb || media.url,
-                alt: post.text?.trim() || "Artwork shared by the community",
-            }))
-    );
-    const carouselArtworks = artworks.map((artwork, index) => ({
-        ...artwork,
-        ...(liveImages[index] ?? {}),
-    }));
 
     // Normalised cursor position inside the artwork cluster (-0.5 to 0.5)
     const mx = useMotionValue(0);
@@ -340,7 +326,7 @@ export default function Hero() {
                         className="mt-12 flex items-center gap-4 border-t border-[var(--jpg-cream)]/10 pt-6"
                     >
                         <div className="flex -space-x-3">
-                            {carouselArtworks.map((artwork) => (
+                            {artworks.map((artwork) => (
                                 <img
                                     key={artwork.id}
                                     src={artwork.image}
@@ -383,7 +369,7 @@ export default function Hero() {
                             className="absolute inset-[12%_8%] rotate-[-20deg] scale-y-[0.7] rounded-[50%] border border-[var(--jpg-cream)]/[0.08] shadow-[0_0_100px_rgba(249,29,29,0.07)]"
                         />
 
-                        {carouselArtworks.map((artwork, index) => (
+                        {artworks.map((artwork, index) => (
                             <ArtworkCard
                                 key={artwork.id}
                                 artwork={artwork}

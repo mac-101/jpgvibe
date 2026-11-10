@@ -310,29 +310,29 @@ function ArtworkCard({ artwork, flipped, onToggle, reduced }) {
 export default function LiveVisualFeed() {
     const reduced = useReducedMotion();
     const { posts } = useInstagram();
-    const liveArtworks = posts.flatMap((post) =>
-        post.media
-            .filter((media) => media.type === "image")
-            .map((media) => {
-                const caption = post.text?.trim() || "Artwork shared by the community.";
-                const title = caption.split(/\r?\n/)[0];
-                return {
-                    ...artworks[0],
-                    id: `${post.id}-${media.url}`,
-                    title: title.length > 56 ? `${title.slice(0, 53)}...` : title,
-                    artist: post.source === "x" ? "Shared on X" : "Shared on Instagram",
-                    category: "Community artwork",
-                    description: caption,
-                    image: media.thumb || media.url,
-                    medium: "Community post",
-                    color: artworks[0].color,
-                };
-            })
-    );
-    const displayedArtworks = [
-        ...liveArtworks.slice(0, artworks.length),
-        ...artworks.slice(liveArtworks.length, artworks.length),
-    ];
+    const liveArtworks = posts.flatMap((post) => {
+        const media = post.media.find((item) => item.type === "image");
+        if (!media) return [];
+
+        const caption = post.text?.trim();
+        if (!caption) return [];
+
+        const title = caption.split(/\r?\n/)[0];
+        return [{
+            ...artworks[0],
+            id: post.id,
+            title: title.length > 56 ? `${title.slice(0, 53)}...` : title,
+            artist: post.source === "x" ? "Shared on X" : "Shared on Instagram",
+            category: "Community artwork",
+            description: caption,
+            image: media.thumb || media.url,
+            medium: "Community post",
+            color: artworks[0].color,
+        }];
+    });
+    const displayedArtworks = liveArtworks.length
+        ? liveArtworks.slice(0, artworks.length)
+        : artworks;
 
     const sectionRef = useRef(null);
     const trackRef = useRef(null);
