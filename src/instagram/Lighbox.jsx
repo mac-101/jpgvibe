@@ -21,7 +21,6 @@ const dialogBase =
   "relative z-10 flex max-h-[92vh] w-full flex-col overflow-y-auto rounded-3xl border bg-[var(--jpg-surface)] shadow-[0_40px_120px_rgba(0,0,0,0.7)] outline-none";
 const dialogWithMedia =
   "max-w-5xl md:grid md:h-[min(86vh,720px)] md:grid-cols-[1.25fr_1fr] md:grid-rows-[minmax(0,1fr)] md:overflow-hidden";
-const dialogTextOnly = "max-w-2xl";
 
 function Media({ post, slide, setSlide }) {
   const items = post.media;
@@ -55,6 +54,7 @@ function Media({ post, slide, setSlide }) {
             key={item.url}
             src={item.url}
             poster={item.thumb}
+            preload="metadata"
             controls
             playsInline
             autoPlay
@@ -67,6 +67,8 @@ function Media({ post, slide, setSlide }) {
             key={item.url}
             src={item.url}
             alt={snippet(post.text, 140)}
+            loading="lazy"
+            decoding="async"
             draggable="false"
             className="h-full w-full object-contain"
           />
@@ -142,6 +144,25 @@ export default function Lightbox() {
   slideInfo.current = { slide, count: post?.media.length || 1 };
 
   useEffect(() => {
+    if (!isOpen || !post?.media.length) return;
+
+    const urls = new Set();
+    const preload = (item) => {
+      const url = item?.type === "video" ? item.thumb : item?.url;
+      if (!url || urls.has(url)) return;
+      urls.add(url);
+      const image = new window.Image();
+      image.src = url;
+    };
+
+    if (post.media.length > 1) {
+      preload(post.media[(slide + 1) % post.media.length]);
+    }
+    preload(posts[(openIndex - 1 + posts.length) % posts.length]?.media[0]);
+    preload(posts[(openIndex + 1) % posts.length]?.media[0]);
+  }, [isOpen, openIndex, post, posts, slide]);
+
+  useEffect(() => {
     setSlide(0);
   }, [openIndex]);
 
@@ -197,7 +218,6 @@ export default function Lightbox() {
   const meta = post ? SOURCE_META[post.source] : null;
   const account = post ? ACCOUNTS[post.source] : null;
   const SourceIcon = meta?.Icon;
-  const textOnly = post ? post.media.length === 0 : false;
   const likes = post ? formatCount(post.metrics?.likes) : null;
   const comments = post ? formatCount(post.metrics?.comments) : null;
 
@@ -228,7 +248,7 @@ export default function Lightbox() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={reduced ? undefined : { opacity: 0, y: 16, scale: 0.98 }}
             transition={{ duration: reduced ? 0 : 0.5, ease }}
-            className={`${dialogBase} ${textOnly ? dialogTextOnly : dialogWithMedia}`}
+            className={`${dialogBase} ${dialogWithMedia}`}
             style={{ borderColor: "var(--jpg-border)", color: "var(--jpg-cream)" }}
           >
             <button
@@ -241,17 +261,11 @@ export default function Lightbox() {
               <FaXmark aria-hidden="true" />
             </button>
 
-            {!textOnly && (
-              <div className="relative aspect-square w-full shrink-0 bg-black md:aspect-auto md:h-full md:min-h-0">
-                <Media post={post} slide={slide} setSlide={setSlide} />
-              </div>
-            )}
+            <div className="relative aspect-square w-full shrink-0 bg-black md:aspect-auto md:h-full md:min-h-0">
+              <Media post={post} slide={slide} setSlide={setSlide} />
+            </div>
 
-            <div
-              className={`flex flex-col ${
-                textOnly ? "" : "md:min-h-0 md:overflow-hidden"
-              }`}
-            >
+            <div className="flex flex-col md:min-h-0 md:overflow-hidden">
               <div
                 className="flex shrink-0 items-center gap-3 border-b px-5 py-4 pr-16"
                 style={{ borderColor: "var(--jpg-border)" }}
@@ -268,17 +282,9 @@ export default function Lightbox() {
                 </div>
               </div>
 
-              <div
-                className={`px-5 py-5 ${
-                  textOnly ? "sm:px-8 sm:py-8" : "md:min-h-0 md:flex-1 md:overflow-y-auto"
-                }`}
-              >
+              <div className="px-5 py-5 md:min-h-0 md:flex-1 md:overflow-y-auto">
                 <p
-                  className={`whitespace-pre-line font-body ${
-                    textOnly
-                      ? "text-2xl leading-9 sm:text-3xl sm:leading-10"
-                      : "text-base leading-7"
-                  }`}
+                  className="whitespace-pre-line font-body text-base leading-7"
                   style={{ opacity: 0.92 }}
                 >
                   {post.text || "No caption."}

@@ -6,7 +6,7 @@ import {
     useTransform,
     useReducedMotion,
 } from "framer-motion";
-import { FaArrowTrendUp, FaArrowRight } from "react-icons/fa6";
+import { FaArrowTrendUp } from "react-icons/fa6";
 
 const artworks = [
     {
@@ -49,11 +49,6 @@ const artworks = [
 
 const ease = [0.22, 1, 0.36, 1];
 
-const container = {
-    hidden: {},
-    show: { transition: { staggerChildren: 0.12, delayChildren: 0.1 } },
-};
-
 const item = {
     hidden: { opacity: 0, y: 28 },
     show: { opacity: 1, y: 0, transition: { duration: 0.8, ease } },
@@ -93,44 +88,6 @@ const headlineWord = {
         filter: "blur(0px)",
         transition: {
             duration: 0.85,
-            ease: [0.22, 1, 0.36, 1],
-        },
-    },
-};
-
-const visionariesReveal = {
-    hidden: {
-        opacity: 0,
-        x: 35,
-        filter: "blur(10px)",
-    },
-    show: {
-        opacity: 1,
-        x: 0,
-        filter: "blur(0px)",
-        transition: {
-            duration: 1.05,
-            delay: 0.15,
-            ease: [0.22, 1, 0.36, 1],
-        },
-    },
-};
-
-const convergeReveal = {
-    hidden: {
-        opacity: 0,
-        y: 24,
-        scale: 0.96,
-        filter: "blur(12px)",
-    },
-    show: {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        filter: "blur(0px)",
-        transition: {
-            duration: 1.1,
-            delay: 0.2,
             ease: [0.22, 1, 0.36, 1],
         },
     },
@@ -215,21 +172,6 @@ function ArtworkCard({ artwork, index, rank, ready, onSelect, sx, sy, reduced })
                         />
                         <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
                     </div>
-
-                    {/* <figcaption className="flex items-center justify-between gap-2 p-3 sm:p-4">
-                        <div className="min-w-0">
-                            <p className="text-xs font-semibold sm:text-sm">{artwork.title}</p>
-                            <p className="mt-1 text-[10px] text-[var(--jpg-muted)] sm:text-xs">
-                                {artwork.category}
-                            </p>
-                        </div>
-                        <span
-                            aria-hidden="true"
-                            className="text-sm text-[var(--jpg-cream)]/70 transition duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:text-[var(--jpg-red)]"
-                        >
-                            <FaArrowRight/>
-                        </span>
-                    </figcaption> */}
 
                     {/* Dims cards that are further back */}
                     <motion.div
@@ -316,9 +258,6 @@ export default function Hero() {
             <div className="relative z-10 mx-auto grid max-w-7xl items-center gap-12 px-6 pb-24 pt-16 lg:min-h-screen lg:grid-cols-2 lg:gap-8 lg:px-10 lg:pb-24">
                 {/* Copy */}
                 <motion.div
-                    // variants={container}
-                    // initial="hidden"
-                    // animate="show"
                     className="relative z-20 max-w-2xl"
                 >
                     <motion.h1
@@ -348,23 +287,6 @@ export default function Hero() {
                             </motion.span>
                         </span>
 
-                        {/* <span className="block overflow-hidden pb-1">
-                            <motion.span
-                                variants={visionariesReveal}
-                                className="inline-block text-[var(--jpg-cream)]/55"
-                            >
-                                &amp; Visionaries
-                            </motion.span>
-                        </span>
-
-                        <span className="block overflow-hidden pb-2">
-                            <motion.span
-                                variants={convergeReveal}
-                                className="inline-block"
-                            >
-                                Converge.
-                            </motion.span>
-                        </span> */}
                     </motion.h1>
 
                     <motion.p

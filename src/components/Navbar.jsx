@@ -189,10 +189,6 @@ export default function Navbar() {
                 </span>
               </span>
 
-              {/* <span className="relative mt-1 flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[var(--jpg-red)] opacity-50" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-[var(--jpg-red)]" />
-              </span> */}
             </Link>
 
             {/* Desktop menu */}

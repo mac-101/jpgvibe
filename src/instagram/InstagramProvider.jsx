@@ -1,11 +1,12 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ACCOUNT, fetchPosts } from "./data";
+import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { fetchPosts } from "./data";
 import { hasMedia } from "./utils";
 import { InstagramContext } from "./InstagramContext";
-import Lightbox from "./Lighbox";
 
 const FIRST_PAGE = 20; // fetched once when the app loads
 const NEXT_PAGE = 12; // infinite scroll on the Instagram page
+const Lightbox = lazy(() => import("./Lighbox.jsx"));
+let firstPagePromise;
 
 async function fetchMediaPosts(limit, after = null) {
   const posts = [];
@@ -32,6 +33,16 @@ async function fetchMediaPosts(limit, after = null) {
   return { data: posts, paging: { after: cursor, hasMore } };
 }
 
+function fetchFirstPage() {
+  if (!firstPagePromise) {
+    firstPagePromise = fetchMediaPosts(FIRST_PAGE).catch((error) => {
+      firstPagePromise = null;
+      throw error;
+    });
+  }
+  return firstPagePromise;
+}
+
 export default function InstagramProvider({ children }) {
   const [feed, setFeed] = useState({
     posts: [],
@@ -42,6 +53,7 @@ export default function InstagramProvider({ children }) {
   const [loadingMore, setLoadingMore] = useState(false);
   const [moreError, setMoreError] = useState(false);
   const [openIndex, setOpenIndex] = useState(null);
+  const [lightboxRequested, setLightboxRequested] = useState(false);
 
   const busy = useRef(false);
   const postsLength = useRef(0);
@@ -50,7 +62,7 @@ export default function InstagramProvider({ children }) {
   const loadFirst = useCallback(async () => {
     setFeed((f) => ({ ...f, status: "loading" }));
     try {
-      const res = await fetchMediaPosts(FIRST_PAGE);
+      const res = await fetchFirstPage();
       setFeed({
         posts: res.data,
         status: "ready",
@@ -88,7 +100,10 @@ export default function InstagramProvider({ children }) {
     }
   }, [feed.status, feed.hasMore, feed.after]);
 
-  const openLightbox = useCallback((index) => setOpenIndex(index), []);
+  const openLightbox = useCallback((index) => {
+    setLightboxRequested(true);
+    setOpenIndex(index);
+  }, []);
   const closeLightbox = useCallback(() => setOpenIndex(null), []);
   const step = useCallback((delta) => {
     setOpenIndex((i) =>
@@ -100,7 +115,6 @@ export default function InstagramProvider({ children }) {
 
   const value = useMemo(
     () => ({
-      account: ACCOUNT,
       posts: feed.posts,
       status: feed.status,
       hasMore: feed.hasMore,
@@ -119,7 +133,11 @@ export default function InstagramProvider({ children }) {
   return (
     <InstagramContext.Provider value={value}>
       {children}
-      <Lightbox />
+      {lightboxRequested && (
+        <Suspense fallback={null}>
+          <Lightbox />
+        </Suspense>
+      )}
     </InstagramContext.Provider>
   );
 }

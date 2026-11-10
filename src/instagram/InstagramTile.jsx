@@ -1,7 +1,8 @@
+import { memo, useCallback, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { FaClone, FaComment, FaHeart, FaPlay } from "react-icons/fa6";
 import { SOURCE_META } from "./sources";
-import { formatCount, getThumb, hasMedia, snippet } from "./utils";
+import { buildSrcSet, formatCount, getThumb, snippet } from "./utils";
 
 const ease = [0.22, 1, 0.36, 1];
 
@@ -39,17 +40,32 @@ export function TileSkeleton() {
   );
 }
 
-export default function InstagramTile({ post, index = 0, onOpen }) {
+function InstagramTile({
+  post,
+  index = 0,
+  postIndex,
+  onOpen,
+  priority = false,
+  sizes = "(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw",
+}) {
   const reduced = useReducedMotion();
+  const [imageLoaded, setImageLoaded] = useState(false);
+  const [imageFailed, setImageFailed] = useState(false);
   const meta = SOURCE_META[post.source];
   const SourceIcon = meta.Icon;
-  const withMedia = hasMedia(post);
   const first = post.media[0];
+  const thumb = getThumb(post);
+  const srcSet = buildSrcSet(thumb);
+  const imageRef = useCallback((image) => {
+    if (!image?.complete) return;
+    setImageLoaded(image.naturalWidth > 0);
+    setImageFailed(image.naturalWidth === 0);
+  }, []);
 
   return (
     <motion.button
       type="button"
-      onClick={onOpen}
+      onClick={() => onOpen(postIndex)}
       aria-label={`Open ${meta.label} post: ${snippet(post.text)}`}
       initial={reduced ? false : { opacity: 0, y: 32 }}
       whileInView={{ opacity: 1, y: 0 }}
@@ -62,30 +78,30 @@ export default function InstagramTile({ post, index = 0, onOpen }) {
         WebkitTapHighlightColor: "transparent",
       }}
     >
-      {withMedia ? (
+      {thumb && !imageFailed && (
         <img
-          src={getThumb(post)}
+          ref={imageRef}
+          src={thumb}
+          srcSet={srcSet}
+          sizes={sizes}
           alt=""
-          loading="lazy"
+          loading={priority ? "eager" : "lazy"}
+          fetchPriority={priority && index < 2 ? "high" : undefined}
+          decoding="async"
           draggable="false"
-          className="absolute inset-0 h-full w-full object-cover transition-transform duration-[900ms] ease-out group-hover:scale-[1.05]"
-        />
-      ) : (
-        /* Text-only post: the words are the artwork */
-        <span
-          className="absolute inset-0 flex flex-col justify-center p-6 pt-16 sm:p-7 sm:pt-16"
-          style={{
-            background:
-              "radial-gradient(ellipse 80% 60% at 100% 0%, rgba(249,29,29,0.14), transparent 70%), var(--jpg-surface-raised)",
+          onLoad={() => setImageLoaded(true)}
+          onError={() => {
+            setImageLoaded(false);
+            setImageFailed(true);
           }}
-        >
-          <span
-            className="line-clamp-6 block font-body text-lg leading-7 sm:text-xl sm:leading-8"
-            style={{ color: "var(--jpg-cream)" }}
-          >
-            {post.text}
-          </span>
-        </span>
+          style={{
+            opacity: imageLoaded ? 1 : 0,
+            transition: reduced
+              ? "transform 900ms ease-out"
+              : "opacity 250ms ease-out, transform 900ms ease-out",
+          }}
+          className="absolute inset-0 h-full w-full object-cover group-hover:scale-[1.05]"
+        />
       )}
 
       {/* Source badge */}
@@ -115,7 +131,7 @@ export default function InstagramTile({ post, index = 0, onOpen }) {
         </span>
       )}
 
-      {/* Mouse: hover overlay. Text-only tiles already show their words, so only counts. */}
+      {/* Mouse: hover overlay. */}
       <span
         aria-hidden="true"
         className="pointer-events-none absolute inset-0 flex flex-col justify-end gap-3 p-4 opacity-0 transition-opacity duration-300 group-focus-visible:opacity-100 [@media(hover:hover)]:group-hover:opacity-100"
@@ -126,11 +142,9 @@ export default function InstagramTile({ post, index = 0, onOpen }) {
         }}
       >
         <Counts post={post} />
-        {withMedia && (
-          <span className="line-clamp-3 block text-sm leading-6 opacity-90">
-            {post.text || "No caption"}
-          </span>
-        )}
+        <span className="line-clamp-3 block text-sm leading-6 opacity-90">
+          {post.text || "No caption"}
+        </span>
       </span>
 
       {/* Touch: no hover, so the counts sit on the tile */}
@@ -144,3 +158,5 @@ export default function InstagramTile({ post, index = 0, onOpen }) {
     </motion.button>
   );
 }
+
+export default memo(InstagramTile);

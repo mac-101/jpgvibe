@@ -5,7 +5,6 @@ import { useInstagram } from "./InstagramContext";
 import InstagramTile, { TileSkeleton } from "./InstagramTile";
 import { ACCOUNTS } from "./data";
 import { SOURCE_META } from "./sources";
-import { hasMedia } from "./utils";
 
 /**
  * start=0 on Home, start=4 on Services, start=8 on Team.
@@ -18,8 +17,7 @@ export default function InstagramStrip({
 }) {
   const { posts, status, openLightbox } = useInstagram();
 
-  const pool = posts.filter(hasMedia);
-  const slice = pool.slice(start, start + count);
+  const slice = posts.slice(start, start + count);
 
   // A broken connection shouldn't leave a hole in the page
   if (status === "error") return null;
@@ -69,7 +67,9 @@ export default function InstagramStrip({
                 key={post.id}
                 post={post}
                 index={i}
-                onOpen={() => openLightbox(posts.indexOf(post))}
+                postIndex={posts.indexOf(post)}
+                onOpen={openLightbox}
+                sizes="(min-width: 1024px) 25vw, 50vw"
               />
             ))}
         </div>

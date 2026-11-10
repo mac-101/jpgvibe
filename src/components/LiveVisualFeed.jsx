@@ -318,8 +318,6 @@ export default function LiveVisualFeed() {
     const sectionRef = useRef(null);
     const trackRef = useRef(null);
 
-    const [playing, setPlaying] = useState(true);
-
     // Read inside the animation loop, so these are refs and don't re-render
     const focusRef = useRef(false);
     const inViewRef = useRef(false);
@@ -373,7 +371,6 @@ export default function LiveVisualFeed() {
             last = now;
 
             const blocked =
-                !playing ||
                 !inViewRef.current ||
                 focusRef.current ||
                 flippedRef.current !== null ||
@@ -412,20 +409,10 @@ export default function LiveVisualFeed() {
 
         raf = requestAnimationFrame(tick);
         return () => cancelAnimationFrame(raf);
-    }, [playing, reduced]);
+    }, [reduced]);
 
     const holdAutoScroll = () => {
         pauseUntil.current = performance.now() + IDLE_PAUSE;
-    };
-
-    const scrollTrack = (direction) => {
-        const el = trackRef.current;
-        if (!el) return;
-        holdAutoScroll();
-        el.scrollBy({
-            left: direction * el.clientWidth * 0.72,
-            behavior: reduced ? "auto" : "smooth",
-        });
     };
 
     return (

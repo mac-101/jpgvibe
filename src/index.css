@@ -77,16 +77,6 @@
   text-transform: none;
 }
 
-@keyframes hero-enter {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes artwork-float {
-  0%, 100% { translate: 0 0; }
-  50% { translate: 0 -10px; }
-}
-
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,

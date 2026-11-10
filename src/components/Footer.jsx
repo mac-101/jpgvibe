@@ -1,9 +1,6 @@
 import { FaArrowRight, FaArrowTrendUp } from "react-icons/fa6"
 import {
     motion,
-    useMotionValue,
-    useSpring,
-    useTransform,
     useReducedMotion
 } from "framer-motion";
 
@@ -44,10 +41,6 @@ export default function Footer() {
                         }}
                         className="relative"
                     >
-                        {/* <p className="mb-6 text-[10px] font-semibold uppercase tracking-[0.28em] text-[var(--jpg-red)] sm:text-xs">
-                            Your perspective belongs here
-                        </p> */}
-
                         <h3 className="max-w-5xl text-[clamp(2.8rem,7.5vw,7rem)] font-semibold leading-[0.95] tracking-[-0.07em]">
                             Make something.
                             <br />

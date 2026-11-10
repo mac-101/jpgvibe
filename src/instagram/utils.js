@@ -6,22 +6,41 @@ export const formatCount = (n) =>
         maximumFractionDigits: 1,
       }).format(n);
 
-// Instagram sends "+0000", but Safari only accepts "+00:00"
-export const parseIgDate = (ts) =>
-  new Date(ts.replace(/([+-]\d{2})(\d{2})$/, "$1:$2"));
-
 export const formatDate = (ts) =>
-  new Intl.DateTimeFormat("en", { dateStyle: "long" }).format(parseIgDate(ts));
+  new Intl.DateTimeFormat("en", { dateStyle: "long" }).format(new Date(ts));
 
-export const getThumb = (post) => {
-  const media = post.media?.[0];
-  return (
-    media?.thumb ??
-    media?.url ??
-    (post.media_type === "VIDEO"
-      ? post.thumbnail_url ?? post.media_url
-      : post.media_url)
-  );
+export const getThumb = (post) => post.media[0]?.thumb;
+
+export const buildSrcSet = (url) => {
+  if (!url) return undefined;
+
+  try {
+    const parsed = new URL(url);
+    if (parsed.hostname === "images.unsplash.com") {
+      return [400, 700, 1000]
+        .map((width) => {
+          const variant = new URL(parsed);
+          variant.searchParams.set("w", String(width));
+          return `${variant.href} ${width}w`;
+        })
+        .join(", ");
+    }
+
+    if (parsed.hostname === "pbs.twimg.com") {
+      return ["small 680w", "medium 1200w", "large 2048w"]
+        .map((variant) => {
+          const [name, width] = variant.split(" ");
+          const image = new URL(parsed);
+          image.searchParams.set("name", name);
+          return `${image.href} ${width}`;
+        })
+        .join(", ");
+    }
+  } catch {
+    return undefined;
+  }
+
+  return undefined;
 };
 
 export const hasMedia = (post) =>
