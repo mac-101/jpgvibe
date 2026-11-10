@@ -6,7 +6,7 @@ import LiveVisualFeed from "../components/LiveVisualFeed";
 import ExhibitionFinale from "../components/ExhibitionFinale";
 export default function App() {
   return (
-    <main>
+    <div>
       <div className="relative">
         <Hero />
       </div>
@@ -15,6 +15,6 @@ export default function App() {
       <LiveVisualFeed />
       <ValueGrid />
       <ExhibitionFinale />
-    </main>
+    </div>
   );
 }

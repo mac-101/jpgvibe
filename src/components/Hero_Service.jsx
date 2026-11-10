@@ -7,6 +7,7 @@ import {
   useSpring,
   useTransform,
 } from "framer-motion";
+import { ROUTES } from "../routes";
 
 const ease = [0.22, 1, 0.36, 1];
 
@@ -206,9 +207,9 @@ function ServiceCard({ service, index, open, onOpen, onClose, onToggle, reduced 
               {/* Resting content */}
               <div className="pointer-events-none relative flex h-full min-h-[360px] flex-col justify-end p-7 sm:min-h-[400px] sm:p-8">
                 <div>
-                  <h3 className="text-2xl font-medium leading-tight tracking-tight sm:text-3xl">
+                  <h2 className="text-2xl font-medium leading-tight tracking-tight sm:text-3xl">
                     {service.title}
-                  </h3>
+                  </h2>
                   <p
                     className="mt-3 text-sm leading-6"
                     style={{ color: "var(--jpg-cream)", opacity: 0.7 }}
@@ -242,9 +243,9 @@ function ServiceCard({ service, index, open, onOpen, onClose, onToggle, reduced 
                 className="absolute inset-0 z-20 flex flex-col bg-black/[0.95] p-7 sm:p-8"
               >
                 <div className="flex items-start justify-between gap-4">
-                  <h3 className="text-lg font-medium leading-snug tracking-tight sm:text-xl">
+                  <h2 className="text-lg font-medium leading-snug tracking-tight sm:text-xl">
                     {service.title}
-                  </h3>
+                  </h2>
                   <button
                     type="button"
                     onClick={onClose}
@@ -299,7 +300,7 @@ function ServiceCard({ service, index, open, onOpen, onClose, onToggle, reduced 
                   </ul>
 
                   <a
-                    href={`/contact?service=${service.slug}`}
+                    href={`${ROUTES.contact}?service=${service.slug}`}
                     tabIndex={open ? 0 : -1}
                     className="mt-auto inline-flex items-center justify-center gap-3 self-start rounded-full bg-[image:var(--jpg-gradient)] px-6 py-3.5 font-button text-[var(--jpg-black)] transition-transform duration-300 hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)]"
                   >

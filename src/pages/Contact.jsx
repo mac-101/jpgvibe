@@ -414,7 +414,7 @@ export default function ContactPage() {
                     name="email"
                     type="email"
                     autoComplete="email"
-                    placeholder="you@example.com"
+                    placeholder="you@thevibe.red"
                     value={values.email}
                     onChange={handleChange}
                     aria-required="true"

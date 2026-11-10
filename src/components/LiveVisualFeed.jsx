@@ -6,6 +6,7 @@ import {
     useSpring,
 } from "framer-motion";
 import { FaArrowRight } from "react-icons/fa6";
+import { ROUTES } from "../routes";
 
 const artworks = [
     {
@@ -509,7 +510,7 @@ export default function LiveVisualFeed() {
                             </h3>
 
                             <a
-                                href="/team"
+                                href={ROUTES.team}
                                 className="group inline-flex items-center gap-3 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
                                 style={{
                                     color: "var(--jpg-cream)",

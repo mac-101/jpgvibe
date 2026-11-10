@@ -3,9 +3,56 @@
 
 <head>
   <meta charset="UTF-8" />
-  <link rel="icon" type="image/jpeg" href="./src/assets/logo.jpg" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Thevibe</title>
+  <meta name="theme-color" content="#000000" />
+  <meta name="color-scheme" content="dark" />
+  <title>thevibe. | Where creatives converge.</title>
+  <meta
+    name="description"
+    content="A curated home for African and diaspora artists to share timeless work and find each other."
+  />
+  <link rel="canonical" href="%VITE_SITE_URL%/" />
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="thevibe." />
+  <meta property="og:title" content="thevibe. | Where creatives converge." />
+  <meta
+    property="og:description"
+    content="A curated home for African and diaspora artists to share timeless work and find each other."
+  />
+  <meta property="og:url" content="%VITE_SITE_URL%/" />
+  <meta property="og:image" content="%VITE_SITE_URL%/og-image.jpg" />
+  <meta property="og:image:alt" content="thevibe. — a home for African and diaspora artists" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="thevibe. | Where creatives converge." />
+  <meta
+    name="twitter:description"
+    content="A curated home for African and diaspora artists to share timeless work and find each other."
+  />
+  <meta name="twitter:image" content="%VITE_SITE_URL%/og-image.jpg" />
+
+  <!-- TODO: Replace the placeholder social profile URLs with the real ones. -->
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "thevibe.",
+      "url": "%VITE_SITE_URL%/",
+      "logo": "%VITE_SITE_URL%/og-image.jpg",
+      "sameAs": [
+        "https://www.instagram.com/your-instagram-profile/",
+        "https://x.com/your-x-profile"
+      ]
+    }
+  </script>
+  <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "thevibe.",
+      "url": "%VITE_SITE_URL%/"
+    }
+  </script>
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -17,6 +64,9 @@
 </head>
 
 <body>
+  <noscript>
+    A curated home for African and diaspora artists to share timeless work and find each other.
+  </noscript>
   <div id="root"></div>
   <script type="module" src="/src/main.jsx"></script>
 </body>

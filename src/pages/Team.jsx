@@ -220,12 +220,12 @@ function TeamCard({ member, index, open, onClose, onToggle, reduced }) {
 
                 {/* Details */}
                 <div className="flex flex-1 flex-col px-6 pb-6 pt-2 sm:px-7 sm:pb-7">
-                    <h3
+                    <h2
                         className="text-2xl leading-tight sm:text-3xl"
                         style={{ color: "var(--jpg-cream)" }}
                     >
                         {member.name}
-                    </h3>
+                    </h2>
 
                     <p
                         className="mt-3 flex items-center gap-3 font-label"

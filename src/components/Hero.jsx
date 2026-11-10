@@ -7,6 +7,7 @@ import {
     useReducedMotion,
 } from "framer-motion";
 import { FaArrowTrendUp } from "react-icons/fa6";
+import { ROUTES } from "../routes";
 
 const artworks = [
     {
@@ -304,7 +305,7 @@ export default function Hero() {
                         className="mt-9 flex flex-wrap items-center gap-4"
                     >
                         <motion.a
-                            href="/art-feed"
+                            href={ROUTES.live}
                             whileHover={{ y: -4 }}
                             whileTap={{ scale: 0.97 }}
                             transition={{ type: "spring", stiffness: 300, damping: 20 }}
@@ -314,7 +315,7 @@ export default function Hero() {
                         </motion.a>
 
                         <motion.a
-                            href="/contact"
+                            href={ROUTES.contact}
                             whileTap={{ scale: 0.97 }}
                             className="rounded-full font-button border border-[var(--jpg-border)] px-6 py-4 transition hover:border-[var(--jpg-cream)]/60 hover:bg-[var(--jpg-cream)]/[0.04] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)] sm:px-7"
                         >

@@ -3,6 +3,7 @@ import { FaArrowTrendUp, FaArrowRight, FaChevronDown } from "react-icons/fa6";
 import { useEffect, useRef, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import logo from "../assets/logo.jpg";
+import { ROUTES } from "../routes";
 import {
   AnimatePresence,
   motion,
@@ -13,12 +14,12 @@ import {
 } from "framer-motion";
 
 const links = [
-  { label: "Home", href: "/" },
-  { label: "About", href: "/about" },
-  { label: "Services", href: "/services" },
-  { label: "Team", href: "/team" },
-  { label: "Art Feed", href: "/art-feed" },
-  { label: "Contact", href: "/contact" },
+  { label: "Home", href: ROUTES.home },
+  { label: "About", href: ROUTES.about },
+  { label: "Services", href: ROUTES.services },
+  { label: "Team", href: ROUTES.team },
+  { label: "Art Feed", href: ROUTES.live },
+  { label: "Contact", href: ROUTES.contact },
 ];
 
 const ease = [0.22, 1, 0.36, 1];
@@ -171,7 +172,7 @@ export default function Navbar() {
 
             {/* Brand */}
             <Link
-              to="/"
+              to={ROUTES.home}
               onClick={closeMenu}
               aria-label="thevibe home"
               className="group relative z-10 flex items-center gap-2.5"
@@ -279,7 +280,7 @@ export default function Navbar() {
 
             {/* CTA */}
             <motion.a
-              href="/contact"
+              href={ROUTES.contact}
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.97 }}
               className="
@@ -401,7 +402,7 @@ export default function Navbar() {
 
                   <motion.a
                     variants={itemVariants}
-                    href="/contact"
+                    href={ROUTES.contact}
                     onClick={closeMenu}
                     className="
                       mt-5 flex items-center justify-between

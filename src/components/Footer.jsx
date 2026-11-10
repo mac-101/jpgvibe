@@ -3,6 +3,7 @@ import {
     motion,
     useReducedMotion
 } from "framer-motion";
+import { ROUTES } from "../routes";
 
 export default function Footer() {
     const reduced = useReducedMotion();
@@ -41,13 +42,13 @@ export default function Footer() {
                         }}
                         className="relative"
                     >
-                        <h3 className="max-w-5xl text-[clamp(2.8rem,7.5vw,7rem)] font-semibold leading-[0.95] tracking-[-0.07em]">
+                        <h2 className="max-w-5xl text-[clamp(2.8rem,7.5vw,7rem)] font-semibold leading-[0.95] tracking-[-0.07em]">
                             Make something.
                             <br />
                             <span className="text-[var(--jpg-cream)]/45">
                                 Show the world.
                             </span>
-                        </h3>
+                        </h2>
 
                         <div className="mt-10 flex flex-col gap-6 sm:mt-12 sm:flex-row sm:items-center sm:justify-between">
                             <p className="max-w-md text-sm leading-7 text-[var(--jpg-muted)] sm:text-base">
@@ -56,7 +57,7 @@ export default function Footer() {
                             </p>
 
                             <motion.a
-                                href="/art-feed"
+                                href={ROUTES.live}
                                 whileHover={reduced ? undefined : { y: -4 }}
                                 whileTap={reduced ? undefined : { scale: 0.97 }}
                                 transition={{
@@ -78,7 +79,7 @@ export default function Footer() {
 
                         <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4 border-t border-[var(--jpg-border)] pt-6">
                             <a
-                                href="/art-feed"
+                                href={ROUTES.live}
                                 className="group inline-flex items-center gap-2 text-[var(--jpg-cream)] transition-colors hover:text-[var(--jpg-yellow)]"
                             >
                                 Explore the platform
@@ -88,7 +89,7 @@ export default function Footer() {
                             </a>
 
                             <a
-                                href="/services"
+                                href={ROUTES.services}
                                 className="group inline-flex items-center gap-2 text-[var(--jpg-muted)] transition-colors hover:text-[var(--jpg-cream)]"
                             >
                                 Discover what we do
