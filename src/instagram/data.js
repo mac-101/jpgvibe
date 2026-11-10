@@ -3,7 +3,7 @@
 //   permalink, timestamp (ISO), metrics: { likes?, comments? } }
 // Responses look like: { data: [...], paging: { after, hasMore } }
 
-export const USE_MOCK = true;
+export const USE_MOCK = false;
 
 export const ACCOUNTS = {
   instagram: { username: "jpgvibe", profileUrl: "https://www.instagram.com/jpgvibe/" },
