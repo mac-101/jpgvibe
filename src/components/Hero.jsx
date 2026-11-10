@@ -27,7 +27,7 @@ const artworks = [
         id: 2,
         title: "Fragments / 014",
         category: "Contemporary art",
-        image: artworkImages[1],
+        image: artworkImages[18],
         position: "left-0 top-[23%] w-[48%]",
         height: "h-[220px] sm:h-[260px]",
         rotate: -10,

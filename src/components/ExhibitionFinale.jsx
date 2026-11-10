@@ -142,9 +142,9 @@ export default function ExhibitionFinale() {
                     </motion.div>
                 </div>
 
-                <InstagramStrip start={0} heading="Our art feed"/>
 
             </div>
+                <InstagramStrip start={0} heading="Our art feed"/>
 
             {/* Section closing rule */}
             <div
