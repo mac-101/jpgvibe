@@ -229,24 +229,18 @@ function ArtworkCard({ artwork, flipped, onToggle, reduced }) {
                             className="absolute inset-0"
                             style={{
                                 background:
-                                    "linear-gradient(180deg, rgba(0,0,0,0) 45%, rgba(0,0,0,0.82) 100%)",
+                                    "linear-gradient(180deg, rgba(0,0,0,0) 62%, rgba(0,0,0,0.72) 100%)",
                             }}
                         />
                         {!hasFlipped && <TouchIndicator reduced={reduced} />}
 
-                        <span className="absolute inset-x-0 bottom-0 flex items-end justify-between gap-4 p-5">
+                        <span className="absolute inset-x-0 bottom-0 p-4 sm:p-5">
                             <span className="block min-w-0">
                                 <span
-                                    className="block text-xl font-medium tracking-tight sm:text-2xl"
+                                    className="line-clamp-2 block text-lg font-medium tracking-tight sm:text-xl"
                                     style={{ color: "var(--jpg-cream)" }}
                                 >
                                     {artwork.title}
-                                </span>
-                                <span
-                                    className="mt-1.5 block text-sm"
-                                    style={{ color: "var(--jpg-cream)", opacity: 0.7 }}
-                                >
-                                    {artwork.artist} · {artwork.category}
                                 </span>
                             </span>
 
