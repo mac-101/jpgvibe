@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import {
   FaChevronLeft,
@@ -10,7 +10,13 @@ import {
 import { ACCOUNTS } from "./data";
 import { useInstagram } from "./InstagramContext";
 import { SOURCE_META } from "./sources";
-import { formatCount, formatDate, snippet } from "./utils";
+import {
+  buildSrcSet,
+  formatCount,
+  formatDate,
+  preloadMedia,
+  snippet,
+} from "./utils";
 
 const ease = [0.22, 1, 0.36, 1];
 
@@ -22,10 +28,110 @@ const dialogBase =
 const dialogWithMedia =
   "max-w-5xl md:grid md:h-[min(86vh,720px)] md:grid-cols-[1.25fr_1fr] md:grid-rows-[minmax(0,1fr)] md:overflow-hidden";
 
+const lightboxImageSizes = "(min-width: 768px) 600px, 100vw";
+
+function MediaImage({ item, alt, reduced }) {
+  const [loaded, setLoaded] = useState(false);
+  const [failed, setFailed] = useState(false);
+  const imageNode = useRef(null);
+  const decoding = useRef(false);
+  const hasFailed = useRef(false);
+
+  const revealImage = useCallback(async (image) => {
+    if (
+      !image ||
+      imageNode.current !== image ||
+      image.naturalWidth === 0 ||
+      hasFailed.current ||
+      decoding.current
+    ) {
+      return;
+    }
+
+    decoding.current = true;
+    try {
+      await image.decode();
+    } catch {
+      // Some image formats/browsers may reject decode even when the image loaded.
+    } finally {
+      decoding.current = false;
+    }
+
+    if (imageNode.current === image && !hasFailed.current) {
+      setLoaded(true);
+    }
+  }, []);
+
+  const setImageRef = useCallback(
+    (image) => {
+      imageNode.current = image;
+      if (!image) return;
+      if (image.complete) {
+        if (image.naturalWidth > 0) {
+          revealImage(image);
+        } else {
+          hasFailed.current = true;
+          setFailed(true);
+        }
+      }
+    },
+    [revealImage],
+  );
+
+  const handleError = useCallback(() => {
+    hasFailed.current = true;
+    setLoaded(false);
+    setFailed(true);
+  }, []);
+
+  return (
+    <div className="relative h-full w-full overflow-hidden">
+      {item.thumb && (
+        <img
+          src={item.thumb}
+          alt=""
+          aria-hidden="true"
+          decoding="async"
+          draggable="false"
+          className="absolute inset-0 h-full w-full object-contain"
+          style={{
+            filter: reduced || failed ? "none" : "blur(8px)",
+            transform: reduced || failed ? "none" : "scale(1.04)",
+          }}
+        />
+      )}
+      <img
+        key={item.url}
+        ref={setImageRef}
+        src={item.url}
+        srcSet={buildSrcSet(item.url)}
+        sizes={lightboxImageSizes}
+        alt={alt}
+        decoding="async"
+        fetchPriority="high"
+        draggable="false"
+        onLoad={(event) => revealImage(event.currentTarget)}
+        onError={handleError}
+        className="absolute inset-0 h-full w-full object-contain"
+        style={{
+          opacity: loaded && !failed ? 1 : 0,
+          transition: reduced ? "none" : "opacity 300ms ease",
+        }}
+      />
+    </div>
+  );
+}
+
 function Media({ post, slide, setSlide }) {
+  const reduced = useReducedMotion();
   const items = post.media;
   const item = items[slide] ?? items[0];
   const multiple = items.length > 1;
+  const videoNode = useRef(null);
+  const setVideoRef = useCallback((video) => {
+    if (!video && videoNode.current) videoNode.current.pause();
+    videoNode.current = video;
+  }, []);
 
   const go = (delta) =>
     setSlide((s) => (s + delta + items.length) % items.length);
@@ -52,6 +158,7 @@ function Media({ post, slide, setSlide }) {
         {item.type === "video" ? (
           <video
             key={item.url}
+            ref={setVideoRef}
             src={item.url}
             poster={item.thumb}
             preload="metadata"
@@ -63,14 +170,11 @@ function Media({ post, slide, setSlide }) {
             className="h-full w-full object-contain"
           />
         ) : (
-          <img
+          <MediaImage
             key={item.url}
-            src={item.url}
+            item={item}
             alt={snippet(post.text, 140)}
-            loading="lazy"
-            decoding="async"
-            draggable="false"
-            className="h-full w-full object-contain"
+            reduced={reduced}
           />
         )}
       </motion.div>
@@ -144,27 +248,22 @@ export default function Lightbox() {
   slideInfo.current = { slide, count: post?.media.length || 1 };
 
   useEffect(() => {
-    if (!isOpen || !post?.media.length) return;
+    if (!isOpen || openIndex === null || !posts.length) return;
 
-    const urls = new Set();
-    const preload = (item) => {
-      const url = item?.type === "video" ? item.thumb : item?.url;
-      if (!url || urls.has(url)) return;
-      urls.add(url);
-      const image = new window.Image();
-      image.src = url;
-    };
-
-    if (post.media.length > 1) {
-      preload(post.media[(slide + 1) % post.media.length]);
+    if (post?.media.length > 1) {
+      preloadMedia(post.media[(slide + 1) % post.media.length]);
     }
-    preload(posts[(openIndex - 1 + posts.length) % posts.length]?.media[0]);
-    preload(posts[(openIndex + 1) % posts.length]?.media[0]);
+    preloadMedia(posts[(openIndex - 1 + posts.length) % posts.length]?.media[0]);
+    preloadMedia(posts[(openIndex + 1) % posts.length]?.media[0]);
   }, [isOpen, openIndex, post, posts, slide]);
 
   useEffect(() => {
     setSlide(0);
   }, [openIndex]);
+
+  useEffect(() => {
+    if (!isOpen) dialogRef.current?.querySelector("video")?.pause();
+  }, [isOpen]);
 
   useEffect(() => {
     if (!isOpen) return;

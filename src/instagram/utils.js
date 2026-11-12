@@ -1,3 +1,6 @@
+const preloadedMedia = new Set();
+const LIGHTBOX_IMAGE_SIZES = "(min-width: 768px) 600px, 100vw";
+
 export const formatCount = (n) =>
   n == null
     ? null
@@ -41,6 +44,24 @@ export const buildSrcSet = (url) => {
   }
 
   return undefined;
+};
+
+export const preloadMedia = (item) => {
+  if (
+    !item ||
+    (typeof navigator !== "undefined" && navigator.connection?.saveData)
+  ) {
+    return;
+  }
+
+  const url = item.type === "video" ? item.thumb : item.url;
+  if (!url || preloadedMedia.has(url)) return;
+
+  preloadedMedia.add(url);
+  const image = new Image();
+  image.sizes = LIGHTBOX_IMAGE_SIZES;
+  image.srcset = buildSrcSet(url) ?? "";
+  image.src = url;
 };
 
 export const hasMedia = (post) =>

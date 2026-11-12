@@ -1,8 +1,14 @@
-import { memo, useCallback, useState } from "react";
+import { memo, useCallback, useEffect, useRef, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
 import { FaClone, FaComment, FaHeart, FaPlay } from "react-icons/fa6";
 import { SOURCE_META } from "./sources";
-import { buildSrcSet, formatCount, getThumb, snippet } from "./utils";
+import {
+  buildSrcSet,
+  formatCount,
+  getThumb,
+  preloadMedia,
+  snippet,
+} from "./utils";
 
 const ease = [0.22, 1, 0.36, 1];
 
@@ -56,6 +62,33 @@ function InstagramTile({
   const first = post.media[0];
   const thumb = getThumb(post);
   const srcSet = buildSrcSet(thumb);
+  const preloadTimer = useRef(null);
+  const cancelPreload = useCallback(() => {
+    if (preloadTimer.current !== null) {
+      window.clearTimeout(preloadTimer.current);
+      preloadTimer.current = null;
+    }
+  }, []);
+  const schedulePreload = useCallback(() => {
+    cancelPreload();
+    preloadTimer.current = window.setTimeout(() => {
+      preloadMedia(first);
+      preloadTimer.current = null;
+    }, 120);
+  }, [cancelPreload, first]);
+  const handlePointerEnter = useCallback(
+    (event) => {
+      if (event.pointerType === "mouse") schedulePreload();
+    },
+    [schedulePreload],
+  );
+  const handleFocus = useCallback(
+    (event) => {
+      if (event.target.matches(":focus-visible")) schedulePreload();
+    },
+    [schedulePreload],
+  );
+  useEffect(() => cancelPreload, [cancelPreload]);
   const imageRef = useCallback((image) => {
     if (!image?.complete) return;
     setImageLoaded(image.naturalWidth > 0);
@@ -66,6 +99,10 @@ function InstagramTile({
     <motion.button
       type="button"
       onClick={() => onOpen(postIndex)}
+      onPointerEnter={handlePointerEnter}
+      onPointerLeave={cancelPreload}
+      onFocus={handleFocus}
+      onBlur={cancelPreload}
       aria-label={`Open ${meta.label} post: ${snippet(post.text)}`}
       initial={reduced ? false : { opacity: 0, y: 32 }}
       whileInView={{ opacity: 1, y: 0 }}
