@@ -7,11 +7,13 @@ import {
   FaChevronDown,
   FaInstagram,
   FaLinkedinIn,
+  FaArrowTrendUp,
   FaTiktok,
   FaXmark,
   FaXTwitter,
 } from "react-icons/fa6";
-import { ACCOUNT } from "../instagram/data";
+import { ROUTES } from "../routes";
+import { ACCOUNTS } from "../instagram/data";
 
 const ease = [0.22, 1, 0.36, 1];
 
@@ -28,21 +30,41 @@ const CONTACT = {
     ["Sunday", "Closed"],
   ],
   socials: [
-    { label: "Instagram", href: ACCOUNT.profileUrl, Icon: FaInstagram },
-    { label: "X", href: "https://x.com/thevibe", Icon: FaXTwitter },
-    { label: "TikTok", href: "https://tiktok.com/@thevibe", Icon: FaTiktok },
-    { label: "LinkedIn", href: "https://linkedin.com/company/thevibe", Icon: FaLinkedinIn },
+    { label: "Instagram", href: ACCOUNTS.instagram.profileUrl, Icon: FaInstagram },
+    { label: "X", href: ACCOUNTS.x.profileUrl, Icon: FaXTwitter },
+    // { label: "TikTok", href: "https://tiktok.com/@thevibe", Icon: FaTiktok },
+    // { label: "LinkedIn", href: "https://linkedin.com/company/thevibe", Icon: FaLinkedinIn },
   ],
 };
 
-const ROLES = ["Fine Artist", "Photographer", "Collector", "Agency"];
+const INQUIRY_TYPES = {
+  general: {
+    title: "General",
+    description:
+      "For general questions, feedback or inquiries that do not fit another category.",
+  },
+  artist: {
+    title: "Artist",
+    description:
+      "For artists interested in curation, exhibitions, branding or portfolio support.",
+  },
+  "brand-partnership": {
+    title: "Brand and partnership",
+    description:
+      "For brands and organizations interested in creative services or a partnership with thevibe.",
+  },
+  press: {
+    title: "Press",
+    description:
+      "For media, interview, press and editorial inquiries.",
+  },
+};
 
-// The Services "Inquire Now" buttons link here as /contact?service=<slug>
-const SERVICES = {
-  "fine-art-curation": "Fine Art Curation & Digital Exhibition Hosting",
-  "commercial-photography": "Commercial Photography & Visual Direction",
-  "artist-branding": "Artist Branding & Digital Identity Systems",
-  "creator-network": "Creator Network & Portfolio Management",
+const SERVICE_INQUIRY_TYPES = {
+  "fine-art-curation": "artist",
+  "commercial-photography": "brand-partnership",
+  "artist-branding": "artist",
+  "creator-network": "artist",
 };
 
 /* ---------- Submission. Flip USE_MOCK once your backend exists ---------- */
@@ -65,13 +87,13 @@ async function submitInquiry(payload) {
 
 /* ---------- Validation ---------- */
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const FIELD_ORDER = ["name", "email", "role", "message"];
+const FIELD_ORDER = ["name", "email", "service", "message"];
 
 function validate(v) {
   const errors = {};
   if (v.name.trim().length < 2) errors.name = "Please enter your full name.";
   if (!EMAIL_RE.test(v.email.trim())) errors.email = "Enter a valid email address.";
-  if (!v.role) errors.role = "Choose the role that fits you best.";
+  if (!v.service) errors.service = "Choose a service you're interested in.";
   if (v.message.trim().length < 10)
     errors.message = "Tell us a little more (at least 10 characters).";
   return errors;
@@ -147,12 +169,14 @@ export default function ContactPage() {
   const reduced = useReducedMotion();
   const [params, setParams] = useSearchParams();
   const serviceSlug = params.get("service");
-  const serviceTitle = SERVICES[serviceSlug] ?? null;
+  const inquiryType = INQUIRY_TYPES[serviceSlug]
+    ? serviceSlug
+    : SERVICE_INQUIRY_TYPES[serviceSlug];
+  const selectedInquiry = INQUIRY_TYPES[inquiryType] ?? null;
 
   const [values, setValues] = useState({
     name: "",
     email: "",
-    role: "",
     message: "",
     website: "", // honeypot: real people never see or fill this
   });
@@ -174,7 +198,10 @@ export default function ContactPage() {
     e.preventDefault();
     if (status === "sending") return;
 
-    const found = validate(values);
+    const found = validate({
+      ...values,
+      service: selectedInquiry ? inquiryType : "",
+    });
     setErrors(found);
     const first = FIELD_ORDER.find((key) => found[key]);
     if (first) {
@@ -193,9 +220,8 @@ export default function ContactPage() {
       await submitInquiry({
         name: values.name.trim(),
         email: values.email.trim(),
-        role: values.role,
         message: values.message.trim(),
-        service: serviceSlug && serviceTitle ? serviceSlug : null,
+        service: selectedInquiry ? inquiryType : null,
       });
       setStatus("sent");
     } catch {
@@ -204,7 +230,7 @@ export default function ContactPage() {
   };
 
   const reset = () => {
-    setValues({ name: "", email: "", role: "", message: "", website: "" });
+    setValues({ name: "", email: "", message: "", website: "" });
     setErrors({});
     setStatus("idle");
   };
@@ -249,7 +275,7 @@ export default function ContactPage() {
             </p>
 
             <div className="mt-12 space-y-9">
-              <InfoBlock title="Inquiries">
+              {/* <InfoBlock title="Inquiries">
                 <a
                   href={`mailto:${CONTACT.email}`}
                   className="font-body text-xl normal-case tracking-normal underline decoration-[var(--jpg-red)] decoration-1 underline-offset-8 transition-colors duration-300 hover:text-[var(--jpg-red)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)] sm:text-2xl"
@@ -281,7 +307,7 @@ export default function ContactPage() {
                     </div>
                   ))}
                 </dl>
-              </InfoBlock>
+              </InfoBlock> */}
 
               <InfoBlock title="Follow">
                 <ul className="flex flex-wrap gap-3">
@@ -307,6 +333,36 @@ export default function ContactPage() {
                   ))}
                 </ul>
               </InfoBlock>
+              <motion.a
+                href={ROUTES.contact}
+                whileHover={{ y: -2 }}
+                whileTap={{ scale: 0.97 }}
+                className="
+                  group items-center gap-4
+                  rounded-full border border-[var(--jpg-cream)]/20
+                  bg-[var(--jpg-cream)]/[0.04]
+                  py-3 pl-5 pr-3
+                  text-[11px] font-semibold uppercase tracking-[0.12em]
+                  text-[var(--jpg-cream)]
+                  transition-all duration-300
+                  hover:border-[var(--jpg-red)]/50
+                  hover:bg-[var(--jpg-red)]/10
+                  w-fit
+                  flex
+                "
+              >
+                Join the waitlist
+
+                <span className="
+                  flex h-8 w-8 items-center justify-center
+                  rounded-full bg-[var(--jpg-red)]
+                  text-[var(--jpg-black)]
+                  transition-transform duration-300
+                  group-hover:rotate-45
+                ">
+                  <FaArrowTrendUp />
+                </span>
+              </motion.a>
             </div>
           </motion.div>
 
@@ -363,35 +419,6 @@ export default function ContactPage() {
               </motion.div>
             ) : (
               <form onSubmit={handleSubmit} noValidate className="space-y-7">
-                {serviceTitle && (
-                  <div
-                    className="flex items-start justify-between gap-4 rounded-2xl border p-4"
-                    style={{ borderColor: "var(--jpg-border)" }}
-                  >
-                    <div className="min-w-0">
-                      <p
-                        className="font-label text-[9px]"
-                        style={{ opacity: 0.6 }}
-                      >
-                        Inquiring about
-                      </p>
-                      <p className="mt-1.5 text-base leading-6">{serviceTitle}</p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => setParams({}, { replace: true })}
-                      aria-label="Remove selected service"
-                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition-colors duration-300 hover:border-[var(--jpg-red)] hover:text-[var(--jpg-red)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--jpg-cream)]"
-                      style={{
-                        color: "var(--jpg-cream)",
-                        borderColor: "var(--jpg-border)",
-                      }}
-                    >
-                      <FaXmark aria-hidden="true" />
-                    </button>
-                  </div>
-                )}
-
                 <Field id="contact-name" label="Full name" error={errors.name}>
                   <input
                     id="contact-name"
@@ -424,29 +451,45 @@ export default function ContactPage() {
                   />
                 </Field>
 
-                <Field id="contact-role" label="Creator role" error={errors.role}>
+                <Field
+                  id="contact-service"
+                  label="Service you're interested in"
+                  error={errors.service}
+                >
                   <select
-                    id="contact-role"
-                    name="role"
-                    value={values.role}
-                    onChange={handleChange}
+                    id="contact-service"
+                    name="service"
+                    value={selectedInquiry ? inquiryType : ""}
+                    onChange={(event) => {
+                      const nextParams = new URLSearchParams(params);
+                      if (event.target.value) {
+                        nextParams.set("service", event.target.value);
+                      } else {
+                        nextParams.delete("service");
+                      }
+                      setParams(nextParams, { replace: true });
+                      if (errors.service) {
+                        setErrors((current) => ({ ...current, service: undefined }));
+                      }
+                    }}
                     aria-required="true"
-                    aria-invalid={Boolean(errors.role)}
-                    aria-describedby={errors.role ? "contact-role-error" : undefined}
-                    className={`${inputClass} cursor-pointer appearance-none pr-12 [color-scheme:dark] ${
-                      values.role ? "" : "text-[var(--jpg-cream)]/40"
-                    }`}
+                    aria-invalid={Boolean(errors.service)}
+                    aria-describedby={
+                      errors.service ? "contact-service-error" : undefined
+                    }
+                    className={`${inputClass} cursor-pointer appearance-none pr-12 [color-scheme:dark] ${selectedInquiry ? "" : "text-[var(--jpg-cream)]/40"
+                      }`}
                   >
                     <option value="" disabled>
-                      Select your role
+                      Select a service
                     </option>
-                    {ROLES.map((role) => (
+                    {Object.entries(INQUIRY_TYPES).map(([slug, inquiry]) => (
                       <option
-                        key={role}
-                        value={role}
+                        key={slug}
+                        value={slug}
                         style={{ backgroundColor: "#000000", color: "#F6E8B1" }}
                       >
-                        {role}
+                        {inquiry.title}
                       </option>
                     ))}
                   </select>
@@ -456,6 +499,44 @@ export default function ContactPage() {
                     style={{ color: "var(--jpg-cream)" }}
                   />
                 </Field>
+
+                {selectedInquiry && (
+                  <div
+                    className="flex items-start justify-between gap-4 rounded-2xl border p-4"
+                    style={{ borderColor: "var(--jpg-border)" }}
+                  >
+                    <div className="min-w-0">
+                      <h2
+                        className="font-label text-[9px]"
+                        style={{ opacity: 0.6 }}
+                      >
+                        Selected inquiry type
+                      </h2>
+                      <p className="mt-1.5 text-base leading-6">
+                        {selectedInquiry.title}
+                      </p>
+                      <p className="mt-2 text-sm leading-6 opacity-70">
+                        {selectedInquiry.description}
+                      </p>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const nextParams = new URLSearchParams(params);
+                        nextParams.delete("service");
+                        setParams(nextParams, { replace: true });
+                      }}
+                      aria-label="Remove selected service"
+                      className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full border transition-colors duration-300 hover:border-[var(--jpg-red)] hover:text-[var(--jpg-red)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--jpg-cream)]"
+                      style={{
+                        color: "var(--jpg-cream)",
+                        borderColor: "var(--jpg-border)",
+                      }}
+                    >
+                      <FaXmark aria-hidden="true" />
+                    </button>
+                  </div>
+                )}
 
                 <Field id="contact-message" label="Message" error={errors.message}>
                   <textarea
