@@ -10,6 +10,7 @@ import InstagramPage from "./instagram/InstagramPage";
 import AboutPage from "./pages/About";
 import ContactPage from './pages/Contact'
 import NotFound from './pages/NotFound'
+import WaitlistPage from './pages/Waitlist'
 import RouteSeo from './RouteSeo'
 import { ROUTES } from './routes'
 
@@ -22,6 +23,7 @@ function AppRoutes() {
       <Route path={ROUTES.live} element={<InstagramPage />} />
       <Route path={ROUTES.about} element={<AboutPage />} />
       <Route path={ROUTES.contact} element={<ContactPage />} />
+      <Route path={ROUTES.waitlist} element={<WaitlistPage />} />
       <Route path="/art-feed" element={<Navigate to={ROUTES.live} replace />} />
       <Route path="*" element={<NotFound />} />
     </Routes>

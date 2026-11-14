@@ -5,4 +5,5 @@ export const ROUTES = {
   team: "/team",
   live: "/live",
   contact: "/contact",
+  waitlist: "/waitlist",
 };

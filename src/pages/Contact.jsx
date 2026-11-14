@@ -65,6 +65,7 @@ const SERVICE_INQUIRY_TYPES = {
   "commercial-photography": "brand-partnership",
   "artist-branding": "artist",
   "creator-network": "artist",
+  "creative-direction": "brand-partnership",
 };
 
 /* ---------- Submission. Flip USE_MOCK once your backend exists ---------- */
@@ -334,7 +335,7 @@ export default function ContactPage() {
                 </ul>
               </InfoBlock>
               <motion.a
-                href={ROUTES.contact}
+                href={ROUTES.waitlist}
                 whileHover={{ y: -2 }}
                 whileTap={{ scale: 0.97 }}
                 className="

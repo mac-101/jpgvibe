@@ -14,6 +14,26 @@ const ease = [0.22, 1, 0.36, 1];
 
 const services = [
   {
+    id: "creative-direction",
+    slug: "creative-direction",
+    title: "Creative Direction & Campaign Production",
+    tagline: "We shape the vision with you, then bring it to life.",
+    description:
+      "From concept through production, we shape the creative direction with you, bring in artists and creatives from our hub, and make the vision real through campaign and behind-the-scenes shoots.",
+    deliverables: [
+      "Concept development and creative direction",
+      "Artists and creatives from our hub",
+      "Campaign photography and content production",
+      "Behind-the-scenes shoot coverage",
+    ],
+    image: artworkImages[8],
+    glow: "rgba(255,106,0,0.28)",
+    float: 12,
+    duration: 6.4,
+    floatDelay: 0,
+    featured: true,
+  },
+  {
     id: "curation",
     slug: "fine-art-curation",
     title: "Fine Art Curation & Digital Exhibition Hosting",
@@ -138,7 +158,16 @@ function ServiceCard({ service, index, open, onOpen, onClose, onToggle, reduced 
   };
 
   return (
-    <div className={index % 2 === 1 ? "md:mt-12" : ""}>
+    <div
+      id={service.featured ? "creative-direction" : undefined}
+      className={
+        service.featured
+          ? "md:col-span-2"
+          : index % 2 === 0
+            ? "md:mt-12"
+            : ""
+      }
+    >
       {/* Layer 1: entrance */}
       <motion.div
         initial={reduced ? false : { opacity: 0, y: 56 }}
@@ -175,7 +204,11 @@ function ServiceCard({ service, index, open, onOpen, onClose, onToggle, reduced 
               rotateX: reduced ? 0 : rotateX,
               rotateY: reduced ? 0 : rotateY,
             }}
-            className="relative min-h-[400px] rounded-3xl"
+            className={`relative min-h-[400px] rounded-3xl ${
+              service.featured
+                ? "ring-1 ring-[var(--jpg-orange)]/60 shadow-[0_35px_100px_rgba(255,106,0,0.2)] md:min-h-[440px]"
+                : ""
+            }`}
           >
             {/* Glass surface */}
             <div className="absolute inset-0 overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] shadow-[0_30px_80px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-xl">
@@ -204,6 +237,11 @@ function ServiceCard({ service, index, open, onOpen, onClose, onToggle, reduced 
               {/* Resting content */}
               <div className="pointer-events-none relative flex h-full min-h-[360px] flex-col justify-end p-7 sm:min-h-[400px] sm:p-8">
                 <div>
+                  {service.featured && (
+                    <span className="mb-4 inline-flex rounded-full border border-[var(--jpg-orange)]/60 bg-black/50 px-3 py-1.5 font-label text-[9px] uppercase tracking-[0.16em] text-[var(--jpg-orange)]">
+                      Featured service
+                    </span>
+                  )}
                   <h2 className="text-2xl font-medium leading-tight tracking-tight sm:text-3xl">
                     {service.title}
                   </h2>
@@ -301,7 +339,8 @@ function ServiceCard({ service, index, open, onOpen, onClose, onToggle, reduced 
                     tabIndex={open ? 0 : -1}
                     className="mt-auto inline-flex items-center justify-center gap-3 self-start rounded-full bg-[image:var(--jpg-gradient)] px-6 py-3.5 font-button text-[var(--jpg-black)] transition-transform duration-300 hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)]"
                   >
-                    Inquire Now <span aria-hidden="true">↗</span>
+                    {service.featured ? "Work with us" : "Inquire Now"}{" "}
+                    <span aria-hidden="true">↗</span>
                   </a>
                 </motion.div>
               </motion.div>

@@ -280,7 +280,7 @@ export default function Navbar() {
 
             {/* CTA */}
             <motion.a
-              href={ROUTES.contact}
+              href={ROUTES.waitlist}
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.97 }}
               className="
@@ -402,7 +402,7 @@ export default function Navbar() {
 
                   <motion.a
                     variants={itemVariants}
-                    href={ROUTES.contact}
+                    href={ROUTES.waitlist}
                     onClick={closeMenu}
                     className="
                       mt-5 flex items-center justify-between

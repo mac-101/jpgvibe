@@ -17,7 +17,7 @@ export const PAGE_SEO = {
   [ROUTES.services]: {
     title: "Bespoke Services for Artists & Brands | thevibe.",
     description:
-      "Bespoke services for artists and brands: fine art curation and digital exhibitions, commercial photography, artist branding and portfolio management.",
+      "Bespoke services for artists and brands: creative direction and campaign production, fine art curation, commercial photography, artist branding and portfolio management.",
   },
   [ROUTES.team]: {
     title: "Meet the Curators & Visionaries | thevibe.",
@@ -33,5 +33,10 @@ export const PAGE_SEO = {
     title: "Get in Touch | thevibe.",
     description:
       "Get in touch with thevibe. about exhibitions, collaborations, photography and artist services.",
+  },
+  [ROUTES.waitlist]: {
+    title: "VibeGig Artist Waitlist | thevibe.",
+    description:
+      "VibeGig is a platform in development for artists to connect, find opportunities and grow their creative practice. Join the artist waitlist.",
   },
 };

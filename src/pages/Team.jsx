@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { motion, useReducedMotion } from "framer-motion";
+import { Link } from "react-router-dom";
 import {
     FaInstagram,
     FaXTwitter,
@@ -10,6 +11,7 @@ import {
     FaXmark,
 } from "react-icons/fa6";
 import InstagramStrip from "../instagram/InstagramStrip";
+import { ROUTES } from "../routes";
 
 const ease = [0.22, 1, 0.36, 1];
 
@@ -416,8 +418,26 @@ export default function TeamPage() {
                         />
                     ))}
                 </div>
+
+                <div className="mt-14 flex flex-col gap-6 rounded-3xl border border-[var(--jpg-border)] bg-[var(--jpg-surface)]/70 p-7 sm:flex-row sm:items-center sm:justify-between sm:p-9">
+                    <div>
+                        <h2 className="text-2xl font-medium sm:text-3xl">
+                            Make something with us.
+                        </h2>
+                        <p className="mt-3 max-w-xl text-base leading-7 text-[var(--jpg-muted)]">
+                            Have a project, campaign or collaboration in mind? Tell us what
+                            you’re imagining.
+                        </p>
+                    </div>
+                    <Link
+                        to={ROUTES.contact}
+                        className="inline-flex w-fit shrink-0 items-center gap-3 rounded-full bg-[image:var(--jpg-gradient)] px-6 py-3.5 font-button text-sm text-[var(--jpg-black)] transition-transform duration-300 hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)]"
+                    >
+                        Start a conversation <FaArrowRight aria-hidden="true" />
+                    </Link>
+                </div>
             </div>
-                <InstagramStrip start={8} /> 
+            <InstagramStrip start={8} />
         </section>
     );
 }

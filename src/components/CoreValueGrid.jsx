@@ -6,36 +6,15 @@ import {
   useSpring,
   useTransform,
 } from "framer-motion";
+import { Link } from "react-router-dom";
+import { ROUTES } from "../routes";
 
 const ease = [0.22, 1, 0.36, 1];
 
 const pillars = [
   {
-    id: "connection",
-    index: "01",
-    title: "Connection",
-    body: "Meet the artists, photographers and collectors shaping the culture, and build something together.",
-    points: [
-      "Find collaborators across disciplines",
-      "Open calls and commissions",
-      "A community that engages with the work",
-    ],
-    color: "var(--jpg-red)",
-    glow: "rgba(249,29,29,0.20)",
-    offset: "md:mt-0",
-    float: 12,
-    duration: 6.2,
-    floatDelay: 0,
-    icon: (
-      <>
-        <circle cx="9" cy="12" r="5.5" />
-        <circle cx="15" cy="12" r="5.5" />
-      </>
-    ),
-  },
-  {
     id: "curation",
-    index: "02",
+    index: "01",
     title: "Curation",
     body: "Work is chosen with intention, not buried by an algorithm. Every piece gets context and room to be seen.",
     points: [
@@ -45,7 +24,7 @@ const pillars = [
     ],
     color: "var(--jpg-orange)",
     glow: "rgba(255,106,0,0.20)",
-    offset: "md:mt-14",
+    offset: "md:mt-0",
     float: 16,
     duration: 7.4,
     floatDelay: 1.1,
@@ -57,14 +36,37 @@ const pillars = [
     ),
   },
   {
-    id: "exhibition",
-    index: "03",
-    title: "Exhibition",
-    body: "Give your work a proper stage, with dedicated spaces to show, share and be discovered.",
+    id: "connection",
+    index: "02",
+    title: "Connection",
+    body: "Meet the artists, photographers and collectors shaping the culture, and build something together.",
     points: [
-      "Portfolio rooms with your own layout",
-      "Online shows with opening dates",
-      "Share your exhibition anywhere",
+      "Find collaborators across disciplines",
+      "Open calls and commissions",
+      "A community that engages with the work",
+    ],
+    color: "var(--jpg-red)",
+    glow: "rgba(249,29,29,0.20)",
+    offset: "md:mt-14",
+    float: 12,
+    duration: 6.2,
+    floatDelay: 0,
+    icon: (
+      <>
+        <circle cx="9" cy="12" r="5.5" />
+        <circle cx="15" cy="12" r="5.5" />
+      </>
+    ),
+  },
+  {
+    id: "creative-direction",
+    index: "03",
+    title: "Creative direction",
+    body: "We shape the concept with you, bring in creatives from our community, and bring your vision to life.",
+    points: [
+      "Concept development and creative direction",
+      "Artists and creatives from our hub",
+      "Campaign and behind-the-scenes shoots",
     ],
     color: "var(--jpg-yellow)",
     glow: "rgba(255,230,0,0.14)",
@@ -72,10 +74,13 @@ const pillars = [
     float: 14,
     duration: 6.8,
     floatDelay: 2.2,
+    featured: true,
+    href: ROUTES.services,
     icon: (
       <>
-        <rect x="3.5" y="4.5" width="17" height="15" rx="1.5" />
-        <path d="M3.5 15.5 9 10l4 4 2.5-2.5 5 5" />
+        <path d="M4 19.5 9.5 14l3 3L20 9.5" />
+        <path d="M14.5 9.5H20V15" />
+        <path d="M4 4.5h8" />
       </>
     ),
   },
@@ -143,7 +148,11 @@ function PillarCard({ pillar, index, reduced }) {
               rotateX: reduced ? 0 : rotateX,
               rotateY: reduced ? 0 : rotateY,
             }}
-            className="relative min-h-[400px] rounded-3xl"
+            id={pillar.featured ? "home-creative-direction" : undefined}
+            className={`relative min-h-[400px] rounded-3xl ${pillar.featured
+                ? "ring-1 ring-[var(--jpg-orange)]/50 shadow-[0_30px_90px_rgba(255,106,0,0.16)]"
+                : ""
+              }`}
           >
             {/* Surface: clipped separately so the content can still pop forward */}
             <div
@@ -197,7 +206,11 @@ function PillarCard({ pillar, index, reduced }) {
                     {pillar.icon}
                   </svg>
                 </span>
-
+                {/* {pillar.featured && (
+                  <span className="rounded-full border border-[var(--jpg-orange)]/50 bg-black/40 px-3 py-1.5 font-label text-[9px] uppercase tracking-[0.16em] text-[var(--jpg-orange)]">
+                    Featured service
+                  </span>
+                )} */}
               </div>
 
               <h3 className="mt-10 text-3xl font-medium tracking-tight sm:text-4xl">
@@ -212,7 +225,7 @@ function PillarCard({ pillar, index, reduced }) {
               </p>
 
               <ul
-                className="mt-auto space-y-3 border-t pt-6 text-sm"
+                className={`${pillar.href ? "mt-6" : "mt-auto"} space-y-3 border-t pt-6 text-sm`}
                 style={{ borderColor: "var(--jpg-border)" }}
               >
                 {pillar.points.map((point) => (
@@ -228,6 +241,15 @@ function PillarCard({ pillar, index, reduced }) {
                   </li>
                 ))}
               </ul>
+
+              {pillar.href && (
+                <Link
+                  to={pillar.href}
+                  className="mt-6 inline-flex w-fit items-center gap-2 rounded-full bg-[image:var(--jpg-gradient)] px-5 py-3 font-button text-xs text-[var(--jpg-black)] transition-transform duration-300 hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)]"
+                >
+                  Work with us <span aria-hidden="true">↗</span>
+                </Link>
+              )}
             </div>
           </motion.article>
         </motion.div>
@@ -276,8 +298,9 @@ export default function ValueGrid() {
             className="mt-5 max-w-lg text-sm leading-7 sm:text-base"
             style={{ color: "var(--jpg-muted)" }}
           >
-            Three things, done properly: finding your people, being seen with
-            intention, and showing your work on a real stage.
+            Three things, done properly: <span className="font-extrabold">finding your people, being seen with
+            intention, and showing your work on a real stage. </span>
+
           </p>
         </motion.div>
 

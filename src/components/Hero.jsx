@@ -313,7 +313,7 @@ export default function Hero() {
                         </motion.a>
 
                         <motion.a
-                            href={ROUTES.contact}
+                            href={ROUTES.waitlist}
                             whileTap={{ scale: 0.97 }}
                             className="rounded-full font-button border border-[var(--jpg-border)] px-6 py-4 transition hover:border-[var(--jpg-cream)]/60 hover:bg-[var(--jpg-cream)]/[0.04] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)] sm:px-7"
                         >

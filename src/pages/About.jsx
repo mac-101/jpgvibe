@@ -1,5 +1,8 @@
 import { motion, useReducedMotion } from "framer-motion";
+import { Link } from "react-router-dom";
+import { FaArrowRight } from "react-icons/fa6";
 import InstagramStrip from "../instagram/InstagramStrip";
+import { ROUTES } from "../routes";
 
 const ease = [0.22, 1, 0.36, 1];
 
@@ -169,6 +172,21 @@ export default function AboutPage() {
                 <br />
                 <span style={{ color: "var(--jpg-red)" }}>to the world.</span>
               </Reveal>
+            </div>
+
+            <div className="mt-10 flex flex-wrap gap-3">
+              <Link
+                to={ROUTES.waitlist}
+                className="inline-flex items-center gap-3 rounded-full bg-[image:var(--jpg-gradient)] px-6 py-3.5 font-button text-sm text-[var(--jpg-black)] transition-transform duration-300 hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)]"
+              >
+                Join the VibeGig waitlist <FaArrowRight aria-hidden="true" />
+              </Link>
+              <Link
+                to={ROUTES.services}
+                className="inline-flex items-center gap-3 rounded-full border border-[var(--jpg-border)] px-6 py-3.5 font-button text-sm transition-colors hover:border-[var(--jpg-cream)]/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)]"
+              >
+                Explore our services <FaArrowRight aria-hidden="true" />
+              </Link>
             </div>
           </div>
         </div>

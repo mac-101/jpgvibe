@@ -1,11 +1,14 @@
 import { useEffect, useRef } from "react";
 import { motion, useReducedMotion } from "framer-motion";
+import { Link } from "react-router-dom";
 import { useState } from "react";
+import { FaArrowRight } from "react-icons/fa6";
 import LiveLight from "../components/LiveLight";
 import { useInstagram } from "./InstagramContext";
 import InstagramTile, { TileSkeleton } from "./InstagramTile";
 import { ACCOUNTS } from "./data";
 import { SOURCE_META } from "./sources";
+import { ROUTES } from "../routes";
 
 const FILTERS = [
   { id: "all", label: "All" },
@@ -87,6 +90,22 @@ export default function InstagramPage() {
             The latest posts from our Instagram and X accounts, collected in
             one place. Tap any post to see the full story.
           </p>
+
+          <div className="mt-7 flex flex-wrap gap-3">
+            <Link
+              to={ROUTES.waitlist}
+              className="inline-flex items-center gap-3 rounded-full bg-[image:var(--jpg-gradient)] px-6 py-3.5 font-button text-sm text-[var(--jpg-black)] transition-transform duration-300 hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)]"
+            >
+              Join the VibeGig waitlist <FaArrowRight aria-hidden="true" />
+            </Link>
+            <Link
+              to={ROUTES.services}
+              className={outlineBtn}
+              style={{ borderColor: "var(--jpg-border)", color: "var(--jpg-cream)" }}
+            >
+              Work with us <FaArrowRight aria-hidden="true" />
+            </Link>
+          </div>
         </motion.div>
 
         <div role="group" aria-label="Filter posts by platform" className="mb-8 flex flex-wrap gap-2.5">

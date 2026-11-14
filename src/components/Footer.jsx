@@ -56,58 +56,91 @@ export default function Footer() {
                                 and give your creative work room to exist.
                             </p>
 
-                            <motion.a
-                                href={ROUTES.live}
-                                whileHover={reduced ? undefined : { y: -4 }}
-                                whileTap={reduced ? undefined : { scale: 0.97 }}
-                                transition={{
-                                    type: "spring",
-                                    stiffness: 300,
-                                    damping: 22,
-                                }}
-                                className="group inline-flex w-fit items-center gap-5 rounded-full bg-[image:var(--jpg-gradient)] px-7 py-4 text-sm font-bold text-[var(--jpg-black)] shadow-[0_0_0_rgba(249,29,29,0)] transition-shadow duration-300 hover:shadow-[0_12px_45px_rgba(249,29,29,0.2)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)] sm:px-8"
-                            >
-                                Explore Thevibe
-                                <span
-                                    aria-hidden="true"
-                                    className="inline-block transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"
+                            <div className="flex flex-wrap gap-3">
+                                <motion.a
+                                    href={ROUTES.waitlist}
+                                    whileHover={reduced ? undefined : { y: -4 }}
+                                    whileTap={reduced ? undefined : { scale: 0.97 }}
+                                    transition={{
+                                        type: "spring",
+                                        stiffness: 300,
+                                        damping: 22,
+                                    }}
+                                    className="group inline-flex w-fit items-center gap-4 rounded-full bg-[image:var(--jpg-gradient)] px-7 py-4 text-sm font-bold text-[var(--jpg-black)] shadow-[0_0_0_rgba(249,29,29,0)] transition-shadow duration-300 hover:shadow-[0_12px_45px_rgba(249,29,29,0.2)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)] sm:px-8"
                                 >
-                                    <FaArrowTrendUp />
-                                </span>
-                            </motion.a>
+                                    Join the VibeGig waitlist
+                                    <span
+                                        aria-hidden="true"
+                                        className="inline-block transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1"
+                                    >
+                                        <FaArrowTrendUp />
+                                    </span>
+                                </motion.a>
+
+                                <motion.a
+                                    href={ROUTES.services}
+                                    whileHover={reduced ? undefined : { y: -4 }}
+                                    whileTap={reduced ? undefined : { scale: 0.97 }}
+                                    transition={{
+                                        type: "spring",
+                                        stiffness: 300,
+                                        damping: 22,
+                                    }}
+                                    className="inline-flex w-fit items-center gap-3 rounded-full border border-[var(--jpg-cream)]/20 px-7 py-4 text-sm font-bold text-[var(--jpg-cream)] transition-colors hover:border-[var(--jpg-orange)] hover:text-[var(--jpg-orange)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)] sm:px-8"
+                                >
+                                    Work with us <FaArrowRight aria-hidden="true" />
+                                </motion.a>
+
+                                <motion.a
+                                    href={ROUTES.live}
+                                    whileHover={reduced ? undefined : { y: -4 }}
+                                    whileTap={reduced ? undefined : { scale: 0.97 }}
+                                    transition={{
+                                        type: "spring",
+                                        stiffness: 300,
+                                        damping: 22,
+                                    }}
+                                    className="inline-flex w-fit items-center gap-3 rounded-full border border-[var(--jpg-cream)]/20 px-7 py-4 text-sm font-bold text-[var(--jpg-cream)] transition-colors hover:border-[var(--jpg-orange)] hover:text-[var(--jpg-orange)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)] sm:px-8"
+                                >
+                                    Explore the community <FaArrowRight aria-hidden="true" />
+                                </motion.a>
+                            </div>
                         </div>
 
-                        <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4 border-t border-[var(--jpg-border)] pt-6">
+                        <nav
+                            aria-label="Footer navigation"
+                            className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4 border-t border-[var(--jpg-border)] pt-6"
+                        >
                             <a
-                                href={ROUTES.live}
-                                className="group inline-flex items-center gap-2 text-[var(--jpg-cream)] transition-colors hover:text-[var(--jpg-yellow)]"
-                            >
-                                Explore the platform
-                                <span className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1">
-                                    <FaArrowRight />
-                                </span>
-                            </a>
-
-                            <a
-                                href={ROUTES.services}
+                                href={ROUTES.about}
                                 className="group inline-flex items-center gap-2 text-[var(--jpg-muted)] transition-colors hover:text-[var(--jpg-cream)]"
                             >
-                                Discover what we do
+                                About thevibe
                                 <span className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1">
                                     <FaArrowRight />
                                 </span>
                             </a>
 
                             <a
-                                href="#exhibition"
-                                className="group inline-flex items-center gap-2  text-[var(--jpg-muted)] transition-colors hover:text-[var(--jpg-red)]"
+                                href={ROUTES.team}
+                                className="group inline-flex items-center gap-2 text-[var(--jpg-muted)] transition-colors hover:text-[var(--jpg-cream)]"
                             >
-                                Back to the exhibition
+                                Meet the team
                                 <span className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1">
                                     <FaArrowRight />
                                 </span>
                             </a>
-                        </div>
+
+                            <a
+                                href={ROUTES.contact}
+                                className="group inline-flex items-center gap-2 text-[var(--jpg-muted)] transition-colors hover:text-[var(--jpg-cream)]"
+                            >
+                                Contact
+                                <span className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1">
+                                    <FaArrowRight />
+                                </span>
+                            </a>
+                        </nav>
 
                     </motion.div>
 
