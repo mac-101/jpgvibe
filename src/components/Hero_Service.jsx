@@ -51,6 +51,7 @@ const services = [
     float: 12,
     duration: 6.4,
     floatDelay: 0,
+    featured: true,
   },
 ];
 
@@ -180,11 +181,6 @@ function ServiceCard({ service, index, open, onOpen, onClose, onToggle, reduced 
               {/* Resting content */}
               <div className="pointer-events-none relative flex h-full min-h-[360px] flex-col justify-end p-7 sm:min-h-[400px] sm:p-8">
                 <div>
-                  {service.featured && (
-                    <span className="mb-4 inline-flex rounded-full border border-[var(--jpg-orange)]/60 bg-black/50 px-3 py-1.5 font-label text-[9px] uppercase tracking-[0.16em] text-[var(--jpg-orange)]">
-                      Featured service
-                    </span>
-                  )}
                   <h2 className="text-2xl font-medium leading-tight tracking-tight sm:text-3xl">
                     {service.title}
                   </h2>
