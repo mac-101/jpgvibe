@@ -1,17 +1,29 @@
 import { motion, useReducedMotion } from "framer-motion";
-import { Link } from "react-router-dom";
-import { FaArrowRight } from "react-icons/fa6";
 import InstagramStrip from "../instagram/InstagramStrip";
-import { ROUTES } from "../routes";
 
 const ease = [0.22, 1, 0.36, 1];
 
-// Her four paragraphs. The only edits are "it's" to "its" (twice) and a stray space in "African/ black".
-const story = [
-  "The VIBE is an organization and a community of and for artists from Africa and in the diaspora.",
-  "Africa stands at the epicenter of the largest talent mine in the world. However, its contribution to the creative industry at large seems negligible. Hence, we are for the promotion of creative talent as a catalyst for social development and cultural exchange.",
-  "We have created a community of African/black artists online which has now developed into relationships and connections. This has led to presence building in locations such as Nigeria, Kenya, Zimbabwe, Ghana, South Africa, United Kingdom, Brazil, America. The community we have built from pure love and viral engagement, has transcended the barriers and cultivated a solid relationship for community outreach.",
-  "The vibe seeks to use its platform to increase the reach of artists from all corners of the African continent.",
+const sections = [
+  {
+    id: "why",
+    title: "Why we exist",
+    body: "Africa is a wellspring of creative talent, yet its voice is still under-recognised across the wider creative industry. We exist to change that. We are promoting creative talent as a catalyst for social development and cultural exchange.",
+  },
+  {
+    id: "built",
+    title: "What we built",
+    body: "It all began as a community of and for black artists online. Built from pure love and viral engagement, it grew into real relationships and connections. We are a community that has crossed borders.",
+  },
+  {
+    id: "next",
+    title: "Where we are going",
+    body: "We’re building the tools artists have always needed. We’re turning community into opportunity. A system where creatives will get found, get booked and get paid.",
+    teaser: [
+      "In print and on screen, something is taking shape.",
+      "Two projects we can’t wait to show you.",
+      "Soon.",
+    ],
+  },
 ];
 
 // Groups are separated by a gap, as in the mockup
@@ -24,7 +36,7 @@ const groups = [
   ],
 ];
 
-function Reveal({ as = "div", delay = 0, y = 28, reduced, className = "", children }) {
+function Reveal({ as = "div", delay = 0, y = 28, reduced, className = "", children, ...rest }) {
   const Tag = motion[as];
   return (
     <Tag
@@ -33,27 +45,10 @@ function Reveal({ as = "div", delay = 0, y = 28, reduced, className = "", childr
       viewport={{ once: true, amount: 0.3 }}
       transition={{ duration: 0.9, ease, delay }}
       className={className}
+      {...rest}
     >
       {children}
     </Tag>
-  );
-}
-
-const COUNTRIES = [
-  "Nigeria", "Kenya", "Zimbabwe", "Ghana",
-  "South Africa", "United Kingdom", "Brazil", "America",
-];
-const pattern = new RegExp(`(${COUNTRIES.join("|")})`, "g");
-
-function Highlighted({ text }) {
-  return text.split(pattern).map((part, i) =>
-    COUNTRIES.includes(part) ? (
-      <strong key={i} className="font-semibold text-[var(--jpg-cream)]">
-        {part}
-      </strong>
-    ) : (
-      part
-    )
   );
 }
 
@@ -79,44 +74,76 @@ export default function AboutPage() {
         />
 
         <div className="relative mx-auto max-w-6xl px-6 sm:px-10 lg:px-16">
-          {/* Header, with the small red block from the mockup */}
-          <header className="mb-14 sm:mb-20">
+          {/* Header: small "our story", then the headline */}
+          <header className="mb-16 sm:mb-24">
             <motion.span
               aria-hidden="true"
               initial={reduced ? false : { scaleX: 0 }}
               animate={{ scaleX: 1 }}
               transition={{ duration: 0.9, ease }}
-              className="mb-8 block h-7 w-40 origin-left bg-[var(--jpg-red)]"
+              className="mb-8 block h-7 w-40 origin-left bg-[var(--jpg-cream)]"
             />
             <motion.h1
               initial={reduced ? false : { opacity: 0, y: 28 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, ease, delay: 0.1 }}
-              className="text-5xl leading-[1.05] sm:text-6xl md:text-7xl"
             >
-              <span style={{ color: "var(--jpg-muted)" }}>About</span>
-              <br />
-              thevibe<span style={{ color: "var(--jpg-red)" }}>.</span>
+              <span
+                className="block text-lg sm:text-xl"
+                style={{ color: "var(--jpg-red)" }}
+              >
+                our story
+              </span>
+              <span className="mt-5 block text-5xl leading-[1.05] sm:text-6xl md:text-7xl">
+                Art doesn’t belong
+                <br />
+                in the background.
+              </span>
             </motion.h1>
           </header>
 
-          {/* The story */}
-          <div className="max-w-3xl space-y-6 sm:space-y-8">
-            {story.map((paragraph, i) => (
+          {/* Three sections: title on the left, text on the right */}
+          <div className="border-b border-[var(--jpg-border)]">
+            {sections.map((s) => (
               <Reveal
-                as="p"
-                key={i}
+                as="section"
+                key={s.id}
                 reduced={reduced}
-                delay={0.05}
-                className="font-body text-lg leading-8 text-[var(--jpg-cream)]/90 sm:text-xl sm:leading-9"
+                aria-labelledby={`about-${s.id}`}
+                className="grid gap-5 border-t border-[var(--jpg-border)] py-12 sm:py-16 md:grid-cols-[1fr_2fr] md:gap-16"
               >
-                <Highlighted text={paragraph} />
+                <h2
+                  id={`about-${s.id}`}
+                  className="text-3xl leading-tight sm:text-4xl"
+                >
+                  {s.title}
+                </h2>
+
+                <div className="max-w-2xl">
+                  <p className="font-body text-xl leading-9 text-[var(--jpg-cream)]/90 sm:text-2xl sm:leading-10">
+                    {s.body}
+                  </p>
+
+                  {s.teaser && (
+                    <p className="mt-10 font-heading text-3xl leading-[1.2] sm:text-4xl">
+                      {s.teaser.map((line) => (
+                        <span
+                          key={line}
+                          className="block"
+                          style={line === "Soon." ? { color: "var(--jpg-red)" } : undefined}
+                        >
+                          {line}
+                        </span>
+                      ))}
+                    </p>
+                  )}
+                </div>
               </Reveal>
             ))}
           </div>
 
           {/* "we are" banner */}
-          <div className="relative mt-20 sm:mt-28">
+          <div className="relative mt-16 sm:mt-24">
             <motion.div
               aria-hidden="true"
               initial={reduced ? false : { scaleX: 0 }}
@@ -155,7 +182,6 @@ export default function AboutPage() {
               </div>
             ))}
 
-            {/* "for the love." is a normal line. The closing line is the big one. */}
             <div className="mt-10 sm:mt-12">
               <Reveal as="p" reduced={reduced} className={lineClass}>
                 for the love.
@@ -172,21 +198,6 @@ export default function AboutPage() {
                 <br />
                 <span style={{ color: "var(--jpg-red)" }}>to the world.</span>
               </Reveal>
-            </div>
-
-            <div className="mt-10 flex flex-wrap gap-3">
-              <Link
-                to={ROUTES.waitlist}
-                className="inline-flex items-center gap-3 rounded-full bg-[image:var(--jpg-gradient)] px-6 py-3.5 font-button text-sm text-[var(--jpg-black)] transition-transform duration-300 hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)]"
-              >
-                Join the VibeGig waitlist <FaArrowRight aria-hidden="true" />
-              </Link>
-              <Link
-                to={ROUTES.services}
-                className="inline-flex items-center gap-3 rounded-full border border-[var(--jpg-border)] px-6 py-3.5 font-button text-sm transition-colors hover:border-[var(--jpg-cream)]/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)]"
-              >
-                Explore our services <FaArrowRight aria-hidden="true" />
-              </Link>
             </div>
           </div>
         </div>
