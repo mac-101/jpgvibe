@@ -500,8 +500,8 @@ function WaitlistForm({ kind, state, update }) {
           {isArtist && (
             <div className="grid gap-7 sm:grid-cols-2">
               {[
-                { key: "instagram", label: "Instagram (optional)" },
-                { key: "x", label: "X / Twitter (optional)" },
+                { key: "instagram", label: "Instagram" },
+                { key: "x", label: "X / Twitter" },
               ].map(({ key, label }) => (
                 <Field key={key} id={`${kind}-${key}`} label={label} error={errors[key]}>
                   <span
