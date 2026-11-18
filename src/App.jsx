@@ -4,7 +4,6 @@ import Home from './pages/Home'
 import ServicesPage from './pages/Service'
 import Navbar from './components/Navbar'
 import Footer from './components/Footer'
-import TeamPage from './pages/Team'
 import InstagramProvider from "./instagram/InstagramProvider";
 import InstagramPage from "./instagram/InstagramPage";
 import AboutPage from "./pages/About";
@@ -19,7 +18,6 @@ function AppRoutes() {
     <Routes>
       <Route path={ROUTES.home} element={<Home />} />
       <Route path={ROUTES.services} element={<ServicesPage />} />
-      <Route path={ROUTES.team} element={<TeamPage />} />
       <Route path={ROUTES.live} element={<InstagramPage />} />
       <Route path={ROUTES.about} element={<AboutPage />} />
       <Route path={ROUTES.contact} element={<ContactPage />} />
