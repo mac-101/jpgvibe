@@ -76,20 +76,13 @@ export default function AboutPage() {
         <div className="relative mx-auto max-w-6xl px-6 sm:px-10 lg:px-16">
           {/* Header: small "our story", then the headline */}
           <header className="mb-16 sm:mb-24">
-            <motion.span
-              aria-hidden="true"
-              initial={reduced ? false : { scaleX: 0 }}
-              animate={{ scaleX: 1 }}
-              transition={{ duration: 0.9, ease }}
-              className="mb-8 block h-7 w-40 origin-left bg-[var(--jpg-cream)]"
-            />
             <motion.h1
               initial={reduced ? false : { opacity: 0, y: 28 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, ease, delay: 0.1 }}
             >
               <span
-                className="block text-lg sm:text-xl"
+                className="block text-xg sm:text-2xl"
                 style={{ color: "var(--jpg-red)" }}
               >
                 our story

@@ -271,8 +271,8 @@ export default function ContactPage() {
               className="mt-6 max-w-md text-lg leading-8"
               style={{ color: "var(--jpg-cream)", opacity: 0.8 }}
             >
-              Tell us about your work, your project or the show you have in
-              mind. We read every message.
+              
+              Tell us about a collaboration, a vision you want to bring to life or anything creative on your mind. We read every message.
             </p>
 
             <div className="mt-12 space-y-9">

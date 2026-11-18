@@ -19,12 +19,12 @@ const services = [
     title: "Creative Direction & Campaign Production",
     tagline: "We shape the vision with you, then bring it to life.",
     description:
-      "From concept through production, we shape the creative direction with you, bring in artists and creatives from our hub, and make the vision real through campaign and behind-the-scenes shoots.",
+      "We co - create the concept with designers and brands, then bring in photographers and creatives from our community to make it real.",
     deliverables: [
-      "Concept development and creative direction",
-      "Artists and creatives from our hub",
-      "Campaign photography and content production",
-      "Behind-the-scenes shoot coverage",
+      "Concept, moodboard and creative direction",
+      "Runway, Campaign, loolbook and behind-the-scenes shoots",
+      "Multidisciplinary creatives from our community",
+      "Final work delivered, ready to share with the world",
     ],
     image: artworkImages[8],
     glow: "rgba(255,106,0,0.28)",
@@ -36,78 +36,21 @@ const services = [
   {
     id: "curation",
     slug: "fine-art-curation",
-    title: "Fine Art Curation & Digital Exhibition Hosting",
-    tagline: "Shows with a point of view, hosted online.",
+    title: "Curation & Exhibition",
+    tagline: "Art choden with intention, shown with purpose.",
     description:
-      "We select, sequence and stage your work as a considered exhibition, then host it as a polished digital show people can visit and share.",
+      "We select, sequence and work by African and dispora artists, for a space, a show or a brand moment.",
     deliverables: [
-      "Curatorial concept and artwork selection",
-      "Custom digital exhibition space",
-      "Launch, press and opening-night support",
-      "Visitor analytics and a follow-up report",
+      "Curated exhibitionand pop-ups, in person or online",
+      "Art sourcing for spaces: hotels, restaurants,  offices and homes",
+      "Artist selection for brand collections and commissions",
+      "Social rollout and promotionto you community",
     ],
     image: artworkImages[3],
     glow: "rgba(249,29,29,0.22)",
     float: 12,
     duration: 6.4,
     floatDelay: 0,
-  },
-  {
-    id: "photography",
-    slug: "commercial-photography",
-    title: "Commercial Photography & Visual Direction",
-    tagline: "Images that carry a brand, shot with intent.",
-    description:
-      "From concept to final edit, we direct and shoot imagery that gives your brand a clear, consistent and memorable visual voice.",
-    deliverables: [
-      "Creative direction and mood boards",
-      "Campaign, product and portrait shoots",
-      "Art direction on set",
-      "Retouching and a licensed image library",
-    ],
-    image: artworkImages[8],
-    glow: "rgba(255,106,0,0.22)",
-    float: 15,
-    duration: 7.2,
-    floatDelay: 1.1,
-  },
-  {
-    id: "branding",
-    slug: "artist-branding",
-    title: "Artist Branding & Digital Identity Systems",
-    tagline: "A look and a voice that are unmistakably yours.",
-    description:
-      "We build the full identity around your practice, so everything you put out, from your site to your socials, feels like one body of work.",
-    deliverables: [
-      "Logo, type and colour system",
-      "Portfolio website design",
-      "Social and presentation templates",
-      "A brand guide your team can use",
-    ],
-    image: artworkImages[14],
-    glow: "rgba(255,230,0,0.16)",
-    float: 13,
-    duration: 6.8,
-    floatDelay: 2.2,
-  },
-  {
-    id: "network",
-    slug: "creator-network",
-    title: "Creator Network & Portfolio Management",
-    tagline: "Your work, represented and put in front of the right people.",
-    description:
-      "We manage your portfolio and open doors, connecting you with collaborators, galleries and brands that fit your practice.",
-    deliverables: [
-      "Portfolio review and ongoing updates",
-      "Introductions to brands and galleries",
-      "Opportunity and commission scouting",
-      "Quarterly growth check-ins",
-    ],
-    image: artworkImages[20],
-    glow: "rgba(249,29,29,0.2)",
-    float: 14,
-    duration: 7,
-    floatDelay: 3.2,
   },
 ];
 
@@ -339,7 +282,7 @@ function ServiceCard({ service, index, open, onOpen, onClose, onToggle, reduced 
                     tabIndex={open ? 0 : -1}
                     className="mt-auto inline-flex items-center justify-center gap-3 self-start rounded-full bg-[image:var(--jpg-gradient)] px-6 py-3.5 font-button text-[var(--jpg-black)] transition-transform duration-300 hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)]"
                   >
-                    {service.featured ? "Work with us" : "Inquire Now"}{" "}
+                    Let's create
                     <span aria-hidden="true">↗</span>
                   </a>
                 </motion.div>
@@ -415,11 +358,25 @@ export default function Services() {
           transition={{ duration: 0.9, ease }}
           className="mb-14 max-w-3xl sm:mb-20"
         >
-          <h1 className="text-4xl font-medium leading-[1.08] tracking-tight sm:text-5xl md:text-6xl">
-            Bespoke Services for
-            <br />
-            <span style={{ color: "var(--jpg-muted)" }}>Artists &amp; Brands</span>
-          </h1>
+            <header className="mb-16 sm:mb-24">
+            <motion.h1
+              initial={reduced ? false : { opacity: 0, y: 28 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.9, ease, delay: 0.1 }}
+            >
+              <span
+                className="block text-xg sm:text-2xl"
+                style={{ color: "var(--jpg-red)" }}
+              >
+                Services
+              </span>
+              <span className="mt-5 block text-5xl leading-[1.05] sm:text-6xl md:text-7xl">
+                Work with
+                <br />
+                The Vibe <span style={{ color: "var(--jpg-red)" }}>.</span>
+              </span>
+            </motion.h1>
+          </header>
 
           <p
             className="mt-6 max-w-xl text-base leading-8 sm:text-lg"
