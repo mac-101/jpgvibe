@@ -1,3 +1,4 @@
+import { ROUTES } from "../routes";
 import { useEffect, useRef, useState } from "react";
 import { Link, useSearchParams } from "react-router-dom";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
@@ -155,10 +156,10 @@ function Pitch({ kind }) {
   const pitch = PITCH[kind];
   return (
     <div className="lg:sticky lg:top-32">
-      <h2 className="font-heading leading-[1.05]">
+      <h1 className="font-heading leading-[1.05]">
         <span className="block text-6xl text-[var(--jpg-red)] sm:text-7xl md:text-8xl">VibeGig</span>
         <span className="mt-5 block text-3xl text-[var(--jpg-cream)] sm:text-4xl">{pitch.tagline}</span>
-      </h2>
+      </h1>
 
       <p className="mt-6 text-xl leading-8" style={{ color: "var(--jpg-cream)", opacity: 0.9 }}>
         {pitch.lead}
@@ -353,25 +354,49 @@ function WaitlistForm({ kind, state, update }) {
           >
             <FaCheck />
           </span>
-          <h3 ref={successRef} tabIndex={-1} className="mt-6 text-3xl outline-none sm:text-4xl">
+          <h2 ref={successRef} tabIndex={-1} className="mt-6 text-3xl outline-none sm:text-4xl">
             You're on the list.
-          </h3>
+          </h2>
           <p className="mt-4 max-w-md text-lg leading-8" style={{ opacity: 0.8 }}>
             {firstName ? `Thank you, ${firstName}. ` : "Thank you. "}
             {pitch.success}
           </p>
-          <button
-            type="button"
-            onClick={() => update(() => makeForm(kind))}
-            className="font-label mt-8 inline-flex items-center rounded-full border px-5 py-3 transition-colors duration-300 hover:border-[var(--jpg-red)] hover:text-[var(--jpg-red)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)]"
-            style={{ color: "var(--jpg-cream)", borderColor: "var(--jpg-border)" }}
-          >
-            Sign up another person
-          </button>
+          <div className="mt-8 flex flex-wrap gap-3">
+  <Link
+    to={ROUTES.live}
+    className="font-button inline-flex items-center gap-3 rounded-full bg-[image:var(--jpg-gradient)] px-6 py-3.5 text-[var(--jpg-black)] transition-transform duration-300 hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)]"
+  >
+    Explore the community <FaArrowRight aria-hidden="true" />
+  </Link>
+  <Link
+    to={ROUTES.home}
+    className="font-button inline-flex items-center gap-3 rounded-full border border-[var(--jpg-border)] px-6 py-3.5 transition-colors hover:border-[var(--jpg-cream)]/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)]"
+  >
+    Back to home
+  </Link>
+</div>
+
+<p className="mt-6 text-sm text-[var(--jpg-muted)]">
+  Need anything else?{" "}
+  <Link
+    to={ROUTES.contact}
+    className="underline decoration-[var(--jpg-orange)] underline-offset-4 transition-colors hover:text-[var(--jpg-cream)]"
+  >
+    Contact us
+  </Link>
+  .{" "}
+  <button
+    type="button"
+    onClick={() => update(() => makeForm(kind))}
+    className="underline decoration-[var(--jpg-orange)] underline-offset-4 transition-colors hover:text-[var(--jpg-cream)]"
+  >
+    Sign up another person
+  </button>
+</p>
         </div>
       ) : (
         <form onSubmit={onSubmit} noValidate className="space-y-7">
-          <h3 className="text-2xl sm:text-3xl">{pitch.formTitle}</h3>
+          <h2 className="text-2xl sm:text-3xl">{pitch.formTitle}</h2>
 
           <Field id={`${kind}-name`} label="Full name" error={errors.name}>
             <TextInput
@@ -576,6 +601,9 @@ function WaitlistForm({ kind, state, update }) {
             {status === "sending" ? "Joining..." : pitch.submit}
             {status !== "sending" && <FaArrowRight aria-hidden="true" />}
           </button>
+          <p className="text-sm leading-6" style={{ color: "var(--jpg-muted)" }}>
+  Your details are only used to contact you about VibeGig.
+</p>
         </form>
       )}
     </div>
