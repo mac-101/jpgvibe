@@ -1,7 +1,6 @@
-
 import { FaArrowTrendUp, FaArrowRight, FaChevronDown } from "react-icons/fa6";
 import { useEffect, useRef, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigationType } from "react-router-dom";
 import logo from "../assets/logo.jpg";
 import { ROUTES } from "../routes";
 import {
@@ -12,6 +11,9 @@ import {
   useScroll,
   useSpring,
 } from "framer-motion";
+
+// Animated router link. On older framer-motion versions use: motion(Link)
+const MotionLink = motion.create(Link);
 
 const links = [
   { label: "Home", href: ROUTES.home },
@@ -24,69 +26,92 @@ const links = [
 const ease = [0.22, 1, 0.36, 1];
 
 const menuVariants = {
-  closed: {
-    height: 0,
-    opacity: 0,
-    transition: { duration: 0.3, ease },
-  },
+  closed: { height: 0, opacity: 0, transition: { duration: 0.3, ease } },
   open: {
     height: "auto",
     opacity: 1,
-    transition: {
-      duration: 0.45,
-      ease,
-      staggerChildren: 0.06,
-      delayChildren: 0.08,
-    },
+    transition: { duration: 0.45, ease, staggerChildren: 0.06, delayChildren: 0.08 },
   },
 };
 
 const itemVariants = {
   closed: { opacity: 0, y: 12 },
-  open: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.4, ease },
-  },
+  open: { opacity: 1, y: 0, transition: { duration: 0.4, ease } },
 };
 
 export default function Navbar() {
   const reduced = useReducedMotion();
   const buttonRef = useRef(null);
+  const desktopMenuRef = useRef(null);
   const desktopMenuButtonRef = useRef(null);
+  const closeTimer = useRef(null);
+  const lastPointer = useRef("mouse");
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [desktopMenuOpen, setDesktopMenuOpen] = useState(false);
+  const [hoveredHref, setHoveredHref] = useState(null);
   const [hidden, setHidden] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   const { pathname } = useLocation();
+  const navType = useNavigationType();
 
   const closeMenu = () => setMenuOpen(false);
 
-  const { scrollY, scrollYProgress } = useScroll();
+  const openDesktop = () => {
+    clearTimeout(closeTimer.current);
+    setDesktopMenuOpen(true);
+  };
+  const closeDesktop = () => {
+    clearTimeout(closeTimer.current);
+    setDesktopMenuOpen(false);
+    setHoveredHref(null);
+  };
+  // A short delay stops the menu flickering shut when the mouse drifts out for a moment
+  const closeDesktopSoon = () => {
+    clearTimeout(closeTimer.current);
+    closeTimer.current = setTimeout(closeDesktop, 140);
+  };
 
-  const progress = useSpring(scrollYProgress, {
-    stiffness: 120,
-    damping: 30,
-    mass: 0.3,
-  });
+  useEffect(() => () => clearTimeout(closeTimer.current), []);
+
+  const { scrollY, scrollYProgress } = useScroll();
+  const progress = useSpring(scrollYProgress, { stiffness: 120, damping: 30, mass: 0.3 });
 
   useMotionValueEvent(scrollY, "change", (latest) => {
     const previous = scrollY.getPrevious() ?? 0;
 
     setScrolled(latest > 30);
     setHidden(latest > previous && latest > 180 && !menuOpen);
+
+    // Any scroll closes the dropdown
+    if (Math.abs(latest - previous) > 2) closeDesktop();
   });
 
+  // New page: reset the menus and the scroll position.
+  // Back and forward ("POP") keep the browser's own scroll restoration.
   useEffect(() => {
     setMenuOpen(false);
     setHidden(false);
-  }, [pathname]);
+    closeDesktop();
+    if (navType !== "POP") window.scrollTo(0, 0);
+  }, [pathname]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Clicking the link of the page you're already on scrolls to the top
+  const handleLinkClick = (e, href) => {
+    closeMenu();
+    closeDesktop();
+    if (href === pathname) {
+      e.preventDefault();
+      // Wait a frame so the mobile menu has released its scroll lock
+      requestAnimationFrame(() =>
+        window.scrollTo({ top: 0, behavior: reduced ? "auto" : "smooth" })
+      );
+    }
+  };
 
   useEffect(() => {
     document.body.style.overflow = menuOpen ? "hidden" : "";
-
     return () => {
       document.body.style.overflow = "";
     };
@@ -94,39 +119,38 @@ export default function Navbar() {
 
   useEffect(() => {
     if (!menuOpen) return;
-
     const onKeyDown = (e) => {
       if (e.key === "Escape") {
         closeMenu();
         buttonRef.current?.focus();
       }
     };
-
     window.addEventListener("keydown", onKeyDown);
-
     return () => window.removeEventListener("keydown", onKeyDown);
   }, [menuOpen]);
 
   useEffect(() => {
     const mq = window.matchMedia("(min-width: 768px)");
-
     const onChange = (e) => {
       if (e.matches) closeMenu();
     };
-
     mq.addEventListener("change", onChange);
-
     return () => mq.removeEventListener("change", onChange);
   }, []);
 
-  const active = links.find(
-    (link) =>
-      link.href === "/"
-        ? pathname === "/"
-        : pathname.startsWith(link.href)
-  )?.href;
+  // A click or tap anywhere outside the dropdown closes it
+  useEffect(() => {
+    if (!desktopMenuOpen) return;
+    const onDown = (e) => {
+      if (!desktopMenuRef.current?.contains(e.target)) closeDesktop();
+    };
+    document.addEventListener("pointerdown", onDown);
+    return () => document.removeEventListener("pointerdown", onDown);
+  }, [desktopMenuOpen]);
 
-  const closeDesktopMenu = () => setDesktopMenuOpen(false);
+  const active = links.find((link) =>
+    link.href === "/" ? pathname === "/" : pathname.startsWith(link.href)
+  )?.href;
 
   return (
     <>
@@ -146,33 +170,23 @@ export default function Navbar() {
 
       <motion.header
         initial={reduced ? false : { y: -70, opacity: 0 }}
-        animate={{
-          y: hidden ? "-130%" : 0,
-          opacity: 1,
-        }}
+        animate={{ y: hidden ? "-130%" : 0, opacity: 1 }}
         transition={{ duration: 0.55, ease }}
         className="fixed inset-x-0 top-0 z-50 px-4 pt-4 sm:px-6 lg:px-10"
       >
         <nav
           aria-label="Main navigation"
-          className={`
-            relative mx-auto max-w-7xl
-            rounded-[20px] border
-            transition-all duration-500
-            ${
-              scrolled || menuOpen
-                ? "border-[var(--jpg-cream)]/15 bg-[var(--jpg-black)]/95 shadow-[0_18px_70px_rgba(0,0,0,0.4)]"
-                : "border-[var(--jpg-cream)]/10 bg-[var(--jpg-black)]/65"
-            }
-            backdrop-blur-2xl
-          `}
+          className={`relative mx-auto max-w-7xl rounded-[20px] border backdrop-blur-2xl transition-[background-color,border-color,box-shadow] duration-500 ${
+            scrolled || menuOpen
+              ? "border-[var(--jpg-cream)]/15 bg-[var(--jpg-black)]/95 shadow-[0_18px_70px_rgba(0,0,0,0.4)]"
+              : "border-[var(--jpg-cream)]/10 bg-[var(--jpg-black)]/65"
+          }`}
         >
           <div className="flex h-[76px] items-center justify-between px-5 sm:px-7">
-
             {/* Brand */}
             <Link
               to={ROUTES.home}
-              onClick={closeMenu}
+              onClick={(e) => handleLinkClick(e, ROUTES.home)}
               aria-label="thevibe home"
               className="group relative z-10 flex items-center gap-2.5"
             >
@@ -184,26 +198,29 @@ export default function Navbar() {
               />
               <span className="font-heading text-[27px] tracking-[-1.5px] text-[var(--jpg-cream)]">
                 thevibe
-                <span className="text-[var(--jpg-red)] pl-1 transition-colors duration-300 group-hover:text-[var(--jpg-orange)]">
+                <span className="pl-1 text-[var(--jpg-red)] transition-colors duration-300 group-hover:text-[var(--jpg-orange)]">
                   .
                 </span>
               </span>
-
             </Link>
 
             {/* Desktop menu */}
             <div
+              ref={desktopMenuRef}
               className="relative hidden md:block"
-              onMouseEnter={() => setDesktopMenuOpen(true)}
-              onMouseLeave={closeDesktopMenu}
-              onBlur={(event) => {
-                if (!event.currentTarget.contains(event.relatedTarget)) {
-                  closeDesktopMenu();
-                }
+              onPointerEnter={(e) => {
+                lastPointer.current = e.pointerType;
+                if (e.pointerType === "mouse") openDesktop();
               }}
-              onKeyDown={(event) => {
-                if (event.key === "Escape") {
-                  closeDesktopMenu();
+              onPointerLeave={(e) => {
+                if (e.pointerType === "mouse") closeDesktopSoon();
+              }}
+              onBlur={(e) => {
+                if (!e.currentTarget.contains(e.relatedTarget)) closeDesktop();
+              }}
+              onKeyDown={(e) => {
+                if (e.key === "Escape") {
+                  closeDesktop();
                   desktopMenuButtonRef.current?.focus();
                 }
               }}
@@ -213,18 +230,22 @@ export default function Navbar() {
                 type="button"
                 aria-haspopup="true"
                 aria-expanded={desktopMenuOpen}
-                onFocus={() => setDesktopMenuOpen(true)}
-                onClick={() => setDesktopMenuOpen(true)}
-                className={`
-                  flex items-center gap-2 rounded-full px-4 py-2.5
-                  text-[12px] font-medium tracking-wide
-                  transition-colors duration-300
-                  ${
-                    active
-                      ? "text-[var(--jpg-cream)]"
-                      : "text-[var(--jpg-cream)]/65 hover:text-[var(--jpg-cream)]"
+                aria-controls="desktop-menu"
+                onPointerDown={(e) => (lastPointer.current = e.pointerType)}
+                onClick={(e) => {
+                  // A mouse already opened it by hovering, so a click keeps it open.
+                  // Taps and keyboard presses toggle.
+                  if (e.detail !== 0 && lastPointer.current === "mouse") {
+                    openDesktop();
+                    return;
                   }
-                `}
+                  setDesktopMenuOpen((open) => !open);
+                }}
+                className={`flex items-center gap-2 rounded-full px-4 py-2.5 text-[12px] font-medium tracking-wide transition-colors duration-300 focus-visible:outline focus-visible:outline-2 focus-visible:outline-[var(--jpg-cream)] ${
+                  active
+                    ? "text-[var(--jpg-cream)]"
+                    : "text-[var(--jpg-cream)]/65 hover:text-[var(--jpg-cream)]"
+                }`}
               >
                 Explore
                 <FaChevronDown
@@ -238,75 +259,79 @@ export default function Navbar() {
               <AnimatePresence>
                 {desktopMenuOpen && (
                   <motion.div
-                    initial={{ opacity: 0, y: 8 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 8 }}
-                    transition={{ duration: 0.2, ease }}
+                    id="desktop-menu"
+                    initial={reduced ? false : { opacity: 0, y: -8, scale: 0.97 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={reduced ? undefined : { opacity: 0, y: -6, scale: 0.98 }}
+                    transition={{ duration: 0.28, ease }}
+                    style={{ transformOrigin: "top right" }}
                     className="absolute right-0 top-full z-50 w-64 pt-3"
                   >
-                    <div className="rounded-2xl border border-[var(--jpg-cream)]/10 bg-[var(--jpg-black)]/95 p-2 shadow-[0_18px_50px_rgba(0,0,0,0.45)] backdrop-blur-2xl">
-                      {links.map((link) => {
+                    {/* Solid background: a second blur on top of the navbar's blur is what made it choppy */}
+                    <ul
+                      onPointerLeave={() => setHoveredHref(null)}
+                      className="rounded-2xl border border-[var(--jpg-cream)]/10 bg-[var(--jpg-black)] p-2 shadow-[0_18px_50px_rgba(0,0,0,0.45)]"
+                    >
+                      {links.map((link, i) => {
                         const isActive = active === link.href;
 
                         return (
-                          <Link
+                          <motion.li
                             key={link.href}
-                            to={link.href}
-                            onClick={closeDesktopMenu}
-                            aria-current={isActive ? "page" : undefined}
-                            className={`
-                              flex items-center justify-between rounded-xl
-                              px-4 py-3 text-sm transition-colors duration-200
-                              ${
-                                isActive
-                                  ? "bg-[var(--jpg-cream)]/[0.07] text-[var(--jpg-cream)]"
-                                  : "text-[var(--jpg-cream)]/65 hover:bg-[var(--jpg-cream)]/[0.05] hover:text-[var(--jpg-cream)]"
-                              }
-                            `}
+                            initial={reduced ? false : { opacity: 0, x: -8 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ duration: 0.3, ease, delay: 0.05 + i * 0.04 }}
                           >
-                            {link.label}
-                            {isActive && (
-                              <span className="h-1.5 w-1.5 rounded-full bg-[var(--jpg-red)]" />
-                            )}
-                          </Link>
+                            <Link
+                              to={link.href}
+                              onClick={(e) => handleLinkClick(e, link.href)}
+                              onPointerEnter={() => setHoveredHref(link.href)}
+                              onFocus={() => setHoveredHref(link.href)}
+                              aria-current={isActive ? "page" : undefined}
+                              className={`relative flex items-center justify-between rounded-xl px-4 py-3 text-sm transition-colors duration-200 ${
+                                isActive
+                                  ? "text-[var(--jpg-cream)]"
+                                  : "text-[var(--jpg-cream)]/65 hover:text-[var(--jpg-cream)]"
+                              }`}
+                            >
+                              {/* One highlight slides between the links */}
+                              {hoveredHref === link.href && !reduced && (
+                                <motion.span
+                                  layoutId="explore-hover"
+                                  transition={{ type: "spring", stiffness: 420, damping: 34 }}
+                                  className="absolute inset-0 rounded-xl bg-[var(--jpg-cream)]/[0.06]"
+                                />
+                              )}
+                              {isActive && (
+                                <span className="absolute inset-0 rounded-xl bg-[var(--jpg-cream)]/[0.07]" />
+                              )}
+                              <span className="relative">{link.label}</span>
+                              {isActive && (
+                                <span className="relative h-1.5 w-1.5 rounded-full bg-[var(--jpg-red)]" />
+                              )}
+                            </Link>
+                          </motion.li>
                         );
                       })}
-                    </div>
+                    </ul>
                   </motion.div>
                 )}
               </AnimatePresence>
             </div>
 
             {/* CTA */}
-            <motion.a
-              href={ROUTES.waitlist}
+            <MotionLink
+              to={ROUTES.waitlist}
+              onClick={(e) => handleLinkClick(e, ROUTES.waitlist)}
               whileHover={{ y: -2 }}
               whileTap={{ scale: 0.97 }}
-              className="
-                group hidden items-center gap-4
-                rounded-full border border-[var(--jpg-cream)]/20
-                bg-[var(--jpg-cream)]/[0.04]
-                py-3 pl-5 pr-3
-                text-[11px] font-semibold uppercase tracking-[0.12em]
-                text-[var(--jpg-cream)]
-                transition-all duration-300
-                hover:border-[var(--jpg-red)]/50
-                hover:bg-[var(--jpg-red)]/10
-                md:flex
-              "
+              className="group hidden items-center gap-4 rounded-full border border-[var(--jpg-cream)]/20 bg-[var(--jpg-cream)]/[0.04] py-3 pl-5 pr-3 text-[11px] font-semibold uppercase tracking-[0.12em] text-[var(--jpg-cream)] transition-colors duration-300 hover:border-[var(--jpg-red)]/50 hover:bg-[var(--jpg-red)]/10 md:flex"
             >
               Join the waitlist
-
-              <span className="
-                flex h-8 w-8 items-center justify-center
-                rounded-full bg-[var(--jpg-red)]
-                text-[var(--jpg-black)]
-                transition-transform duration-300
-                group-hover:rotate-45
-              ">
-                <FaArrowTrendUp />
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-[var(--jpg-red)] text-[var(--jpg-black)] transition-transform duration-300 group-hover:rotate-45">
+                <FaArrowTrendUp aria-hidden="true" />
               </span>
-            </motion.a>
+            </MotionLink>
 
             {/* Mobile toggle */}
             <button
@@ -316,31 +341,14 @@ export default function Navbar() {
               aria-expanded={menuOpen}
               aria-controls="mobile-navigation"
               onClick={() => setMenuOpen((open) => !open)}
-              className="
-                relative z-10 flex h-11 w-11
-                flex-col items-center justify-center
-                gap-[6px] rounded-full
-                border border-[var(--jpg-cream)]/15
-                transition-colors duration-300
-                hover:border-[var(--jpg-red)]/60
-                md:hidden
-              "
+              className="relative z-10 flex h-11 w-11 flex-col items-center justify-center gap-[6px] rounded-full border border-[var(--jpg-cream)]/15 transition-colors duration-300 hover:border-[var(--jpg-red)]/60 md:hidden"
             >
               <motion.span
-                animate={
-                  menuOpen
-                    ? { y: 3.75, rotate: 45 }
-                    : { y: 0, rotate: 0 }
-                }
+                animate={menuOpen ? { y: 3.75, rotate: 45 } : { y: 0, rotate: 0 }}
                 className="h-[1.5px] w-5 bg-[var(--jpg-cream)]"
               />
-
               <motion.span
-                animate={
-                  menuOpen
-                    ? { y: -3.75, rotate: -45 }
-                    : { y: 0, rotate: 0 }
-                }
+                animate={menuOpen ? { y: -3.75, rotate: -45 } : { y: 0, rotate: 0 }}
                 className="h-[1.5px] w-5 bg-[var(--jpg-cream)]"
               />
             </button>
@@ -358,62 +366,42 @@ export default function Navbar() {
                 className="overflow-hidden md:hidden"
               >
                 <div className="border-t border-[var(--jpg-cream)]/10 px-5 pb-6 pt-5">
-
                   <div className="space-y-1">
                     {links.map((link) => (
-                      <motion.div
-                        key={link.href}
-                        variants={itemVariants}
-                      >
+                      <motion.div key={link.href} variants={itemVariants}>
                         <Link
                           to={link.href}
-                          onClick={closeMenu}
-                          className="
-                            group flex items-center justify-between
-                            rounded-xl px-3 py-4
-                            transition-colors duration-300
-                            hover:bg-[var(--jpg-cream)]/[0.05]
-                          "
+                          onClick={(e) => handleLinkClick(e, link.href)}
+                          aria-current={active === link.href ? "page" : undefined}
+                          className="group flex items-center justify-between rounded-xl px-3 py-4 transition-colors duration-300 hover:bg-[var(--jpg-cream)]/[0.05]"
                         >
                           <span
-                            className="
-                              text-sm
-                              text-[var(--jpg-cream)]/80
-                              transition-all duration-300
-                              group-hover:translate-x-1
-                              group-hover:text-[var(--jpg-cream)]
-                            "
+                            className={`text-sm transition-all duration-300 group-hover:translate-x-1 group-hover:text-[var(--jpg-cream)] ${
+                              active === link.href
+                                ? "text-[var(--jpg-cream)]"
+                                : "text-[var(--jpg-cream)]/80"
+                            }`}
                           >
                             {link.label}
                           </span>
-
-                          <FaArrowRight className="
-                            text-xs text-[var(--jpg-cream)]/45
-                            opacity-0 transition-all duration-300
-                            group-hover:translate-x-1
-                            group-hover:text-[var(--jpg-cream)]
-                            group-hover:opacity-100
-                          " />
+                          <FaArrowRight
+                            aria-hidden="true"
+                            className="text-xs text-[var(--jpg-cream)]/45 opacity-0 transition-all duration-300 group-hover:translate-x-1 group-hover:text-[var(--jpg-cream)] group-hover:opacity-100"
+                          />
                         </Link>
                       </motion.div>
                     ))}
                   </div>
 
-                  <motion.a
+                  <MotionLink
                     variants={itemVariants}
-                    href={ROUTES.waitlist}
-                    onClick={closeMenu}
-                    className="
-                      mt-5 flex items-center justify-between
-                      rounded-full bg-[image:var(--jpg-gradient)]
-                      px-5 py-4
-                      text-xs font-semibold uppercase tracking-wider
-                      text-[var(--jpg-black)]
-                    "
+                    to={ROUTES.waitlist}
+                    onClick={(e) => handleLinkClick(e, ROUTES.waitlist)}
+                    className="mt-5 flex items-center justify-between rounded-full bg-[image:var(--jpg-gradient)] px-5 py-4 text-xs font-semibold uppercase tracking-wider text-[var(--jpg-black)]"
                   >
                     Join the waitlist
-                    <FaArrowTrendUp />
-                  </motion.a>
+                    <FaArrowTrendUp aria-hidden="true" />
+                  </MotionLink>
                 </div>
               </motion.div>
             )}
@@ -423,10 +411,7 @@ export default function Navbar() {
           <motion.div
             aria-hidden="true"
             style={{ scaleX: progress }}
-            className="
-              absolute inset-x-0 bottom-0 h-[2px]
-              origin-left rounded-b-[20px] bg-[image:var(--jpg-gradient)]
-            "
+            className="absolute inset-x-0 bottom-0 h-[2px] origin-left rounded-b-[20px] bg-[image:var(--jpg-gradient)]"
           />
         </nav>
       </motion.header>
