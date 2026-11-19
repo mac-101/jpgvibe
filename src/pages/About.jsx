@@ -129,7 +129,7 @@ function HeadlineLines({ lines, reduced, mode = "view", delay = 0 }) {
         >
           {line.gradient ? (
             <span
-              className="bg-clip-text"
+              className="bg-clip-text text-transpart"
               style={{ backgroundImage: GRADIENT[line.gradient] }}
             >
               {line.text}
@@ -160,7 +160,7 @@ function Chapter({ chapter, reduced }) {
           id={`about-${chapter.id}`}
           className={`text-[clamp(3rem,8vw,7.5rem)] text-[var(--jpg-cream)] ${headlineSize}`}
         >
-          <HeadlineLines lines={chapter.lines} reduced={reduced} />
+          <HeadlineLines lines={chapter.lines} reduced={reduced} mode="load"/>
         </h2>
 
         <Reveal reduced={reduced} delay={0.35} className="max-w-md lg:pb-3">
