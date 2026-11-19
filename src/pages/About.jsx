@@ -129,7 +129,7 @@ function HeadlineLines({ lines, reduced, mode = "view", delay = 0 }) {
         >
           {line.gradient ? (
             <span
-              className="bg-clip-text text-transparent"
+              className="bg-clip-text"
               style={{ backgroundImage: GRADIENT[line.gradient] }}
             >
               {line.text}
