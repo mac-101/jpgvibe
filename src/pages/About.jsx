@@ -171,7 +171,6 @@ function Chapter({ chapter, reduced }) {
               </p>
             ))}
           </div>
-          <Marker>{chapter.count} / 03</Marker>
         </Reveal>
       </div>
     </section>
@@ -226,7 +225,7 @@ export default function AboutPage() {
                   thevibe. is an organisation and a community of and for artists
                   from Africa and the diaspora.
                 </p>
-                <Marker>Made to be seen</Marker>
+                
               </motion.div>
             </div>
           </div>
