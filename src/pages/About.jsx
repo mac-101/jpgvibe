@@ -207,7 +207,40 @@ export default function AboutPage() {
               </motion.h2>
             </div>
 
-            <div className="mt-10 max-w-3xl sm:mt-14">
+           
+          </div>
+        </section>
+
+        {/* Three columns */}
+        <section className="pb-24 sm:pb-32">
+          <div className={wrap}>
+            <div className="grid gap-12 border-t border-[var(--jpg-border)] pt-10 sm:pt-12 md:grid-cols-3 md:gap-10 lg:gap-14">
+              {columns.map((col, i) => (
+                <Reveal
+                  key={col.id}
+                  reduced={reduced}
+                  delay={i * 0.12}
+                  className="max-w-md"
+                >
+                  <h2 className="flex items-baseline gap-4 font-label font-bold text-[var(--jpg-red)]">
+                    <span aria-hidden="true">{col.count}</span>
+                    {col.title}
+                  </h2>
+
+                  <div className="mt-6 space-y-6 font-body text-lg leading-8 text-[var(--jpg-cream)]/65">
+                    {col.paragraphs.map((parts, pi) => (
+                      <p key={pi}>
+                        <Parts parts={parts} />
+                      </p>
+                    ))}
+                  </div>
+                </Reveal>
+              ))}
+            </div>
+          </div>
+        </section>
+        
+         <div className="mt-10 max-w-3xl sm:mt-14">
               {groups.map((group, gi) => (
                 <div key={gi} className={gi === 0 ? "" : "mt-10 sm:mt-12"}>
                   {group.map((line, li) => (
@@ -242,37 +275,6 @@ export default function AboutPage() {
                 </Reveal>
               </div>
             </div>
-          </div>
-        </section>
-
-        {/* Three columns */}
-        <section className="pb-24 sm:pb-32">
-          <div className={wrap}>
-            <div className="grid gap-12 border-t border-[var(--jpg-border)] pt-10 sm:pt-12 md:grid-cols-3 md:gap-10 lg:gap-14">
-              {columns.map((col, i) => (
-                <Reveal
-                  key={col.id}
-                  reduced={reduced}
-                  delay={i * 0.12}
-                  className="max-w-md"
-                >
-                  <h2 className="flex items-baseline gap-4 font-label font-bold text-[var(--jpg-red)]">
-                    <span aria-hidden="true">{col.count}</span>
-                    {col.title}
-                  </h2>
-
-                  <div className="mt-6 space-y-6 font-body text-lg leading-8 text-[var(--jpg-cream)]/65">
-                    {col.paragraphs.map((parts, pi) => (
-                      <p key={pi}>
-                        <Parts parts={parts} />
-                      </p>
-                    ))}
-                  </div>
-                </Reveal>
-              ))}
-            </div>
-          </div>
-        </section>
       </div>
 
       {/* Posts 13 to 16: Home, Services and Team already use the first 12 */}
