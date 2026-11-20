@@ -1,33 +1,48 @@
 
+import { deflateRawSync, inflateRawSync } from "node:zlib";
 import { getInstagramFeed } from "./instagram.js";
 import { getXFeed } from "./x.js";
 
 const HALF_HOUR = 1800;
 const SIX_HOURS = 21600;
 
-// Keep X's cache longer because its API uses credits.
 function getCacheSeconds(useX) {
   return useX ? SIX_HOURS : HALF_HOUR;
 }
 
-// Encode both platform cursors and their unreturned posts
-// into one cursor that the frontend can pass back.
+// Compress the combined cursor to keep the GET URL smaller.
 function encodeCursor(state) {
-  return Buffer.from(JSON.stringify(state)).toString("base64url");
+  const json = JSON.stringify(state);
+  return deflateRawSync(Buffer.from(json)).toString("base64url");
 }
 
 function decodeCursor(cursor) {
   try {
-    const parsed = JSON.parse(
-      Buffer.from(cursor, "base64url").toString("utf8")
-    );
+    if (typeof cursor !== "string" || cursor.length > 100000) {
+      return null;
+    }
 
-    if (!parsed || !parsed.instagram || !parsed.x) {
-      throw new Error("Invalid cursor structure");
+    const json = inflateRawSync(
+      Buffer.from(cursor, "base64url")
+    ).toString("utf8");
+
+    const parsed = JSON.parse(json);
+
+    for (const source of ["instagram", "x"]) {
+      const item = parsed?.[source];
+
+      if (
+        !item ||
+        !Array.isArray(item.buffer) ||
+        typeof item.hasMore !== "boolean"
+      ) {
+        return null;
+      }
     }
 
     return parsed;
-  } catch {
+  } catch (error) {
+    console.error("[feed] Cursor decoding failed:", error.message);
     return null;
   }
 }
@@ -50,50 +65,44 @@ function createInitialState() {
 async function fetchSourcePage(source, state, limit, env) {
   const previousCursor = state.after;
 
-  const result =
-    source === "instagram"
-      ? await getInstagramFeed({
-          limit,
-          after: state.after,
-          env,
-        })
-      : await getXFeed({
-          limit,
-          after: state.after,
-          env,
-        });
+  try {
+    const result =
+      source === "instagram"
+        ? await getInstagramFeed({ limit, after: state.after, env })
+        : await getXFeed({ limit, after: state.after, env });
 
-  if (!result.ok) {
+    if (!result.ok) {
+      console.error(`[feed] ${source} request failed:`, result.error);
+      state.hasMore = false;
+      return false;
+    }
+
+    const nextCursor = result.body.paging?.after ?? null;
+
+    const posts = (result.body.data ?? []).filter(
+      (post) => Array.isArray(post.media) && post.media.length > 0
+    );
+
+    state.buffer.push(...posts);
+    state.after = nextCursor;
+
+    state.hasMore = Boolean(
+      result.body.paging?.hasMore &&
+      nextCursor &&
+      nextCursor !== previousCursor
+    );
+
+    return true;
+  } catch (error) {
+    console.error(`[feed] ${source} fetch exception:`, error.message);
     state.hasMore = false;
     return false;
   }
-
-  const nextCursor = result.body.paging?.after ?? null;
-
-  state.buffer.push(
-    ...(result.body.data ?? []).filter(
-      (post) => Array.isArray(post.media) && post.media.length > 0
-    )
-  );
-
-  state.after = nextCursor;
-
-  state.hasMore = Boolean(
-    result.body.paging?.hasMore &&
-    nextCursor &&
-    nextCursor !== previousCursor
-  );
-
-  return true;
 }
 
-// Make sure a source has a post ready before comparing timestamps.
-// If a provider page contains no media posts, keep fetching until
-// we find one or that provider runs out of pages.
 async function ensureHead(source, state, limit, env) {
   while (state.buffer.length === 0 && state.hasMore) {
     const success = await fetchSourcePage(source, state, limit, env);
-
     if (!success) break;
   }
 }
@@ -109,17 +118,13 @@ async function getCombinedFeed({ limit, after, env }) {
     };
   }
 
-  // Keep provider requests within their supported limits.
-  const batchSize = Math.min(Math.max(limit, 5), 50);
-
   const instagramState = state.instagram;
   const xState = state.x;
 
+  const batchSize = Math.min(Math.max(limit, 5), 50);
   const data = [];
 
   while (data.length < limit) {
-    // Both sources need a next post before we can safely
-    // determine which post is newest.
     await Promise.all([
       ensureHead("instagram", instagramState, batchSize, env),
       ensureHead("x", xState, batchSize, env),
@@ -156,15 +161,29 @@ async function getCombinedFeed({ limit, after, env }) {
     xState.buffer.length > 0 ||
     xState.hasMore;
 
+  let nextCursor = null;
+
+  if (hasMore) {
+    try {
+      nextCursor = encodeCursor(state);
+    } catch (error) {
+      console.error("[feed] Cursor encoding failed:", error.message);
+
+      return {
+        ok: false,
+        status: 500,
+        error: "cursor_encoding_failed",
+      };
+    }
+  }
+
   return {
     ok: true,
     body: {
       data,
       paging: {
-        after: hasMore
-          ? encodeCursor(state)
-          : null,
-        hasMore,
+        after: nextCursor,
+        hasMore: Boolean(nextCursor),
       },
     },
   };
@@ -194,7 +213,6 @@ export async function getFeed({
   const safeLimit = Math.min(Math.max(Number(limit) || 20, 1), 50);
   const cacheSeconds = getCacheSeconds(useX);
 
-  // Single-source feeds keep their native provider cursors.
   if (useInstagram && !useX) {
     return {
       ...(await getInstagramFeed({
@@ -217,8 +235,6 @@ export async function getFeed({
     };
   }
 
-  // Both platforms: merge posts chronologically and paginate
-  // using one combined cursor.
   const result = await getCombinedFeed({
     limit: safeLimit,
     after,
