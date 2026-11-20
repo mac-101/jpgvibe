@@ -1,15 +1,17 @@
-import { getXFeed } from "../server/x.js";
+import { getFeed } from "../server/feed.js";
 
 export default async function handler(req, res) {
-  const result = await getXFeed({
+  const result = await getFeed({
     limit: Number(req.query.limit) || 20,
-    after: req.query.after,
+    after: req.query.after || null,
     env: process.env,
   });
 
   if (!result.ok) return res.status(result.status).json({ error: result.error });
 
-  // Cache for 6 hours so X is only called (and billed) a few times a day
-  res.setHeader("Cache-Control", "s-maxage=21600, stale-while-revalidate=3600");
+  res.setHeader(
+    "Cache-Control",
+    `s-maxage=${result.cacheSeconds}, stale-while-revalidate=3600`
+  );
   res.status(200).json(result.body);
 }
