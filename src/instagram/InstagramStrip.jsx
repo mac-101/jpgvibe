@@ -1,3 +1,5 @@
+
+import { useMemo } from "react";
 import { Link } from "react-router-dom";
 import { FaArrowRight } from "react-icons/fa6";
 import LiveLight from "../components/LiveLight";
@@ -6,27 +8,52 @@ import InstagramTile, { TileSkeleton } from "./InstagramTile";
 import { ACCOUNTS } from "./data";
 import { SOURCE_META } from "./sources";
 
+function shuffle(items) {
+  const result = [...items];
+
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+
+  return result;
+}
+
 /**
  * start=0 on Home, start=4 on Services, start=8 on Team.
- * Same fetch, different posts on every page.
+ * Same fetch, different rotating selections on every page.
  */
 export default function InstagramStrip({
   start = 0,
   count = 4,
   heading = "Fresh from the feed",
+  rotate = true,
 }) {
   const { posts, status, openLightbox } = useInstagram();
 
-  const slice = posts.slice(start, start + count);
+  const slice = useMemo(() => {
+    if (!posts?.length) return [];
 
-  // A broken connection shouldn't leave a hole in the page
+    if (!rotate) {
+      return posts.slice(start, start + count);
+    }
+
+    // Shuffle the available feed, then select this page's group.
+    const shuffled = shuffle(posts);
+
+    return shuffled.slice(start, start + count);
+  }, [posts, start, count, rotate]);
+
   if (status === "error") return null;
   if (status === "ready" && slice.length === 0) return null;
 
   return (
     <section
       className="relative py-20 sm:py-28"
-      style={{ backgroundColor: "var(--jpg-black)", color: "var(--jpg-cream)" }}
+      style={{
+        backgroundColor: "var(--jpg-black)",
+        color: "var(--jpg-cream)",
+      }}
     >
       <div className="mx-auto max-w-6xl px-6 sm:px-10 lg:px-16">
         <div className="mb-10 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
@@ -35,6 +62,7 @@ export default function InstagramStrip({
               <LiveLight />
               Live from the vibe
             </p>
+
             <h2 className="text-3xl leading-tight sm:text-4xl md:text-5xl">
               {heading}
             </h2>
@@ -43,6 +71,7 @@ export default function InstagramStrip({
           <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
             {Object.entries(ACCOUNTS).map(([key, acc]) => {
               const { Icon } = SOURCE_META[key];
+
               return (
                 <a
                   key={key}
@@ -61,17 +90,19 @@ export default function InstagramStrip({
 
         <div className="grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
           {status === "loading"
-            ? Array.from({ length: count }, (_, i) => <TileSkeleton key={i} />)
-            : slice.map((post, i) => (
-              <InstagramTile
-                key={post.id}
-                post={post}
-                index={i}
-                postIndex={posts.indexOf(post)}
-                onOpen={openLightbox}
-                sizes="(min-width: 1024px) 25vw, 50vw"
-              />
-            ))}
+            ? Array.from({ length: count }, (_, i) => (
+                <TileSkeleton key={i} />
+              ))
+            : slice.map((post) => (
+                <InstagramTile
+                  key={post.id}
+                  post={post}
+                  index={posts.indexOf(post)}
+                  postIndex={posts.indexOf(post)}
+                  onOpen={openLightbox}
+                  sizes="(min-width: 1024px) 25vw, 50vw"
+                />
+              ))}
         </div>
 
         <div className="mt-10">
