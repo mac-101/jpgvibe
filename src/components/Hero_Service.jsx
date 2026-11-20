@@ -26,7 +26,8 @@ const services = [
       "Multidisciplinary creatives from our community",
       "Final work delivered, ready to share with the world",
     ],
-    image: artworkImages[8],
+    gradient:
+  "radial-gradient(ellipse at 20% 20%, rgba(255, 230, 0, 0.28) 0%, transparent 45%), linear-gradient(135deg, #FF6A00 0%, #9D2514 48%, #170A08 100%)",
     glow: "rgba(255,106,0,0.28)",
     float: 12,
     duration: 6.4,
@@ -46,7 +47,8 @@ const services = [
       "Artist selection for brand collections and commissions",
       "Social rollout and promotionto you community",
     ],
-    image: artworkImages[3],
+    gradient:
+  "radial-gradient(ellipse at 20% 20%, rgba(255, 230, 0, 0.28) 0%, transparent 45%), linear-gradient(135deg, #FF6A00 0%, #9D2514 48%, #170A08 100%)",
     glow: "rgba(249,29,29,0.22)",
     float: 12,
     duration: 6.4,
@@ -152,22 +154,25 @@ function ServiceCard({ service, index, open, onOpen, onClose, onToggle, reduced 
           >
             {/* Glass surface */}
             <div className="absolute inset-0 overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] shadow-[0_30px_80px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-xl">
-              <img
-                src={service.image}
-                alt=""
-                loading="lazy"
-                draggable="false"
-                className="absolute inset-0 h-full w-full object-cover opacity-40 transition-transform duration-[1200ms] ease-out"
-                style={{ transform: open ? "scale(1.06)" : "scale(1)" }}
-              />
-              <div
-                aria-hidden="true"
-                className="absolute inset-0"
-                style={{
-                  background:
-                    "linear-gradient(180deg, rgba(10,10,10,0.1) 0%, rgba(10,10,10,0.55) 55%, rgba(10,10,10,0.88) 100%)",
-                }}
-              />
+              { /* Gradient background */ }
+<div
+  aria-hidden="true"
+  className="absolute inset-0 transition-transform duration-[1200ms] ease-out"
+  style={{
+    background: service.gradient,
+    transform: open ? "scale(1.06)" : "scale(1)",
+  }}
+/>
+
+{ /* Dark overlay — retained for contrast */ }
+<div
+  aria-hidden="true"
+  className="absolute inset-0"
+  style={{
+    background:
+      "linear-gradient(180deg, rgba(10,10,10,0.25) 0%, rgba(10,10,10,0.58) 50%, rgba(10,10,10,0.92) 100%)",
+  }}
+/>
               <motion.div
                 aria-hidden="true"
                 className="absolute inset-0"

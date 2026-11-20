@@ -4,10 +4,8 @@ import InstagramStrip from "../instagram/InstagramStrip";
 const ease = [0.22, 1, 0.36, 1];
 
 // "the background." is split across two lines, so each line takes its own slice of the gradient
-const GRADIENT = {
-  start: "linear-gradient(100deg, var(--jpg-yellow), #FFB300)",
-  end: "linear-gradient(100deg, #FFB300, var(--jpg-orange) 55%, var(--jpg-red))",
-};
+const GRADIENT =
+  "linear-gradient(100deg, var(--jpg-yellow) 0%, #FFB300 35%, var(--jpg-orange) 65%, var(--jpg-red) 100%)";
 
 const HERO_LINES = [
   { text: "Art doesn’t" },
@@ -120,16 +118,16 @@ function HeadlineLines({ lines, reduced, delay = 0 }) {
         animate={{ y: "0%" }}
         transition={{ duration: 1.1, ease, delay: delay + i * 0.09 }}
       >
-        {line.gradient ? (
-          <span
-            className="bg-clip-text text-transparent"
-            style={{ backgroundImage: GRADIENT[line.gradient] }}
-          >
-            {line.text}
-          </span>
-        ) : (
-          line.text
-        )}
+      {line.gradient ? (
+  <span
+    className="bg-clip-text text-transparent"
+    style={{ backgroundImage: GRADIENT }}
+  >
+    {line.text}
+  </span>
+) : (
+  line.text
+)}
       </motion.span>
     </span>
   ));
@@ -153,7 +151,7 @@ export default function AboutPage() {
           />
 
           <div className={wrap}>
-            <h1 className="text-[clamp(3rem,9.5vw,9rem)] leading-[0.92] tracking-[-0.045em] text-[var(--jpg-cream)]">
+            <h1 className="text-[clamp(2.7rem,8.5vw,8rem)] leading-[0.92] tracking-[-0.045em] text-[var(--jpg-cream)]">
               <motion.span
                 initial={reduced ? false : { opacity: 0 }}
                 animate={{ opacity: 1 }}
