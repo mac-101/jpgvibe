@@ -137,33 +137,6 @@ More information will be shared soon.
           </div>
         </div>
       </section>
-      
-      {/* PRE-ORDER ANNOUNCEMENT */}
-      <section className="relative px-6 py-32 sm:px-10 lg:px-16">
-        <div className="absolute inset-0 bg-[var(--jpg-surface)]" />
-
-        <div className="relative mx-auto max-w-4xl text-center">
-          <p className="text-xs uppercase tracking-[0.35em] text-[var(--jpg-orange)]">
-            Publication 001
-          </p>
-
-          <h2 className="mt-7 text-5xl leading-[1.05] tracking-[-0.05em] sm:text-7xl">
-            Something worth
-            <br />
-            keeping.
-          </h2>
-
-          <p className="mx-auto mt-7 max-w-lg text-base leading-8 text-[var(--jpg-muted)]">
-            The JPGVibe Photobook is on its way. Pre-order information,
-            release details, and availability will be announced soon.
-          </p>
-
-          <div className="mt-10 inline-flex cursor-not-allowed items-center gap-3 rounded-full border border-[var(--jpg-orange)]/40 px-7 py-4 text-xs uppercase tracking-[0.2em] text-[var(--jpg-orange)] opacity-80">
-            Pre-orders coming soon
-            <span aria-hidden="true">↗</span>
-          </div>
-        </div>
-      </section>
     </main>
   );
 }
