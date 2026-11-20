@@ -155,77 +155,93 @@ function ServiceCard({
           }
         >
           {/* Layer 3: 3D tilt */}
-          <motion.article
-            data-service-card
-            onPointerDown={(e) => (lastPointer.current = e.pointerType)}
-            onPointerEnter={handleEnter}
-            onPointerMove={handleMove}
-            onPointerLeave={handleLeave}
-            onKeyDown={(e) => e.key === "Escape" && onClose()}
-            style={{
-              transformPerspective: 1200,
-              transformStyle: "preserve-3d",
-              rotateX: reduced ? 0 : rotateX,
-              rotateY: reduced ? 0 : rotateY,
-            }}
-            className={`relative min-h-[400px] rounded-3xl ${
-              service.featured
-                ? "ring-1 ring-[var(--jpg-orange)]/50 shadow-[0_30px_90px_rgba(255,106,0,0.16)]"
-                : ""
-            }`}
-          >
+         <motion.article
+  data-service-card
+  onPointerDown={(e) => (lastPointer.current = e.pointerType)}
+  onPointerEnter={handleEnter}
+  onPointerMove={handleMove}
+  onPointerLeave={handleLeave}
+  onKeyDown={(e) => e.key === "Escape" && onClose()}
+  style={{
+    transformPerspective: 1200,
+    transformStyle: "preserve-3d",
+    rotateX: reduced ? 0 : rotateX,
+    rotateY: reduced ? 0 : rotateY,
+  }}
+  className={`relative isolate min-h-[400px] rounded-3xl ${
+    service.featured
+      ? "ring-1 ring-[var(--jpg-orange)]/50 shadow-[0_30px_90px_rgba(255,106,0,0.16)]"
+      : ""
+  }`}
+>
             {/* Glass surface */}
-            <div
-              className="absolute inset-0 overflow-hidden rounded-3xl border shadow-[0_30px_80px_rgba(0,0,0,0.55)] backdrop-blur-xl"
-              style={{
-                borderColor: "var(--jpg-border)",
-                background:
-                  "linear-gradient(160deg, var(--jpg-surface-raised), var(--jpg-surface))",
-              }}
-            >
-              {/* Gradient background */}
-              <div
-                aria-hidden="true"
-                className="absolute inset-0 transition-transform duration-[1200ms] ease-out"
-                style={{
-                  background: service.gradient,
-                  transform: open ? "scale(1.06)" : "scale(1)",
-                }}
-              />
+            {/* Solid glass surface */}
+<div
+  className="absolute inset-0 overflow-hidden rounded-3xl border shadow-[0_30px_80px_rgba(0,0,0,0.55)] backdrop-blur-xl"
+  style={{
+    borderColor: "rgba(246,232,177,0.22)",
+    background: "var(--jpg-surface)",
+    transform: "translateZ(0px)",
+  }}
+>
+  {/* Gradient background */}
+  <div
+    aria-hidden="true"
+    className="absolute inset-0"
+    style={{
+      background: service.gradient,
+    }}
+  />
 
-              {/* Dark overlay */}
-              <div
-                aria-hidden="true"
-                className="absolute inset-0"
-                style={{
-                  background:
-                    "linear-gradient(180deg, rgba(10,10,10,0.25) 0%, rgba(10,10,10,0.58) 50%, rgba(10,10,10,0.92) 100%)",
-                }}
-              />
+  {/* Dark overlay */}
+  <div
+    aria-hidden="true"
+    className="absolute inset-0"
+    style={{
+      background:
+        "linear-gradient(180deg, rgba(10,10,10,0.22) 0%, rgba(10,10,10,0.48) 48%, rgba(10,10,10,0.90) 100%)",
+    }}
+  />
 
-              {/* Cursor spotlight */}
-              <motion.div
-                aria-hidden="true"
-                className="absolute inset-0"
-                style={{ background: spotlight, opacity: glow }}
-              />
+  {/* Mouse-following spotlight */}
+  <motion.div
+    aria-hidden="true"
+    className="pointer-events-none absolute inset-0"
+    style={{
+      background: spotlight,
+      opacity: glow,
+    }}
+  />
 
-              {/* Top accent line */}
-              <div
-                aria-hidden="true"
-                className="absolute inset-x-0 top-0 h-px"
-                style={{
-                  background: `linear-gradient(90deg, transparent, ${service.color}, transparent)`,
-                  opacity: 0.55,
-                }}
-              />
-            </div>
+  {/* Top edge highlight */}
+  <div
+    aria-hidden="true"
+    className="absolute inset-x-0 top-0 h-px"
+    style={{
+      background: `linear-gradient(90deg, transparent, ${service.color}, transparent)`,
+      opacity: 0.7,
+    }}
+  />
+
+  {/* Inner edge depth */}
+  <div
+    aria-hidden="true"
+    className="pointer-events-none absolute inset-0 rounded-3xl"
+    style={{
+      boxShadow:
+        "inset 0 1px 0 rgba(255,255,255,0.16), inset 0 -1px 0 rgba(0,0,0,0.45), inset 1px 0 0 rgba(255,255,255,0.06), inset -1px 0 0 rgba(255,255,255,0.06)",
+    }}
+  />
+</div>
 
             {/* Resting content */}
             <div
-              className="pointer-events-none relative flex h-full min-h-[360px] flex-col justify-end p-7 sm:min-h-[400px] sm:p-8"
-              style={{ transform: "translateZ(40px)" }}
-            >
+  className="pointer-events-none relative flex h-full min-h-[360px] flex-col justify-end p-7 sm:min-h-[400px] sm:p-8"
+  style={{
+    transform: "translateZ(35px)",
+    transformStyle: "preserve-3d",
+  }}
+>
               <div>
                 <h2 className="text-2xl font-medium leading-tight tracking-tight sm:text-3xl">
                   {service.title}
@@ -262,16 +278,16 @@ function ServiceCard({
 
             {/* Black cover with service breakdown */}
             <motion.div
-              aria-hidden={!open}
-              initial={false}
-              animate={{ y: open ? "0%" : "101%" }}
-              transition={{ duration: reduced ? 0 : 0.7, ease }}
-              style={{
-                pointerEvents: open ? "auto" : "none",
-                transform: "translateZ(55px)",
-              }}
-              className="absolute inset-0 z-20 flex flex-col rounded-3xl bg-black/[0.95] p-7 sm:p-8"
-            >
+  aria-hidden={!open}
+  initial={false}
+  animate={{ y: open ? "0%" : "101%" }}
+  transition={{ duration: reduced ? 0 : 0.7, ease }}
+  style={{
+    pointerEvents: open ? "auto" : "none",
+    backfaceVisibility: "hidden",
+  }}
+  className="absolute inset-0 z-20 flex flex-col rounded-3xl bg-black/[0.97] p-7 sm:p-8"
+>
               <div className="flex items-start justify-between gap-4">
                 <h2 className="text-lg font-medium leading-snug tracking-tight sm:text-xl">
                   {service.title}
