@@ -26,7 +26,7 @@ function shuffle(items) {
 export default function InstagramStrip({
   start = 0,
   count = 4,
-  heading = "Exploreour latest post",
+  heading = "Explore our latest post",
   rotate = true,
 }) {
   const { posts, status, openLightbox } = useInstagram();
