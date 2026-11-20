@@ -3,8 +3,8 @@ import { fetchPosts } from "./data";
 import { hasMedia } from "./utils";
 import { InstagramContext } from "./InstagramContext";
 
-const FIRST_PAGE = 20; // fetched once when the app loads
-const NEXT_PAGE = 12; // infinite scroll on the Instagram page
+const FIRST_PAGE = 40; // fetched once when the app loads
+const NEXT_PAGE = 40; // infinite scroll on the Instagram page
 const Lightbox = lazy(() => import("./Lighbox.jsx"));
 let firstPagePromise;
 

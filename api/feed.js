@@ -8,7 +8,7 @@ export default async function handler(req, res) {
     }
 
     const result = await getFeed({
-      limit: Number(req.query.limit) || 20,
+      limit: Number(req.query.limit) || 40,
       after: req.query.after || null,
       env: process.env,
     });
@@ -38,3 +38,4 @@ export default async function handler(req, res) {
     });
   }
 }
+29

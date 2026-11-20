@@ -1,208 +1,87 @@
 
-import { deflateRawSync, inflateRawSync } from "node:zlib";
 import { getInstagramFeed } from "./instagram.js";
 import { getXFeed } from "./x.js";
 
 const HALF_HOUR = 1800;
 const SIX_HOURS = 21600;
 
-function getCacheSeconds(useX) {
-  return useX ? SIX_HOURS : HALF_HOUR;
+function getSources(env) {
+  return (env.FEED_SOURCES || "instagram")
+    .split(",")
+    .map((s) => s.trim().toLowerCase())
+    .filter((s) => s === "instagram" || s === "x");
 }
 
-// Compress the combined cursor to keep the GET URL smaller.
-function encodeCursor(state) {
-  const json = JSON.stringify(state);
-  return deflateRawSync(Buffer.from(json)).toString("base64url");
-}
+function decodeCursor(after) {
+  if (!after) {
+    return {
+      instagram: { after: null, hasMore: true },
+      x: { after: null, hasMore: true },
+    };
+  }
 
-function decodeCursor(cursor) {
   try {
-    if (typeof cursor !== "string" || cursor.length > 100000) {
-      return null;
-    }
+    const parsed = JSON.parse(
+      Buffer.from(after, "base64url").toString("utf8")
+    );
 
-    const json = inflateRawSync(
-      Buffer.from(cursor, "base64url")
-    ).toString("utf8");
-
-    const parsed = JSON.parse(json);
-
-    for (const source of ["instagram", "x"]) {
-      const item = parsed?.[source];
-
-      if (
-        !item ||
-        !Array.isArray(item.buffer) ||
-        typeof item.hasMore !== "boolean"
-      ) {
-        return null;
-      }
-    }
-
-    return parsed;
-  } catch (error) {
-    console.error("[feed] Cursor decoding failed:", error.message);
+    return {
+      instagram: {
+        after: parsed.instagram?.after ?? null,
+        hasMore: parsed.instagram?.hasMore !== false,
+      },
+      x: {
+        after: parsed.x?.after ?? null,
+        hasMore: parsed.x?.hasMore !== false,
+      },
+    };
+  } catch {
     return null;
   }
 }
 
-function createInitialState() {
-  return {
-    instagram: {
-      after: null,
-      hasMore: true,
-      buffer: [],
-    },
-    x: {
-      after: null,
-      hasMore: true,
-      buffer: [],
-    },
-  };
-}
+async function fetchSource(source, state, limit, env) {
+  const fetcher =
+    source === "instagram" ? getInstagramFeed : getXFeed;
 
-async function fetchSourcePage(source, state, limit, env) {
-  const previousCursor = state.after;
+  const result = await fetcher({
+    limit,
+    after: state.after,
+    env,
+  });
 
-  try {
-    const result =
-      source === "instagram"
-        ? await getInstagramFeed({ limit, after: state.after, env })
-        : await getXFeed({ limit, after: state.after, env });
-
-    if (!result.ok) {
-      console.error(`[feed] ${source} request failed:`, result.error);
-      state.hasMore = false;
-      return false;
-    }
-
-    const nextCursor = result.body.paging?.after ?? null;
-
-    const posts = (result.body.data ?? []).filter(
-      (post) => Array.isArray(post.media) && post.media.length > 0
-    );
-
-    state.buffer.push(...posts);
-    state.after = nextCursor;
-
-    state.hasMore = Boolean(
-      result.body.paging?.hasMore &&
-      nextCursor &&
-      nextCursor !== previousCursor
-    );
-
-    return true;
-  } catch (error) {
-    console.error(`[feed] ${source} fetch exception:`, error.message);
-    state.hasMore = false;
-    return false;
-  }
-}
-
-async function ensureHead(source, state, limit, env) {
-  while (state.buffer.length === 0 && state.hasMore) {
-    const success = await fetchSourcePage(source, state, limit, env);
-    if (!success) break;
-  }
-}
-
-async function getCombinedFeed({ limit, after, env }) {
-  const state = after ? decodeCursor(after) : createInitialState();
-
-  if (!state) {
-    return {
-      ok: false,
-      status: 400,
-      error: "invalid_cursor",
-    };
+  if (!result.ok) {
+    return { ok: false, error: result.error };
   }
 
-  const instagramState = state.instagram;
-  const xState = state.x;
-
-  const batchSize = Math.min(Math.max(limit, 5), 50);
-  const data = [];
-
-  while (data.length < limit) {
-    await Promise.all([
-      ensureHead("instagram", instagramState, batchSize, env),
-      ensureHead("x", xState, batchSize, env),
-    ]);
-
-    const igPost = instagramState.buffer[0];
-    const xPost = xState.buffer[0];
-
-    if (!igPost && !xPost) break;
-
-    if (!xPost) {
-      data.push(instagramState.buffer.shift());
-      continue;
-    }
-
-    if (!igPost) {
-      data.push(xState.buffer.shift());
-      continue;
-    }
-
-    const igTime = new Date(igPost.timestamp).getTime();
-    const xTime = new Date(xPost.timestamp).getTime();
-
-    if (igTime >= xTime) {
-      data.push(instagramState.buffer.shift());
-    } else {
-      data.push(xState.buffer.shift());
-    }
-  }
-
-  const hasMore =
-    instagramState.buffer.length > 0 ||
-    instagramState.hasMore ||
-    xState.buffer.length > 0 ||
-    xState.hasMore;
-
-  let nextCursor = null;
-
-  if (hasMore) {
-    try {
-      nextCursor = encodeCursor(state);
-    } catch (error) {
-      console.error("[feed] Cursor encoding failed:", error.message);
-
-      return {
-        ok: false,
-        status: 500,
-        error: "cursor_encoding_failed",
-      };
-    }
-  }
+  const paging = result.body?.paging || {};
+  const nextAfter = paging.after ?? null;
 
   return {
     ok: true,
-    body: {
-      data,
-      paging: {
-        after: nextCursor,
-        hasMore: Boolean(nextCursor),
-      },
+    data: Array.isArray(result.body?.data)
+      ? result.body.data
+      : [],
+    state: {
+      after: nextAfter,
+      hasMore: Boolean(paging.hasMore && nextAfter),
     },
   };
 }
 
 export async function getFeed({
-  limit = 20,
+  limit = 40,
   after = null,
   env,
 }) {
-  const sources = (env.FEED_SOURCES || "instagram")
-    .split(",")
-    .map((source) => source.trim().toLowerCase())
-    .filter(Boolean);
+  const sources = getSources(env);
 
   const useInstagram = sources.includes("instagram");
   const useX = sources.includes("x");
 
-  if (!useInstagram && !useX) {
+  const cacheSeconds = useX ? SIX_HOURS : HALF_HOUR;
+
+  if (!sources.length) {
     return {
       ok: false,
       status: 500,
@@ -210,39 +89,157 @@ export async function getFeed({
     };
   }
 
-  const safeLimit = Math.min(Math.max(Number(limit) || 20, 1), 50);
-  const cacheSeconds = getCacheSeconds(useX);
-
+  // Preserve normal pagination for single-source feeds.
   if (useInstagram && !useX) {
     return {
-      ...(await getInstagramFeed({
-        limit: safeLimit,
-        after,
-        env,
-      })),
+      ...(await getInstagramFeed({ limit, after, env })),
       cacheSeconds,
     };
   }
 
   if (useX && !useInstagram) {
     return {
-      ...(await getXFeed({
-        limit: safeLimit,
-        after,
-        env,
-      })),
+      ...(await getXFeed({ limit, after, env })),
       cacheSeconds,
     };
   }
 
-  const result = await getCombinedFeed({
-    limit: safeLimit,
-    after,
-    env,
-  });
+  // Combined feed.
+  const state = decodeCursor(after);
+
+  if (!state) {
+    return {
+      ok: false,
+      status: 400,
+      error: "invalid_feed_cursor",
+    };
+  }
+
+  const sourceLimit = Math.ceil(limit / 2);
+
+  const data = [];
+  const counts = {
+    instagram: 0,
+    x: 0,
+  };
+
+  const failedThisRequest = new Set();
+
+  // Fetch the first batch from both providers.
+  const initialResults = await Promise.all(
+    sources.map(async (source) => {
+      if (!state[source].hasMore) {
+        return { source, skipped: true };
+      }
+
+      const result = await fetchSource(
+        source,
+        state[source],
+        sourceLimit,
+        env
+      );
+
+      return { source, result };
+    })
+  );
+
+  for (const item of initialResults) {
+    if (item.skipped) continue;
+
+    if (!item.result.ok) {
+      failedThisRequest.add(item.source);
+      continue;
+    }
+
+    state[item.source] = item.result.state;
+
+    data.push(...item.result.data);
+    counts[item.source] += item.result.data.length;
+  }
+
+  // If one provider returned fewer posts, use the other
+  // provider to fill the remaining space when possible.
+  while (data.length < limit) {
+    const available = sources
+      .filter(
+        (source) =>
+          state[source].hasMore &&
+          !failedThisRequest.has(source)
+      )
+      .sort(
+        (a, b) => counts[b] - counts[a]
+      );
+
+    if (!available.length) break;
+
+    const source = available[0];
+    const remaining = limit - data.length;
+
+    const result = await fetchSource(
+      source,
+      state[source],
+      remaining,
+      env
+    );
+
+    if (!result.ok) {
+      failedThisRequest.add(source);
+      continue;
+    }
+
+    const previousCursor = state[source].after;
+
+    state[source] = result.state;
+
+    data.push(...result.data);
+    counts[source] += result.data.length;
+
+    // Prevent an endless loop if a provider gives us
+    // no posts and does not advance its cursor.
+    if (
+      result.data.length === 0 &&
+      state[source].hasMore &&
+      state[source].after === previousCursor
+    ) {
+      state[source].hasMore = false;
+    }
+  }
+
+  if (
+    data.length === 0 &&
+    failedThisRequest.size === sources.length
+  ) {
+    return {
+      ok: false,
+      status: 502,
+      error: "feed_sources_failed",
+    };
+  }
+
+  // Sort all returned posts together, newest first.
+  data.sort(
+    (a, b) =>
+      new Date(b.timestamp).getTime() -
+      new Date(a.timestamp).getTime()
+  );
+
+  const hasMore = sources.some(
+    (source) => state[source].hasMore
+  );
+
+  const nextCursor = hasMore
+    ? Buffer.from(JSON.stringify(state)).toString("base64url")
+    : null;
 
   return {
-    ...result,
+    ok: true,
     cacheSeconds,
+    body: {
+      data,
+      paging: {
+        after: nextCursor,
+        hasMore,
+      },
+    },
   };
 }

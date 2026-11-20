@@ -59,7 +59,7 @@ const RAW_X = [
   ["Africa has the talent. We're building the stage.", "text", [], 3020, 241, 300],
   ["Colour field. Nothing else to say.", "image", ["photo-1508214751196-bcfd4ca60f91"], 265, 7, 380],
   ["Thank you to everyone who came out last night. Same energy, bigger room next time.", "text", [], 977, 63, 470],
-  ["Structure and shadow. Architecture series, part two.", "image", ["photo-1518005020951-eccb494ad742"], 530, 19, 600],
+  ["Structure and shadow. Architecture series, part two.", "image", ["photo-1518005040951-eccb494ad742"], 530, 19, 600],
 ];
 
 const IG = RAW_IG.map(([photo, kind, text, likes, comments, hours], i) => {
@@ -104,7 +104,7 @@ const ALL = [...IG, ...X].sort(
 );
 const MEDIA_POSTS = ALL.filter((post) => post.media.length > 0);
 
-export async function fetchPosts({ limit = 20, after = null } = {}) {
+export async function fetchPosts({ limit = 40, after = null } = {}) {
   if (!USE_MOCK) {
     const qs = new URLSearchParams({ limit: String(limit) });
     if (after) qs.set("after", after);
