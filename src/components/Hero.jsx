@@ -1,4 +1,5 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useInstagram } from "../Instagram/InstagramContext";
 import {
     motion,
     useMotionValue,
@@ -10,23 +11,21 @@ import { FaArrowTrendUp } from "react-icons/fa6";
 import { ROUTES } from "../routes";
 import { artworkImages } from "../artworkImages";
 
-const artworks = [
+const artworkLayouts = [
     {
         id: 1,
         title: "Human / 001",
         category: "Portrait photography",
-        image: artworkImages[2],
         position: "left-[26%] top-[8%] w-[54%]",
         height: "h-[340px] sm:h-[390px]",
         rotate: 3,
-        depth: 28, // parallax strength (px) and z-lift
+        depth: 28,
         floatDelay: 0,
     },
     {
         id: 2,
         title: "Colour / 014",
         category: "Contemporary art",
-        image: artworkImages[24],
         position: "left-0 top-[23%] w-[48%]",
         height: "h-[220px] sm:h-[260px]",
         rotate: -10,
@@ -37,7 +36,6 @@ const artworks = [
         id: 3,
         title: "Sound / 021",
         category: "Music photography",
-        image: artworkImages[11],
         position: "right-0 top-[38%] w-[45%]",
         height: "h-[190px] sm:h-[230px]",
         rotate: 8,
@@ -45,6 +43,65 @@ const artworks = [
         floatDelay: 2.4,
     },
 ];
+
+function getPostImages(posts = []) {
+    const images = [];
+
+    posts.slice(0, 40).forEach((post) => {
+        const mediaItems = Array.isArray(post.media)
+            ? post.media
+            : post.media
+                ? [post.media]
+                : [];
+
+        mediaItems.forEach((media) => {
+            const image =
+                typeof media === "string"
+                    ? media
+                    : media?.thumbnail_url ||
+                      media?.thumb ||
+                      media?.media_url ||
+                      media?.url ||
+                      media?.src;
+
+            if (image) {
+                images.push({
+                    image,
+                    alt: post.caption || post.text || "JPGVibe artwork",
+                });
+            }
+        });
+
+        // Support posts with a direct image field too.
+        const directImage =
+            post.image_url ||
+            post.imageUrl ||
+            post.thumbnail_url ||
+            post.thumbnail ||
+            post.image;
+
+        if (directImage) {
+            images.push({
+                image: directImage,
+                alt: post.caption || post.text || "JPGVibe artwork",
+            });
+        }
+    });
+
+    // Remove duplicate image URLs.
+    return [...new Map(images.map((item) => [item.image, item])).values()];
+}
+
+function shuffleImages(images) {
+    const shuffled = [...images];
+
+    for (let i = shuffled.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+
+    return shuffled;
+}
 
 const ease = [0.22, 1, 0.36, 1];
 
@@ -188,6 +245,18 @@ function ArtworkCard({ artwork, index, rank, ready, onSelect, sx, sy, reduced })
 
 export default function Hero() {
     const reduced = useReducedMotion();
+    const { posts, status } = useInstagram();
+
+const artworks = useMemo(() => {
+    const availableImages = shuffleImages(getPostImages(posts));
+
+    return artworkLayouts
+        .slice(0, Math.min(3, availableImages.length))
+        .map((layout, index) => ({
+            ...layout,
+            ...availableImages[index],
+        }));
+}, [posts]);
 
     // Normalised cursor position inside the artwork cluster (-0.5 to 0.5)
     const mx = useMotionValue(0);
@@ -227,13 +296,15 @@ export default function Hero() {
     // Every few seconds the next card comes to the front.
     // `focus` is a dependency, so hovering or clicking a card restarts the wait.
     useEffect(() => {
-        if (reduced || !ready) return;
-        const t = setTimeout(
-            () => setFocus((f) => (f + 1) % artworks.length),
-            FOCUS_INTERVAL
-        );
-        return () => clearTimeout(t);
-    }, [focus, ready, reduced]);
+    if (reduced || !ready || artworks.length < 2) return;
+    
+    const t = setTimeout(
+        () => setFocus((f) => (f + 1) % artworks.length),
+        FOCUS_INTERVAL
+    );
+    
+    return () => clearTimeout(t);
+}, [focus, ready, reduced, artworks.length]);
 
     return (
         <section className="relative pt-20 isolate min-h-screen overflow-hidden bg-[var(--jpg-black)] text-[var(--jpg-cream)]">
@@ -326,7 +397,7 @@ export default function Hero() {
                         className="mt-12 flex items-center gap-4 border-t border-[var(--jpg-cream)]/10 pt-6"
                     >
                         <div className="flex -space-x-3">
-                            {artworks.map((artwork) => (
+                            {((artwork) => (
                                 <img
                                     key={artwork.id}
                                     src={artwork.image}
@@ -369,19 +440,19 @@ export default function Hero() {
                             className="absolute inset-[12%_8%] rotate-[-20deg] scale-y-[0.7] rounded-[50%] border border-[var(--jpg-cream)]/[0.08] shadow-[0_0_100px_rgba(249,29,29,0.07)]"
                         />
 
-                        {artworks.map((artwork, index) => (
-                            <ArtworkCard
-                                key={artwork.id}
-                                artwork={artwork}
-                                index={index}
-                                rank={(index - focus + artworks.length) % artworks.length}
-                                ready={ready}
-                                onSelect={() => setFocus(index)}
-                                sx={sx}
-                                sy={sy}
-                                reduced={reduced}
-                            />
-                        ))}
+                      {artworks.map((artwork, index) => (
+    <ArtworkCard
+        key={`${artwork.id}-${artwork.image}`}
+        artwork={artwork}
+        index={index}
+        rank={(index - focus + artworks.length) % artworks.length}
+        ready={ready}
+        onSelect={() => setFocus(index)}
+        sx={sx}
+        sy={sy}
+        reduced={reduced}
+    />
+))}
                     </motion.div>
                 </div>
             </div>
