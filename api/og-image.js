@@ -13,8 +13,11 @@ export default function handler(req, res) {
     return res.status(405).end("Method Not Allowed");
   }
 
-  const selectedImage =
-    artworkImages[randomInt(artworkImages.length)];
+  const rotate = process.env.ROTATE_OG_IMAGE === "true";
+
+  const selectedImage = rotate
+    ? artworkImages[randomInt(artworkImages.length)]
+    : "/logo.jpg";
 
   const host =
     req.headers["x-forwarded-host"] || req.headers.host;
@@ -24,14 +27,7 @@ export default function handler(req, res) {
 
   const imageUrl = `${protocol}://${host}${selectedImage}`;
 
-  res.setHeader(
-    "Cache-Control",
-    "no-store, no-cache, must-revalidate, proxy-revalidate, max-age=0"
-  );
-
-  res.setHeader("CDN-Cache-Control", "no-store");
-  res.setHeader("Vercel-CDN-Cache-Control", "no-store");
-
+  res.setHeader("Cache-Control", "no-store, max-age=0");
   res.setHeader("Location", imageUrl);
 
   return res.status(302).end();
