@@ -19,6 +19,7 @@ const links = [
   { label: "Home", href: ROUTES.home },
   { label: "About", href: ROUTES.about },
   { label: "Services", href: ROUTES.services },
+  {label: "Photobook", href: ROUTES.photobook},
   { label: "Jpgvibe", href: ROUTES.live },
   { label: "Contact", href: ROUTES.contact },
 ];

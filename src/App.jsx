@@ -7,6 +7,7 @@ import Footer from './components/Footer'
 import InstagramProvider from "./instagram/InstagramProvider";
 import InstagramPage from "./instagram/InstagramPage";
 import AboutPage from "./pages/About";
+import Photobook from "./pages/Photobook";
 import ContactPage from './pages/Contact'
 import NotFound from './pages/NotFound'
 import WaitlistPage from './pages/Waitlist'
@@ -19,6 +20,7 @@ function AppRoutes() {
       <Route path={ROUTES.home} element={<Home />} />
       <Route path={ROUTES.services} element={<ServicesPage />} />
       <Route path={ROUTES.live} element={<InstagramPage />} />
+      <Route path={ROUTES.photobook} element={<Photobook />} />
       <Route path={ROUTES.about} element={<AboutPage />} />
       <Route path={ROUTES.contact} element={<ContactPage />} />
       <Route path={ROUTES.waitlist} element={<WaitlistPage />} />

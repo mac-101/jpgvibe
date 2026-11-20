@@ -5,4 +5,5 @@ export const ROUTES = {
   live: "/live",
   contact: "/contact",
   waitlist: "/waitlist",
+  photobook: "/photobook"
 };
