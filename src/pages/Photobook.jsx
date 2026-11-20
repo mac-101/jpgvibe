@@ -1,6 +1,6 @@
 
 import { motion, useReducedMotion } from "framer-motion";
-import logo from '../assets/logo';
+import logo from '../assets/logo.jpg';
 
 const ease = [0.22, 1, 0.36, 1];
 
