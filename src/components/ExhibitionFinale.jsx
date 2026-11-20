@@ -1,4 +1,3 @@
-
 import { motion, useReducedMotion } from "framer-motion";
 import InstagramStrip from "../instagram/InstagramStrip";
 

@@ -120,17 +120,6 @@ export default function Footer() {
                                     <FaArrowRight />
                                 </span>
                             </a>
-
-                            <a
-                                href={ROUTES.team}
-                                className="group inline-flex items-center gap-2 text-[var(--jpg-muted)] transition-colors hover:text-[var(--jpg-cream)]"
-                            >
-                                Meet the team
-                                <span className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1">
-                                    <FaArrowRight />
-                                </span>
-                            </a>
-
                             <a
                                 href={ROUTES.contact}
                                 className="group inline-flex items-center gap-2 text-[var(--jpg-muted)] transition-colors hover:text-[var(--jpg-cream)]"
