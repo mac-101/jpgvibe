@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from "react";
-import { useInstagram } from "../Instagram/InstagramContext";
+import { useInstagram } from "../instagram/InstagramContext";
 import {
     motion,
     useMotionValue,
