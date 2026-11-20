@@ -9,7 +9,7 @@ import {
 } from "framer-motion";
 
 import LiveLight from "./LiveLight";
-import { useInstagram } from "../feed/InstagramContext";
+import { useInstagram } from "../instagram/InstagramContext";
 
 // Adjust this import path if VisualStory.jsx is in a different folder.
 // Use the same import path as InstagramStrip.jsx.
