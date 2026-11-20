@@ -27,8 +27,9 @@ const services = [
       "Final work delivered, ready to share with the world",
     ],
     gradient:
-      "radial-gradient(ellipse at 20% 20%, rgba(255, 230, 0, 0.28) 0%, transparent 45%), linear-gradient(135deg, #FF6A00 0%, #9D2514 48%, #170A08 100%)",
+      "radial-gradient(ellipse at 20% 20%, rgba(255,230,0,0.28) 0%, transparent 45%), linear-gradient(135deg, #FF6A00 0%, #9D2514 48%, #170A08 100%)",
     glow: "rgba(255,106,0,0.28)",
+    color: "var(--jpg-orange)",
     float: 12,
     duration: 6.4,
     floatDelay: 0,
@@ -48,8 +49,9 @@ const services = [
       "Social rollout and promotionto you community",
     ],
     gradient:
-      "radial-gradient(ellipse at 80% 15%, rgba(249, 29, 29, 0.30) 0%, transparent 45%), linear-gradient(135deg, #6F1717 0%, #32100F 50%, #0A0A0A 100%)",
+      "radial-gradient(ellipse at 80% 15%, rgba(249,29,29,0.30) 0%, transparent 45%), linear-gradient(135deg, #6F1717 0%, #32100F 50%, #0A0A0A 100%)",
     glow: "rgba(249,29,29,0.22)",
+    color: "var(--jpg-red)",
     float: 12,
     duration: 6.4,
     floatDelay: 0,
@@ -68,7 +70,7 @@ function ServiceCard({
 }) {
   const lastPointer = useRef("mouse");
 
-  // Cursor position inside the card, 0 to 1
+  // Cursor position inside the card
   const mx = useMotionValue(0.5);
   const my = useMotionValue(0.5);
   const hover = useMotionValue(0);
@@ -78,11 +80,12 @@ function ServiceCard({
   const sy = useSpring(my, spring);
   const glow = useSpring(hover, { stiffness: 120, damping: 24 });
 
-  const rotateY = useTransform(sx, [0, 1], [6, -6]);
-  const rotateX = useTransform(sy, [0, 1], [-6, 6]);
+  const rotateY = useTransform(sx, [0, 1], [9, -9]);
+  const rotateX = useTransform(sy, [0, 1], [-9, 9]);
 
   const gx = useTransform(sx, (v) => v * 100);
   const gy = useTransform(sy, (v) => v * 100);
+
   const spotlight = useMotionTemplate`radial-gradient(380px circle at ${gx}% ${gy}%, ${service.glow}, transparent 65%)`;
 
   const handleEnter = (e) => {
@@ -108,7 +111,6 @@ function ServiceCard({
     if (e.pointerType === "mouse") onClose();
   };
 
-  // Mouse users already opened it by hovering. Taps and keyboard presses toggle.
   const handleClick = (e) => {
     if (e.detail !== 0 && lastPointer.current === "mouse") return;
     onToggle();
@@ -132,10 +134,14 @@ function ServiceCard({
         viewport={{ once: true, amount: 0.2 }}
         transition={{ duration: 0.9, ease, delay: (index % 2) * 0.14 }}
       >
-        {/* Layer 2: idle float, which settles while the card is open */}
+        {/* Layer 2: floating animation */}
         <motion.div
           animate={
-            reduced ? undefined : open ? { y: 0 } : { y: [0, -service.float, 0] }
+            reduced
+              ? undefined
+              : open
+                ? { y: 0 }
+                : { y: [0, -service.float, 0] }
           }
           transition={
             open
@@ -148,7 +154,7 @@ function ServiceCard({
                 }
           }
         >
-          {/* Layer 3: tilt */}
+          {/* Layer 3: 3D tilt */}
           <motion.article
             data-service-card
             onPointerDown={(e) => (lastPointer.current = e.pointerType)}
@@ -158,13 +164,25 @@ function ServiceCard({
             onKeyDown={(e) => e.key === "Escape" && onClose()}
             style={{
               transformPerspective: 1200,
+              transformStyle: "preserve-3d",
               rotateX: reduced ? 0 : rotateX,
               rotateY: reduced ? 0 : rotateY,
             }}
-            className="relative min-h-[400px] rounded-3xl"
+            className={`relative min-h-[400px] rounded-3xl ${
+              service.featured
+                ? "ring-1 ring-[var(--jpg-orange)]/50 shadow-[0_30px_90px_rgba(255,106,0,0.16)]"
+                : ""
+            }`}
           >
             {/* Glass surface */}
-            <div className="absolute inset-0 overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] shadow-[0_30px_80px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-xl">
+            <div
+              className="absolute inset-0 overflow-hidden rounded-3xl border shadow-[0_30px_80px_rgba(0,0,0,0.55)] backdrop-blur-xl"
+              style={{
+                borderColor: "var(--jpg-border)",
+                background:
+                  "linear-gradient(160deg, var(--jpg-surface-raised), var(--jpg-surface))",
+              }}
+            >
               {/* Gradient background */}
               <div
                 aria-hidden="true"
@@ -192,135 +210,151 @@ function ServiceCard({
                 style={{ background: spotlight, opacity: glow }}
               />
 
-              {/* Resting content */}
-              <div className="pointer-events-none relative flex h-full min-h-[360px] flex-col justify-end p-7 sm:min-h-[400px] sm:p-8">
-                <div>
-                  <h2 className="text-2xl font-medium leading-tight tracking-tight sm:text-3xl">
-                    {service.title}
-                  </h2>
-
-                  <p
-                    className="mt-3 text-sm leading-6"
-                    style={{
-                      color: "var(--jpg-cream)",
-                      opacity: 0.7,
-                    }}
-                  >
-                    {service.tagline}
-                  </p>
-
-                  <p className="text-sm text-right leading text-(--jpg-orange)">
-                    Learn More
-                  </p>
-                </div>
-              </div>
-
-              {/* Toggle target for taps and keyboard */}
-              <button
-                type="button"
-                onClick={handleClick}
-                aria-expanded={open}
-                aria-label={`${service.title}. ${open ? "Hide" : "Show"} details`}
-                className="absolute inset-0 z-10 cursor-pointer rounded-3xl focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-4"
+              {/* Top accent line */}
+              <div
+                aria-hidden="true"
+                className="absolute inset-x-0 top-0 h-px"
                 style={{
-                  outlineColor: "var(--jpg-orange)",
-                  WebkitTapHighlightColor: "transparent",
+                  background: `linear-gradient(90deg, transparent, ${service.color}, transparent)`,
+                  opacity: 0.55,
                 }}
               />
-
-              {/* Black cover with the breakdown */}
-              <motion.div
-                aria-hidden={!open}
-                initial={false}
-                animate={{ y: open ? "0%" : "101%" }}
-                transition={{ duration: reduced ? 0 : 0.7, ease }}
-                style={{ pointerEvents: open ? "auto" : "none" }}
-                className="absolute inset-0 z-20 flex flex-col bg-black/[0.95] p-7 sm:p-8"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <h2 className="text-lg font-medium leading-snug tracking-tight sm:text-xl">
-                    {service.title}
-                  </h2>
-
-                  <button
-                    type="button"
-                    onClick={onClose}
-                    tabIndex={open ? 0 : -1}
-                    aria-label="Close details"
-                    className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/15 transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2"
-                    style={{
-                      color: "var(--jpg-cream)",
-                      outlineColor: "var(--jpg-orange)",
-                    }}
-                  >
-                    <svg
-                      viewBox="0 0 24 24"
-                      width="16"
-                      height="16"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                    >
-                      <path d="M6 6l12 12M18 6 6 18" />
-                    </svg>
-                  </button>
-                </div>
-
-                <motion.div
-                  initial={false}
-                  animate={{ opacity: open ? 1 : 0, y: open ? 0 : 18 }}
-                  transition={{
-                    duration: reduced ? 0 : 0.6,
-                    ease,
-                    delay: open ? 0.2 : 0,
-                  }}
-                  className="mt-4 flex flex-1 flex-col"
-                >
-                  <p
-                    className="text-sm leading-7"
-                    style={{
-                      color: "var(--jpg-cream)",
-                      opacity: 0.8,
-                    }}
-                  >
-                    {service.description}
-                  </p>
-
-                  <ul className="mt-5 space-y-2.5 text-sm">
-                    {service.deliverables.map((item) => (
-                      <li key={item} className="flex items-start gap-3">
-                        <span
-                          aria-hidden="true"
-                          className="mt-[9px] h-1 w-1 shrink-0 rounded-full"
-                          style={{ backgroundColor: "var(--jpg-orange)" }}
-                        />
-
-                        <span
-                          style={{
-                            color: "var(--jpg-cream)",
-                            opacity: 0.88,
-                          }}
-                        >
-                          {item}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-
-                  <a
-                    href={`${ROUTES.contact}?service=${service.slug}`}
-                    tabIndex={open ? 0 : -1}
-                    className="mt-auto inline-flex items-center justify-center gap-3 self-start rounded-full bg-[image:var(--jpg-gradient)] px-6 py-3.5 font-button text-[var(--jpg-black)] transition-transform duration-300 hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)]"
-                  >
-                    Let's create
-                    <span aria-hidden="true">↗</span>
-                  </a>
-                </motion.div>
-              </motion.div>
             </div>
 
-            {/* Gradient border that draws down the edge on open */}
+            {/* Resting content */}
+            <div
+              className="pointer-events-none relative flex h-full min-h-[360px] flex-col justify-end p-7 sm:min-h-[400px] sm:p-8"
+              style={{ transform: "translateZ(40px)" }}
+            >
+              <div>
+                <h2 className="text-2xl font-medium leading-tight tracking-tight sm:text-3xl">
+                  {service.title}
+                </h2>
+
+                <p
+                  className="mt-3 text-sm leading-6"
+                  style={{
+                    color: "var(--jpg-cream)",
+                    opacity: 0.7,
+                  }}
+                >
+                  {service.tagline}
+                </p>
+
+                <p className="text-sm text-right leading text-(--jpg-orange)">
+                  Learn More
+                </p>
+              </div>
+            </div>
+
+            {/* Toggle target */}
+            <button
+              type="button"
+              onClick={handleClick}
+              aria-expanded={open}
+              aria-label={`${service.title}. ${open ? "Hide" : "Show"} details`}
+              className="absolute inset-0 z-10 cursor-pointer rounded-3xl focus-visible:outline focus-visible:outline-2 focus-visible:-outline-offset-4"
+              style={{
+                outlineColor: "var(--jpg-orange)",
+                WebkitTapHighlightColor: "transparent",
+              }}
+            />
+
+            {/* Black cover with service breakdown */}
+            <motion.div
+              aria-hidden={!open}
+              initial={false}
+              animate={{ y: open ? "0%" : "101%" }}
+              transition={{ duration: reduced ? 0 : 0.7, ease }}
+              style={{
+                pointerEvents: open ? "auto" : "none",
+                transform: "translateZ(55px)",
+              }}
+              className="absolute inset-0 z-20 flex flex-col rounded-3xl bg-black/[0.95] p-7 sm:p-8"
+            >
+              <div className="flex items-start justify-between gap-4">
+                <h2 className="text-lg font-medium leading-snug tracking-tight sm:text-xl">
+                  {service.title}
+                </h2>
+
+                <button
+                  type="button"
+                  onClick={onClose}
+                  tabIndex={open ? 0 : -1}
+                  aria-label="Close details"
+                  className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/15 transition-colors hover:bg-white/10 focus-visible:outline focus-visible:outline-2"
+                  style={{
+                    color: "var(--jpg-cream)",
+                    outlineColor: "var(--jpg-orange)",
+                  }}
+                >
+                  <svg
+                    viewBox="0 0 24 24"
+                    width="16"
+                    height="16"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                  >
+                    <path d="M6 6l12 12M18 6 6 18" />
+                  </svg>
+                </button>
+              </div>
+
+              <motion.div
+                initial={false}
+                animate={{ opacity: open ? 1 : 0, y: open ? 0 : 18 }}
+                transition={{
+                  duration: reduced ? 0 : 0.6,
+                  ease,
+                  delay: open ? 0.2 : 0,
+                }}
+                className="mt-4 flex flex-1 flex-col"
+              >
+                <p
+                  className="text-sm leading-7"
+                  style={{
+                    color: "var(--jpg-cream)",
+                    opacity: 0.8,
+                  }}
+                >
+                  {service.description}
+                </p>
+
+                <ul className="mt-5 space-y-2.5 text-sm">
+                  {service.deliverables.map((item) => (
+                    <li key={item} className="flex items-start gap-3">
+                      <span
+                        aria-hidden="true"
+                        className="mt-[9px] h-1 w-1 shrink-0 rounded-full"
+                        style={{ backgroundColor: "var(--jpg-orange)" }}
+                      />
+
+                      <span
+                        style={{
+                          color: "var(--jpg-cream)",
+                          opacity: 0.88,
+                        }}
+                      >
+                        {item}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+
+                <a
+                  href={`${ROUTES.contact}?service=${service.slug}`}
+                  tabIndex={open ? 0 : -1}
+                  className="mt-auto inline-flex items-center justify-center gap-3 self-start rounded-full bg-[image:var(--jpg-gradient)] px-6 py-3.5 font-button text-[var(--jpg-black)] transition-transform duration-300 hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)]"
+                >
+                  Let's create
+                  <span aria-hidden="true">↗</span>
+                </a>
+              </motion.div>
+            </motion.div>
+
+            {/* Animated gradient border */}
             <motion.div
               aria-hidden="true"
               initial={false}
@@ -353,7 +387,7 @@ export default function Services() {
   const reduced = useReducedMotion();
   const [openId, setOpenId] = useState(null);
 
-  // Tapping anywhere outside the cards closes the open one
+  // Tapping outside the cards closes the open one
   useEffect(() => {
     const onDown = (e) => {
       if (!e.target.closest("[data-service-card]")) {
@@ -376,26 +410,18 @@ export default function Services() {
         color: "var(--jpg-cream)",
       }}
     >
-      {/* Colour behind the glass, so the blur has something to catch */}
+      {/* Ambient background glows */}
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
         <motion.div
           className="absolute -left-24 top-1/4 h-[420px] w-[420px] rounded-full bg-[var(--jpg-red)] opacity-[0.16] blur-[120px]"
           animate={reduced ? undefined : { x: [0, 60, 0], y: [0, 40, 0] }}
-          transition={{
-            duration: 18,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
+          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
         />
 
         <motion.div
           className="absolute -right-24 top-1/2 h-[460px] w-[460px] rounded-full bg-[var(--jpg-orange)] opacity-[0.13] blur-[130px]"
           animate={reduced ? undefined : { x: [0, -70, 0], y: [0, -50, 0] }}
-          transition={{
-            duration: 22,
-            repeat: Infinity,
-            ease: "easeInOut",
-          }}
+          transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
         />
       </div>
 
