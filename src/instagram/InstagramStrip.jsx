@@ -33,7 +33,7 @@ export default function InstagramStrip({
           <div>
             <p className="mb-4 flex items-center gap-3 font-label">
               <LiveLight />
-              Live from Instagram
+              Live from the vibe
             </p>
             <h2 className="text-3xl leading-tight sm:text-4xl md:text-5xl">
               {heading}

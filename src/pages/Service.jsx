@@ -5,7 +5,7 @@ export default function ServicesPage(){
     return(
         <>
             <Services/>
-            <InstagramStrip start={4} heading="Live from the vibe" />
+            <InstagramStrip start={4} heading="Explore our latest posts" />
         </>
     )
 }
