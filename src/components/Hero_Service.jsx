@@ -242,7 +242,7 @@ function ServiceCard({
               }}
             >
               <div>
-                <h2 className="text-2xl font-medium leading-tight tracking-tight sm:text-3xl">
+                <h2 className="text-2xl font-medium uppercase leading-tight tracking-tight sm:text-3xl">
                   {service.title}
                 </h2>
 
