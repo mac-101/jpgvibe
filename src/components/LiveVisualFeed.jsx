@@ -505,23 +505,6 @@ export default function LiveVisualFeed() {
                     
                     </div>
                 </div>
-
-                {/* Progress */}
-                <div className="mt-2 px-6 sm:px-10 lg:px-16">
-                    <div
-                        aria-hidden="true"
-                        className="h-px w-full"
-                        style={{ backgroundColor: "var(--jpg-border)" }}
-                    >
-                        <motion.div
-                            className="h-px origin-left"
-                            style={{
-                                scaleX: progress,
-                                background: "var(--jpg-gradient)",
-                            }}
-                        />
-                    </div>
-                </div>
             </div>
         </section>
     );
