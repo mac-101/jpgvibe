@@ -5,7 +5,6 @@ const ease = [0.22, 1, 0.36, 1];
 
 // "the background." is split across two lines, so each line takes its own slice of the gradient
 const GRADIENT = {
-  full: "var(--jpg-gradient)",
   start: "linear-gradient(100deg, var(--jpg-yellow), #FFB300)",
   end: "linear-gradient(100deg, #FFB300, var(--jpg-orange) 55%, var(--jpg-red))",
 };
@@ -18,11 +17,11 @@ const HERO_LINES = [
 ];
 
 // A paragraph is a list of parts: plain text, { hi } (brighter cream) or { red }
-const chapters = [
+const columns = [
   {
     id: "why",
     count: "01",
-    lines: [{ text: "Why we" }, { text: "exist.", gradient: "full" }],
+    title: "Why we exist",
     paragraphs: [
       [
         "Africa is a wellspring of creative talent, yet its voices are still under-recognised across the wider creative industry. We exist to change that, promoting creative talent as a catalyst for social development and cultural exchange.",
@@ -32,7 +31,7 @@ const chapters = [
   {
     id: "built",
     count: "02",
-    lines: [{ text: "What we" }, { text: "built.", gradient: "full" }],
+    title: "What we built",
     paragraphs: [
       [
         "It began as a community of African and black artists online. Built from pure love and viral engagement, it grew into real relationships and connections, with a presence across ",
@@ -45,7 +44,7 @@ const chapters = [
   {
     id: "next",
     count: "03",
-    lines: [{ text: "Where we’re" }, { text: "going.", gradient: "full" }],
+    title: "Where we’re going",
     paragraphs: [
       [
         "We’re building the tools artists have always needed. We’re turning community into opportunity: a system where creatives get found, get booked and get paid.",
@@ -73,7 +72,7 @@ const groups = [
 const lineClass =
   "font-body text-base leading-8 tracking-[0.1em] text-[var(--jpg-cream)] sm:text-lg sm:leading-9";
 
-const headlineSize = "leading-[0.92] tracking-[-0.045em]";
+const wrap = "mx-auto max-w-7xl px-6 sm:px-10 lg:px-16";
 
 function Reveal({ as = "div", delay = 0, y = 28, reduced, className = "", children, ...rest }) {
   const Tag = motion[as];
@@ -108,73 +107,32 @@ function Parts({ parts }) {
   });
 }
 
-/* Each line rises out of its own mask. "load" plays at once, "view" plays on scroll. */
-function HeadlineLines({ lines, reduced, mode = "load", delay = 0 }) {
-  return lines.map((line, i) => {
-    const trigger =
-      mode === "load"
-        ? { animate: { y: "0%" } }
-        : { whileInView: { y: "0%" }, viewport: { once: true, amount: 0.6 } };
-
-    return (
-      <span
-        key={line.text}
-        className="block overflow-hidden pb-[0.25em] pt-[0.15em] -mb-[0.25em] -mt-[0.15em]"
+/* Each line rises out of its own mask when the page loads */
+function HeadlineLines({ lines, reduced, delay = 0 }) {
+  return lines.map((line, i) => (
+    <span
+      key={line.text}
+      className="block overflow-hidden pb-[0.25em] pt-[0.15em] -mb-[0.25em] -mt-[0.15em]"
+    >
+      <motion.span
+        className="block"
+        initial={reduced ? false : { y: "140%" }}
+        animate={{ y: "0%" }}
+        transition={{ duration: 1.1, ease, delay: delay + i * 0.09 }}
       >
-        <motion.span
-          className="block"
-          initial={reduced ? false : { y: "140%" }}
-          {...trigger}
-          transition={{ duration: 1.1, ease, delay: delay + i * 0.09 }}
-        >
-          {line.gradient ? (
-            <span
-              className="bg-clip-text text-transparent"
-              style={{ backgroundImage: GRADIENT[line.gradient] }}
-            >
-              {line.text}
-            </span>
-          ) : (
-            line.text
-          )}
-        </motion.span>
-      </span>
-    );
-  });
-}
-
-function Marker({ children }) {
-  return (
-    <div className="mt-8 flex items-center gap-4">
-      <span aria-hidden="true" className="h-px w-10 bg-[var(--jpg-red)]" />
-      <span className="font-label text-[var(--jpg-cream)]/60">{children}</span>
-    </div>
-  );
-}
-
-function Chapter({ chapter, reduced }) {
-  return (
-    <section aria-labelledby={`about-${chapter.id}`} className="relative">
-      <div className="mx-auto grid max-w-7xl gap-10 px-6 py-24 sm:px-10 sm:py-32 lg:min-h-[85vh] lg:grid-cols-[1.45fr_1fr] lg:items-end lg:gap-16 lg:px-16">
-        <h2
-          id={`about-${chapter.id}`}
-          className={`text-[clamp(3rem,8vw,7.5rem)] text-[var(--jpg-cream)] ${headlineSize}`}
-        >
-          <HeadlineLines lines={chapter.lines} reduced={reduced} />
-        </h2>
-
-        <Reveal reduced={reduced} delay={0.35} className="max-w-md lg:pb-3">
-          <div className="space-y-6 font-body text-lg leading-8 text-[var(--jpg-cream)]/65 sm:text-xl sm:leading-9">
-            {chapter.paragraphs.map((parts, i) => (
-              <p key={i}>
-                <Parts parts={parts} />
-              </p>
-            ))}
-          </div>
-        </Reveal>
-      </div>
-    </section>
-  );
+        {line.gradient ? (
+          <span
+            className="bg-clip-text text-transparent"
+            style={{ backgroundImage: GRADIENT[line.gradient] }}
+          >
+            {line.text}
+          </span>
+        ) : (
+          line.text
+        )}
+      </motion.span>
+    </span>
+  ));
 }
 
 export default function AboutPage() {
@@ -183,8 +141,8 @@ export default function AboutPage() {
   return (
     <>
       <div style={{ backgroundColor: "var(--jpg-black)", color: "var(--jpg-cream)" }}>
-        {/* Hero */}
-        <section className="relative isolate flex min-h-[100svh] flex-col justify-end overflow-hidden pb-16 pt-32 sm:pb-20">
+        {/* Header: label, headline, and the intro text under it on the left */}
+        <section className="relative isolate overflow-hidden pb-16 pt-32 sm:pb-24 sm:pt-40">
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0 -z-10"
@@ -194,51 +152,42 @@ export default function AboutPage() {
             }}
           />
 
-          <div className="mx-auto w-full max-w-7xl px-6 sm:px-10 lg:px-16">
-            <div className="grid items-end gap-10 lg:grid-cols-[1.45fr_1fr] lg:gap-16">
-              <h1
-                className={`text-[clamp(3rem,9.5vw,9rem)] text-[var(--jpg-cream)] ${headlineSize}`}
+          <div className={wrap}>
+            <h1 className="text-[clamp(3rem,9.5vw,9rem)] leading-[0.92] tracking-[-0.045em] text-[var(--jpg-cream)]">
+              <motion.span
+                initial={reduced ? false : { opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.8, ease }}
+                className="mb-8 block font-label text-[var(--jpg-red)] sm:mb-10"
               >
-                <motion.span
-                  initial={reduced ? false : { opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ duration: 0.8, ease }}
-                  className="mb-8 block font-label text-[var(--jpg-red)] sm:mb-10"
-                >
-                  our story
-                </motion.span>
-                <HeadlineLines
-                  lines={HERO_LINES}
-                  reduced={reduced}
-                  mode="load"
-                  delay={0.15}
-                />
-              </h1>
+                our story
+              </motion.span>
+              <HeadlineLines lines={HERO_LINES} reduced={reduced} delay={0.15} />
+            </h1>
 
-              <motion.div
-                initial={reduced ? false : { opacity: 0, y: 24 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 1, ease, delay: 0.8 }}
-                className="max-w-md lg:pb-3"
-              >
-                <p className="font-body text-lg leading-8 text-[var(--jpg-cream)]/65 sm:text-xl sm:leading-9">
-                  thevibe. is an organisation and a community of and for artists
-                  from Africa and the diaspora.
-                </p>
-                
-              </motion.div>
-            </div>
+            <motion.div
+              initial={reduced ? false : { opacity: 0, y: 24 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1, ease, delay: 0.8 }}
+              className="mt-10 max-w-xl sm:mt-14"
+            >
+              <p className="font-body text-xl leading-9 text-[var(--jpg-cream)]/90 sm:text-2xl sm:leading-10">
+                thevibe. is an organisation and a community of and for artists
+                from Africa and the diaspora.
+              </p>
+              <div className="mt-8 flex items-center gap-4">
+                <span aria-hidden="true" className="h-px w-10 bg-[var(--jpg-red)]" />
+                <span className="font-label text-[var(--jpg-cream)]/60">
+                  Made to be seen
+                </span>
+              </div>
+            </motion.div>
           </div>
         </section>
 
-        {/* The three chapters */}
-        {chapters.map((chapter) => (
-          <Chapter key={chapter.id} chapter={chapter} reduced={reduced} />
-        ))}
-
-        {/* "we are" banner and lines, from the original mockup */}
-        <section className="relative overflow-hidden pb-24 pt-8 sm:pb-32">
-          <div className="mx-auto max-w-6xl px-6 sm:px-10 lg:px-16">
+        {/* "we are" block, now right after the header */}
+        <section className="relative overflow-hidden pb-20 pt-4 sm:pb-28">
+          <div className={wrap}>
             <div className="relative">
               <motion.div
                 aria-hidden="true"
@@ -294,6 +243,35 @@ export default function AboutPage() {
                   <span style={{ color: "var(--jpg-red)" }}>to the world.</span>
                 </Reveal>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Three columns */}
+        <section className="pb-24 sm:pb-32">
+          <div className={wrap}>
+            <div className="grid gap-12 border-t border-[var(--jpg-border)] pt-10 sm:pt-12 md:grid-cols-3 md:gap-10 lg:gap-14">
+              {columns.map((col, i) => (
+                <Reveal
+                  key={col.id}
+                  reduced={reduced}
+                  delay={i * 0.12}
+                  className="max-w-md"
+                >
+                  <h2 className="flex items-baseline gap-4 font-label font-bold text-[var(--jpg-red)]">
+                    <span aria-hidden="true">{col.count}</span>
+                    {col.title}
+                  </h2>
+
+                  <div className="mt-6 space-y-6 font-body text-lg leading-8 text-[var(--jpg-cream)]/65">
+                    {col.paragraphs.map((parts, pi) => (
+                      <p key={pi}>
+                        <Parts parts={parts} />
+                      </p>
+                    ))}
+                  </div>
+                </Reveal>
+              ))}
             </div>
           </div>
         </section>
