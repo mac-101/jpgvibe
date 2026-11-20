@@ -327,6 +327,11 @@ export default function LiveVisualFeed() {
     const displayedArtworks = liveArtworks.length
         ? liveArtworks.slice(0, artworks.length)
         : artworks;
+        
+    const carouselArtworks = [
+        ...displayedArtworks,
+        ...displayedArtworks,
+        ];
 
     const sectionRef = useRef(null);
     const trackRef = useRef(null);
@@ -370,59 +375,53 @@ export default function LiveVisualFeed() {
 
     // Auto-scroll: drifts right, dwells at the end, drifts back
     useEffect(() => {
-        const el = trackRef.current;
-        if (!el || reduced) return;
+    const el = trackRef.current;
+    if (!el || reduced) return;
 
-        let raf;
-        let last = performance.now();
-        let pos = el.scrollLeft;
-        let dir = 1;
-        let running = false;
+    let raf;
+    let last = performance.now();
+    let pos = el.scrollLeft;
+    let running = false;
 
-        const tick = (now) => {
-            const dt = Math.min(now - last, 64) / 1000;
-            last = now;
+    const tick = (now) => {
+        const dt = Math.min(now - last, 64) / 1000;
+        last = now;
 
-            const blocked =
-                !inViewRef.current ||
-                focusRef.current ||
-                flippedRef.current !== null ||
-                now < pauseUntil.current ||
-                document.hidden;
+        const blocked =
+            !inViewRef.current ||
+            focusRef.current ||
+            flippedRef.current !== null ||
+            now < pauseUntil.current ||
+            document.hidden;
 
-            if (blocked) {
-                running = false;
-            } else {
-                // Re-sync after any pause, since the user may have scrolled by hand
-                if (!running) {
-                    pos = el.scrollLeft;
-                    running = true;
-                }
-
-                const max = el.scrollWidth - el.clientWidth;
-                if (max > 0) {
-                    pos += dir * SPEED * dt;
-
-                    if (pos >= max) {
-                        pos = max;
-                        dir = -1;
-                        pauseUntil.current = now + EDGE_DWELL;
-                    } else if (pos <= 0) {
-                        pos = 0;
-                        dir = 1;
-                        pauseUntil.current = now + EDGE_DWELL;
-                    }
-
-                    el.scrollLeft = pos;
-                }
+        if (blocked) {
+            running = false;
+        } else {
+            if (!running) {
+                pos = el.scrollLeft;
+                running = true;
             }
 
-            raf = requestAnimationFrame(tick);
-        };
+            const loopWidth = el.scrollWidth / 2;
+
+            if (loopWidth > 0) {
+                pos += SPEED * dt;
+
+                if (pos >= loopWidth) {
+                    pos -= loopWidth;
+                }
+
+                el.scrollLeft = pos;
+            }
+        }
 
         raf = requestAnimationFrame(tick);
-        return () => cancelAnimationFrame(raf);
-    }, [reduced]);
+    };
+
+    raf = requestAnimationFrame(tick);
+
+    return () => cancelAnimationFrame(raf);
+}, [reduced, displayedArtworks.length]); 
 
     const holdAutoScroll = () => {
         pauseUntil.current = performance.now() + IDLE_PAUSE;
@@ -493,52 +492,17 @@ export default function LiveVisualFeed() {
                         }}
                         className="flex gap-4 overflow-x-auto px-6 pb-6 [-ms-overflow-style:none] [overscroll-behavior-x:contain] [scrollbar-width:none] sm:gap-5 sm:px-10 lg:gap-6 lg:px-16 [&::-webkit-scrollbar]:hidden"
                     >
-                        {displayedArtworks.map((artwork) => (
-                            <ArtworkCard
-                                key={artwork.id}
-                                artwork={artwork}
-                                flipped={flippedId === artwork.id}
-                                onToggle={() => toggleCard(artwork.id)}
-                                reduced={reduced}
-                            />
-                        ))}
+                        {carouselArtworks.map((artwork, index) => (
+    <ArtworkCard
+        key={`${artwork.id}-${index}`}
+        artwork={artwork}
+        flipped={flippedId === artwork.id}
+        onToggle={() => toggleCard(artwork.id)}
+        reduced={reduced}
+    />
+))}
 
-                        {/* Closing card */}
-                        <div
-                            className="flex shrink-0 flex-col justify-between rounded-2xl border p-7 sm:p-9"
-                            style={{
-                                ...CARD_SIZE,
-                                borderColor: "var(--jpg-border)",
-                                background:
-                                    "radial-gradient(ellipse at top right, rgba(255,106,0,0.12), transparent 55%), var(--jpg-surface)",
-                            }}
-                        >
-                            <h3 className="text-3xl font-medium leading-tight tracking-tight sm:text-4xl">
-                                The next
-                                <br />
-                                vision could
-                                <br />
-                                be yours.
-                            </h3>
-
-                            <a
-                                href={ROUTES.team}
-                                className="group inline-flex items-center gap-3 text-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4"
-                                style={{
-                                    color: "var(--jpg-cream)",
-                                    outlineColor: "var(--jpg-orange)",
-                                }}
-                            >
-                                Meet the creators
-                                <span
-                                    aria-hidden="true"
-                                    className="inline-block transition-transform duration-300 group-hover:-translate-y-0.5 group-hover:translate-x-1"
-                                    style={{ color: "var(--jpg-orange)" }}
-                                >
-                                    <FaArrowRight/>
-                                </span>
-                            </a>
-                        </div>
+                    
                     </div>
                 </div>
 
