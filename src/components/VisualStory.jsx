@@ -11,9 +11,6 @@ import {
 import LiveLight from "./LiveLight";
 import { useInstagram } from "../instagram/InstagramContext";
 
-// Adjust this import path if VisualStory.jsx is in a different folder.
-// Use the same import path as InstagramStrip.jsx.
-
 // Polygon rings. Index 0 = closest to the viewer.
 const LAYERS = [
   {
@@ -68,6 +65,8 @@ const MAX_CARDS = LAYERS.reduce(
   0
 );
 
+const MAX_FEED_POSTS = 40;
+
 const clamp = (v, min, max) => Math.min(Math.max(v, min), max);
 const lerp = (a, b, t) => a + (b - a) * t;
 
@@ -79,31 +78,99 @@ const easeInOut = (t) =>
     : 1 - Math.pow(-2 * t + 2, 2) / 2;
 
 /**
- * Converts real feed posts into visual cards.
- * Each card retains its original post index so the
- * existing lightbox can open the correct post.
+ * Get usable image URLs from a feed post.
+ * Each visual item retains its original post index.
+ */
+function getPostMedia(post, postIndex) {
+  const mediaItems = Array.isArray(post.media)
+    ? post.media
+    : post.media
+      ? [post.media]
+      : [];
+
+  const items = [];
+
+  mediaItems.forEach((media, mediaIndex) => {
+    const image =
+      typeof media === "string"
+        ? media
+        : media?.thumb ||
+          media?.thumbnail_url ||
+          media?.media_url ||
+          media?.url ||
+          media?.src;
+
+    if (!image) return;
+
+    // Avoid using video URLs as artwork.
+    const mediaType =
+      typeof media === "object" ? media?.type : null;
+
+    if (mediaType && !["image", "photo"].includes(mediaType)) {
+      return;
+    }
+
+    items.push({
+      image,
+      post,
+      postIndex,
+      mediaIndex,
+    });
+  });
+
+  // Also support posts with a direct image property.
+  const directImage =
+    post.image_url ||
+    post.imageUrl ||
+    post.thumbnail_url ||
+    post.thumbnail ||
+    post.image;
+
+  if (directImage) {
+    items.push({
+      image: directImage,
+      post,
+      postIndex,
+      mediaIndex: 0,
+    });
+  }
+
+  return items;
+}
+
+/**
+ * Shuffle an array without mutating the original.
+ */
+function shuffle(items) {
+  const result = [...items];
+
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+
+  return result;
+}
+
+/**
+ * Select up to 28 unique images from the first 40 posts.
+ * Assign each selected image to one polygon position.
  */
 function buildSlots(posts) {
   const visualItems = [];
+  const seenImages = new Set();
 
-  posts.forEach((post, postIndex) => {
-    if (!Array.isArray(post.media)) return;
+  posts.slice(0, MAX_FEED_POSTS).forEach((post, postIndex) => {
+    getPostMedia(post, postIndex).forEach((item) => {
+      if (seenImages.has(item.image)) return;
 
-    post.media.forEach((media, mediaIndex) => {
-      const image =
-        media.thumb ||
-        (media.type === "image" ? media.url : null);
-
-      if (!image) return;
-
-      visualItems.push({
-        image,
-        post,
-        postIndex,
-        mediaIndex,
-      });
+      seenImages.add(item.image);
+      visualItems.push(item);
     });
   });
+
+  const selected = shuffle(visualItems).slice(0, MAX_CARDS);
 
   const slots = [];
   let cursor = 0;
@@ -111,13 +178,11 @@ function buildSlots(posts) {
   LAYERS.forEach((layer, layerIndex) => {
     for (
       let vertex = 0;
-      vertex < layer.sides && cursor < visualItems.length;
+      vertex < layer.sides && cursor < selected.length;
       vertex++
     ) {
-      const item = visualItems[cursor];
-
       slots.push({
-        ...item,
+        ...selected[cursor],
         index: cursor,
         layerIndex,
         vertex,
@@ -128,7 +193,7 @@ function buildSlots(posts) {
     }
   });
 
-  return slots.slice(0, MAX_CARDS);
+  return slots;
 }
 
 /* Individual animated feed card */
@@ -163,7 +228,6 @@ function Card({
       Math.PI) /
     180;
 
-  // Deterministic placement variation
   const jx =
     (((index * 37) % 11) - 5) *
     (mobile ? 1.5 : 3);
@@ -172,7 +236,6 @@ function Card({
     (((index * 53) % 11) - 5) *
     (mobile ? 1.5 : 3);
 
-  // Starting pile
   const stackX =
     ((index % 7) - 3) * (mobile ? 1.5 : 3);
 
@@ -238,16 +301,8 @@ function Card({
     );
 
     return {
-      x: lerp(
-        stackX,
-        clamp(rawX, -maxX, maxX),
-        t
-      ),
-      y: lerp(
-        stackY,
-        clamp(rawY, -maxY, maxY),
-        t
-      ),
+      x: lerp(stackX, clamp(rawX, -maxX, maxX), t),
+      y: lerp(stackY, clamp(rawY, -maxY, maxY), t),
       rotate: lerp(stackRot, endRot, t),
       scale,
       opacity,
@@ -316,24 +371,31 @@ function Card({
     mass: 0.45,
   });
 
+  const finalX = useTransform(
+    [x, smoothRepelX],
+    ([base, repel]) => base + repel
+  );
+
+  const finalY = useTransform(
+    [y, smoothRepelY],
+    ([base, repel]) => base + repel
+  );
+
+  const postDescription =
+    post.text || post.caption || "View artwork";
+
   return (
     <div className="pointer-events-none absolute inset-0 flex items-center justify-center">
       <motion.button
         type="button"
-        aria-label={`Open post: ${post.text?.slice(0, 80) || "View artwork"}`}
+        aria-label={`Open post: ${postDescription.slice(0, 80)}`}
         onClick={() => onOpen(postIndex)}
         className="pointer-events-auto cursor-pointer overflow-hidden rounded-lg border border-white/15 bg-[var(--jpg-surface)] shadow-[0_10px_30px_rgba(0,0,0,0.6)] will-change-transform focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[var(--jpg-cream)]"
         style={{
           width: cardW,
           height: cardH,
-          x: useTransform(
-            [x, smoothRepelX],
-            ([base, repel]) => base + repel
-          ),
-          y: useTransform(
-            [y, smoothRepelY],
-            ([base, repel]) => base + repel
-          ),
+          x: finalX,
+          y: finalY,
           rotate,
           scale,
           opacity,
@@ -343,7 +405,7 @@ function Card({
       >
         <img
           src={image}
-          alt={post.text || "Creative work from the JPGVibe community"}
+          alt={postDescription}
           loading="lazy"
           draggable="false"
           className="h-full w-full rounded-[7px] object-cover"
@@ -361,7 +423,7 @@ export default function VisualStory() {
     height: 800,
   });
 
-  // Real Instagram and X feed data
+  // Existing live Instagram and X feed.
   const { posts, status, openLightbox } = useInstagram();
 
   useEffect(() => {
@@ -376,8 +438,7 @@ export default function VisualStory() {
 
     window.addEventListener("resize", resize);
 
-    return () =>
-      window.removeEventListener("resize", resize);
+    return () => window.removeEventListener("resize", resize);
   }, []);
 
   // Scroll progress
@@ -415,7 +476,8 @@ export default function VisualStory() {
 
   const mobile = width < 640;
 
-  // Build cards whenever the feed changes
+  // Random selection is made when the feed posts change.
+  // Ordinary renders do not reshuffle the cards.
   const slots = useMemo(
     () => buildSlots(posts || []),
     [posts]
@@ -495,7 +557,7 @@ export default function VisualStory() {
         {/* Real community artwork */}
         {slots.map((slot) => (
           <Card
-            key={`${slot.post.id}-${slot.mediaIndex}`}
+            key={`${slot.post.id || slot.postIndex}-${slot.mediaIndex}-${slot.image}`}
             slot={slot}
             progress={progress}
             width={width}
