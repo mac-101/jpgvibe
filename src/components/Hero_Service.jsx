@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState } from "react";
 import {
   motion,
@@ -8,7 +9,6 @@ import {
   useTransform,
 } from "framer-motion";
 import { ROUTES } from "../routes";
-import { artworkImages } from "../artworkImages";
 
 const ease = [0.22, 1, 0.36, 1];
 
@@ -27,7 +27,7 @@ const services = [
       "Final work delivered, ready to share with the world",
     ],
     gradient:
-  "radial-gradient(ellipse at 20% 20%, rgba(255, 230, 0, 0.28) 0%, transparent 45%), linear-gradient(135deg, #FF6A00 0%, #9D2514 48%, #170A08 100%)",
+      "radial-gradient(ellipse at 20% 20%, rgba(255, 230, 0, 0.28) 0%, transparent 45%), linear-gradient(135deg, #FF6A00 0%, #9D2514 48%, #170A08 100%)",
     glow: "rgba(255,106,0,0.28)",
     float: 12,
     duration: 6.4,
@@ -43,12 +43,12 @@ const services = [
       "We select, sequence and work by African and dispora artists, for a space, a show or a brand moment.",
     deliverables: [
       "Curated exhibitionand pop-ups, in person or online",
-      "Art sourcing for spaces: hotels, restaurants,  offices and homes",
+      "Art sourcing for spaces: hotels, restaurants, offices and homes",
       "Artist selection for brand collections and commissions",
       "Social rollout and promotionto you community",
     ],
     gradient:
-  "radial-gradient(ellipse at 20% 20%, rgba(255, 230, 0, 0.28) 0%, transparent 45%), linear-gradient(135deg, #FF6A00 0%, #9D2514 48%, #170A08 100%)",
+      "radial-gradient(ellipse at 80% 15%, rgba(249, 29, 29, 0.30) 0%, transparent 45%), linear-gradient(135deg, #6F1717 0%, #32100F 50%, #0A0A0A 100%)",
     glow: "rgba(249,29,29,0.22)",
     float: 12,
     duration: 6.4,
@@ -57,7 +57,15 @@ const services = [
   },
 ];
 
-function ServiceCard({ service, index, open, onOpen, onClose, onToggle, reduced }) {
+function ServiceCard({
+  service,
+  index,
+  open,
+  onOpen,
+  onClose,
+  onToggle,
+  reduced,
+}) {
   const lastPointer = useRef("mouse");
 
   // Cursor position inside the card, 0 to 1
@@ -84,7 +92,9 @@ function ServiceCard({ service, index, open, onOpen, onClose, onToggle, reduced 
 
   const handleMove = (e) => {
     if (reduced || e.pointerType !== "mouse") return;
+
     const rect = e.currentTarget.getBoundingClientRect();
+
     mx.set((e.clientX - rect.left) / rect.width);
     my.set((e.clientY - rect.top) / rect.height);
     hover.set(1);
@@ -94,6 +104,7 @@ function ServiceCard({ service, index, open, onOpen, onClose, onToggle, reduced 
     mx.set(0.5);
     my.set(0.5);
     hover.set(0);
+
     if (e.pointerType === "mouse") onClose();
   };
 
@@ -121,7 +132,7 @@ function ServiceCard({ service, index, open, onOpen, onClose, onToggle, reduced 
         viewport={{ once: true, amount: 0.2 }}
         transition={{ duration: 0.9, ease, delay: (index % 2) * 0.14 }}
       >
-        {/* Layer 2: idle float, which settles while the card is open so it's easy to read */}
+        {/* Layer 2: idle float, which settles while the card is open */}
         <motion.div
           animate={
             reduced ? undefined : open ? { y: 0 } : { y: [0, -service.float, 0] }
@@ -150,29 +161,31 @@ function ServiceCard({ service, index, open, onOpen, onClose, onToggle, reduced 
               rotateX: reduced ? 0 : rotateX,
               rotateY: reduced ? 0 : rotateY,
             }}
-            className={`relative min-h-[400px] rounded-3xl`}
+            className="relative min-h-[400px] rounded-3xl"
           >
             {/* Glass surface */}
             <div className="absolute inset-0 overflow-hidden rounded-3xl border border-white/10 bg-white/[0.04] shadow-[0_30px_80px_rgba(0,0,0,0.5),inset_0_1px_0_rgba(255,255,255,0.12)] backdrop-blur-xl">
-              { /* Gradient background */ }
-<div
-  aria-hidden="true"
-  className="absolute inset-0 transition-transform duration-[1200ms] ease-out"
-  style={{
-    background: service.gradient,
-    transform: open ? "scale(1.06)" : "scale(1)",
-  }}
-/>
+              {/* Gradient background */}
+              <div
+                aria-hidden="true"
+                className="absolute inset-0 transition-transform duration-[1200ms] ease-out"
+                style={{
+                  background: service.gradient,
+                  transform: open ? "scale(1.06)" : "scale(1)",
+                }}
+              />
 
-{ /* Dark overlay — retained for contrast */ }
-<div
-  aria-hidden="true"
-  className="absolute inset-0"
-  style={{
-    background:
-      "linear-gradient(180deg, rgba(10,10,10,0.25) 0%, rgba(10,10,10,0.58) 50%, rgba(10,10,10,0.92) 100%)",
-  }}
-/>
+              {/* Dark overlay */}
+              <div
+                aria-hidden="true"
+                className="absolute inset-0"
+                style={{
+                  background:
+                    "linear-gradient(180deg, rgba(10,10,10,0.25) 0%, rgba(10,10,10,0.58) 50%, rgba(10,10,10,0.92) 100%)",
+                }}
+              />
+
+              {/* Cursor spotlight */}
               <motion.div
                 aria-hidden="true"
                 className="absolute inset-0"
@@ -185,13 +198,20 @@ function ServiceCard({ service, index, open, onOpen, onClose, onToggle, reduced 
                   <h2 className="text-2xl font-medium leading-tight tracking-tight sm:text-3xl">
                     {service.title}
                   </h2>
+
                   <p
                     className="mt-3 text-sm leading-6"
-                    style={{ color: "var(--jpg-cream)", opacity: 0.7 }}
+                    style={{
+                      color: "var(--jpg-cream)",
+                      opacity: 0.7,
+                    }}
                   >
                     {service.tagline}
                   </p>
-                  <p className="text-sm text-right leading text-(--jpg-orange)">Learn More</p>
+
+                  <p className="text-sm text-right leading text-(--jpg-orange)">
+                    Learn More
+                  </p>
                 </div>
               </div>
 
@@ -221,6 +241,7 @@ function ServiceCard({ service, index, open, onOpen, onClose, onToggle, reduced 
                   <h2 className="text-lg font-medium leading-snug tracking-tight sm:text-xl">
                     {service.title}
                   </h2>
+
                   <button
                     type="button"
                     onClick={onClose}
@@ -249,12 +270,19 @@ function ServiceCard({ service, index, open, onOpen, onClose, onToggle, reduced 
                 <motion.div
                   initial={false}
                   animate={{ opacity: open ? 1 : 0, y: open ? 0 : 18 }}
-                  transition={{ duration: reduced ? 0 : 0.6, ease, delay: open ? 0.2 : 0 }}
+                  transition={{
+                    duration: reduced ? 0 : 0.6,
+                    ease,
+                    delay: open ? 0.2 : 0,
+                  }}
                   className="mt-4 flex flex-1 flex-col"
                 >
                   <p
                     className="text-sm leading-7"
-                    style={{ color: "var(--jpg-cream)", opacity: 0.8 }}
+                    style={{
+                      color: "var(--jpg-cream)",
+                      opacity: 0.8,
+                    }}
                   >
                     {service.description}
                   </p>
@@ -267,7 +295,13 @@ function ServiceCard({ service, index, open, onOpen, onClose, onToggle, reduced 
                           className="mt-[9px] h-1 w-1 shrink-0 rounded-full"
                           style={{ backgroundColor: "var(--jpg-orange)" }}
                         />
-                        <span style={{ color: "var(--jpg-cream)", opacity: 0.88 }}>
+
+                        <span
+                          style={{
+                            color: "var(--jpg-cream)",
+                            opacity: 0.88,
+                          }}
+                        >
                           {item}
                         </span>
                       </li>
@@ -291,7 +325,9 @@ function ServiceCard({ service, index, open, onOpen, onClose, onToggle, reduced 
               aria-hidden="true"
               initial={false}
               animate={{
-                clipPath: open ? "inset(0% 0% 0% 0%)" : "inset(0% 0% 100% 0%)",
+                clipPath: open
+                  ? "inset(0% 0% 0% 0%)"
+                  : "inset(0% 0% 100% 0%)",
               }}
               transition={{ duration: reduced ? 0 : 0.9, ease }}
               className="pointer-events-none absolute inset-0 z-30 rounded-3xl"
@@ -317,13 +353,19 @@ export default function Services() {
   const reduced = useReducedMotion();
   const [openId, setOpenId] = useState(null);
 
-  // Tapping anywhere outside the cards closes the open one (touch devices)
+  // Tapping anywhere outside the cards closes the open one
   useEffect(() => {
     const onDown = (e) => {
-      if (!e.target.closest("[data-service-card]")) setOpenId(null);
+      if (!e.target.closest("[data-service-card]")) {
+        setOpenId(null);
+      }
     };
+
     document.addEventListener("pointerdown", onDown);
-    return () => document.removeEventListener("pointerdown", onDown);
+
+    return () => {
+      document.removeEventListener("pointerdown", onDown);
+    };
   }, []);
 
   return (
@@ -339,12 +381,21 @@ export default function Services() {
         <motion.div
           className="absolute -left-24 top-1/4 h-[420px] w-[420px] rounded-full bg-[var(--jpg-red)] opacity-[0.16] blur-[120px]"
           animate={reduced ? undefined : { x: [0, 60, 0], y: [0, 40, 0] }}
-          transition={{ duration: 18, repeat: Infinity, ease: "easeInOut" }}
+          transition={{
+            duration: 18,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
         />
+
         <motion.div
           className="absolute -right-24 top-1/2 h-[460px] w-[460px] rounded-full bg-[var(--jpg-orange)] opacity-[0.13] blur-[130px]"
           animate={reduced ? undefined : { x: [0, -70, 0], y: [0, -50, 0] }}
-          transition={{ duration: 22, repeat: Infinity, ease: "easeInOut" }}
+          transition={{
+            duration: 22,
+            repeat: Infinity,
+            ease: "easeInOut",
+          }}
         />
       </div>
 
@@ -355,7 +406,7 @@ export default function Services() {
           transition={{ duration: 0.9, ease }}
           className="mb-14 max-w-3xl sm:mb-20"
         >
-            <header className="mb-16 sm:mb-24">
+          <header className="mb-16 sm:mb-24">
             <motion.h1
               initial={reduced ? false : { opacity: 0, y: 28 }}
               animate={{ opacity: 1, y: 0 }}
@@ -367,6 +418,7 @@ export default function Services() {
               >
                 Services
               </span>
+
               <span className="mt-5 block text-5xl leading-[1.05] sm:text-6xl md:text-7xl">
                 Work with
                 <br />
@@ -377,7 +429,10 @@ export default function Services() {
 
           <p
             className="mt-6 max-w-xl text-base leading-8 sm:text-lg"
-            style={{ color: "var(--jpg-cream)", opacity: 0.8 }}
+            style={{
+              color: "var(--jpg-cream)",
+              opacity: 0.8,
+            }}
           >
             From the first idea to the finished show, we shape how your work is
             seen, presented and remembered.
@@ -393,9 +448,13 @@ export default function Services() {
               reduced={reduced}
               open={openId === service.id}
               onOpen={() => setOpenId(service.id)}
-              onClose={() => setOpenId((cur) => (cur === service.id ? null : cur))}
+              onClose={() =>
+                setOpenId((cur) => (cur === service.id ? null : cur))
+              }
               onToggle={() =>
-                setOpenId((cur) => (cur === service.id ? null : service.id))
+                setOpenId((cur) =>
+                  cur === service.id ? null : service.id
+                )
               }
             />
           ))}
