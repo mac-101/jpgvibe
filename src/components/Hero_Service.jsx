@@ -476,8 +476,7 @@ export default function Services() {
               opacity: 0.8,
             }}
           >
-            From the first idea to the finished show, we shape how your work is
-            seen, presented and remembered.
+           From concept to completetion, we shape how your work is seen, presented and remembered.
           </p>
         </motion.div>
 
