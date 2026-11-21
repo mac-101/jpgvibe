@@ -68,8 +68,8 @@ const SERVICE_INQUIRY_TYPES = {
   "creative-direction": "brand-partnership",
 };
 
-/* ---------- Submission. Flip USE_MOCK once your backend exists ---------- */
-const USE_MOCK = true;
+/* ---------- Submission. Flip USE_.K once your backend exists ---------- */
+const USE_MOCK = false;
 
 async function submitInquiry(payload) {
   if (USE_MOCK) {
