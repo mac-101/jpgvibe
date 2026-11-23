@@ -82,7 +82,15 @@ async function submitInquiry(payload) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(payload),
   });
-  if (!res.ok) throw new Error(`Contact request failed (${res.status})`);
+    if (!res.ok) {
+    let reason = "";
+    try {
+      reason = (await res.json())?.error ?? "";
+    } catch {
+      // ignore
+    }
+    throw new Error(reason || `Contact request failed (${res.status})`);
+  }
   return res.json();
 }
 
@@ -182,6 +190,7 @@ export default function ContactPage() {
     website: "", // honeypot: real people never see or fill this
   });
   const [errors, setErrors] = useState({});
+  const [errorDetail, setErrorDetail] = useState("");
   const [status, setStatus] = useState("idle"); // idle | sending | sent | error
   const successRef = useRef(null);
 
@@ -225,7 +234,8 @@ export default function ContactPage() {
         service: selectedInquiry ? inquiryType : null,
       });
       setStatus("sent");
-    } catch {
+    } catch (err) {
+      setErrorDetail(err instanceof Error ? err.message : "");
       setStatus("error");
     }
   };
@@ -591,6 +601,9 @@ export default function ContactPage() {
                       {CONTACT.email}
                     </a>
                     .
+                    {errorDetail && (
+  <span className="mt-2 block text-sm opacity-70">Reason: {errorDetail}</span>
+)}
                   </p>
                 )}
 

@@ -8,7 +8,7 @@ const SERVICES = {
 };
 
 const BREVO_URL = "https://api.brevo.com/v3/smtp/email";
-const fail = (status, error) => ({ status, body: { error } });
+const fail = (status, error) => {   console.error("Contact rejected:", status, error);   return { status, body: { error } }; };
 
 function parseBody(body) {
   if (typeof body === "string") {
@@ -90,12 +90,21 @@ export async function submitContact({ body, env }) {
     return fail(400, "Your message must be between 10 and 2000 characters.");
   }
   
-  const { BREVO_API_KEY, CONTACT_FROM_EMAIL, CONTACT_TO_EMAIL } = env;
-  const fromName = env.CONTACT_FROM_NAME || "thevibe.";
-  const teamInboxes = (CONTACT_TO_EMAIL || "")
-    .split(",")
-    .map((e) => e.trim())
-    .filter(Boolean);
+  // Phone-pasted values often carry stray spaces or quotes. Strip them.
+const clean = (value) =>
+  String(value ?? "")
+    .trim()
+    .replace(/^["']+|["']+$/g, "")
+    .trim();
+
+const BREVO_API_KEY = clean(env.BREVO_API_KEY);
+const CONTACT_FROM_EMAIL = clean(env.CONTACT_FROM_EMAIL);
+const fromName = clean(env.CONTACT_FROM_NAME) || "thevibe.";
+const teamInboxes = clean(env.CONTACT_TO_EMAIL)
+  .split(",")
+  .map(clean)
+  .filter(Boolean);
+  
   
   if (!BREVO_API_KEY || !CONTACT_FROM_EMAIL || !teamInboxes.length) {
     console.error("Contact email is not configured.");
