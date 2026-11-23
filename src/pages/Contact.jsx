@@ -227,11 +227,12 @@ export default function ContactPage() {
 
     setStatus("sending");
     try {
-      await submitInquiry({
+            await submitInquiry({
         name: values.name.trim(),
         email: values.email.trim(),
         message: values.message.trim(),
         service: selectedInquiry ? inquiryType : null,
+        interest: SERVICE_INQUIRY_TYPES[serviceSlug] ? serviceSlug : null,
       });
       setStatus("sent");
     } catch (err) {
