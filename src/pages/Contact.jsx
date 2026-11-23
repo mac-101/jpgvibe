@@ -69,7 +69,7 @@ const SERVICE_INQUIRY_TYPES = {
 };
 
 /* ---------- Submission. Flip USE_.K once your backend exists ---------- */
-const USE_MOCK = false;
+const USE_MOCK = true;
 
 async function submitInquiry(payload) {
   if (USE_MOCK) {
