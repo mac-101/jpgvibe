@@ -54,8 +54,9 @@ const clean = (value) =>
     .trim()
     .replace(/^["']+|["']+$/g, "")
     .trim();
-
+    
 async function sendEmail(apiKey, payload) {
+  sendEmail.lastError = "";
   let response;
   try {
     response = await fetch(BREVO_URL, {
@@ -68,10 +69,11 @@ async function sendEmail(apiKey, payload) {
       body: JSON.stringify(payload),
     });
   } catch (err) {
-    console.error("Could not reach Brevo:", err.cause?.code ?? err.message);
+    sendEmail.lastError = `network: ${err.cause?.code ?? err.message}`;
+    console.error("Could not reach Brevo:", sendEmail.lastError);
     return false;
   }
-
+  
   if (!response.ok) {
     let detail = "";
     try {
@@ -80,6 +82,7 @@ async function sendEmail(apiKey, payload) {
     } catch {
       // ignore
     }
+    sendEmail.lastError = `Brevo ${response.status}: ${detail}`;
     console.error("Brevo request failed", response.status, detail);
     return false;
   }
@@ -159,8 +162,12 @@ ${serviceTitle ? row("Service page", escapeHtml(serviceTitle)) : ""}
       .join("\n"),
   });
 
-  if (!teamSent) {
-    return fail(502, "We couldn't send your message right now. Please try again.");
+    if (!teamSent) {
+    // TEMPORARY: shows Brevo's reason on the form. Remove once it works.
+    return fail(
+      502,
+      `We couldn't send your message right now. Please try again. (${sendEmail.lastError})`
+    );
   }
 
   // 2. The confirmation to the visitor. A failure here doesn't fail the form.
