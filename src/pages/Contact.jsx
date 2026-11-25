@@ -69,30 +69,41 @@ const SERVICE_INQUIRY_TYPES = {
 };
 
 /* ---------- Submission. Flip USE_.K once your backend exists ---------- */
-const USE_MOCK = false;
+
+/* ---------- Formspree submission ---------- */
+const FORMSPREE_ENDPOINT = import.meta.env.VITE_FORMSPREE_ENDPOINT;
 
 async function submitInquiry(payload) {
-  if (USE_MOCK) {
-    await new Promise((resolve) => setTimeout(resolve, 900)); // fake network
-    console.log("Inquiry (mock):", payload);
-    return { ok: true };
-  }
-  const res = await fetch("/api/contact", {
+  const res = await fetch(FORMSPREE_ENDPOINT, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload),
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      name: payload.name,
+      email: payload.email,
+      service: payload.service,
+      interest: payload.interest || "None",
+      message: payload.message,
+      _subject: `New ${payload.service} inquiry from ${payload.name}`,
+      _gotcha: payload.website || "",
+    }),
   });
-    if (!res.ok) {
-    let reason = "";
-    try {
-      reason = (await res.json())?.error ?? "";
-    } catch {
-      // ignore
-    }
-    throw new Error(reason || `Contact request failed (${res.status})`);
+
+  const data = await res.json().catch(() => null);
+
+  if (!res.ok) {
+    throw new Error(
+      data?.errors?.map((error) => error.message).join(", ") ||
+        "Failed to submit your message."
+    );
   }
-  return res.json();
+
+  return data;
 }
+
+
 
 /* ---------- Validation ---------- */
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -205,41 +216,47 @@ export default function ContactPage() {
   };
 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (status === "sending") return;
+  e.preventDefault();
+  if (status === "sending") return;
 
-    const found = validate({
-      ...values,
-      service: selectedInquiry ? inquiryType : "",
+  const found = validate({
+    ...values,
+    service: selectedInquiry ? inquiryType : "",
+  });
+
+  setErrors(found);
+
+  const first = FIELD_ORDER.find((key) => found[key]);
+
+  if (first) {
+    document.getElementById(`contact-${first}`)?.focus();
+    return;
+  }
+
+  // Honeypot: silently reject bots
+  if (values.website) {
+    setStatus("sent");
+    return;
+  }
+
+  setStatus("sending");
+
+  try {
+    await submitInquiry({
+      name: values.name.trim(),
+      email: values.email.trim(),
+      message: values.message.trim(),
+      service: selectedInquiry ? inquiryType : null,
+      interest: SERVICE_INQUIRY_TYPES[serviceSlug] ? serviceSlug : null,
+      website: values.website,
     });
-    setErrors(found);
-    const first = FIELD_ORDER.find((key) => found[key]);
-    if (first) {
-      document.getElementById(`contact-${first}`)?.focus();
-      return;
-    }
 
-    // Bots fill the hidden field. Act as if it worked, send nothing.
-    if (values.website) {
-      setStatus("sent");
-      return;
-    }
-
-    setStatus("sending");
-    try {
-            await submitInquiry({
-        name: values.name.trim(),
-        email: values.email.trim(),
-        message: values.message.trim(),
-        service: selectedInquiry ? inquiryType : null,
-        interest: SERVICE_INQUIRY_TYPES[serviceSlug] ? serviceSlug : null,
-      });
-      setStatus("sent");
-    } catch (err) {
-      setErrorDetail(err instanceof Error ? err.message : "");
-      setStatus("error");
-    }
-  };
+    setStatus("sent");
+  } catch (err) {
+    setErrorDetail(err instanceof Error ? err.message : "");
+    setStatus("error");
+  }
+};
 
   const reset = () => {
     setValues({ name: "", email: "", message: "", website: "" });
